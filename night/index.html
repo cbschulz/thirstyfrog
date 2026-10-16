@@ -93,7 +93,9 @@ const M=[
 ['ce','Night','Charlie & Erin: big night at home? (O/U 0.5)','Over','Under'],
 ['bh','Drinks',"Erin's drinks at Bowie House: O/U 2.5",'Over','Under'],
 ['din','Night','Do Charlie & Erin go to dinner?','Yes','No'],
-['mad','Night','Does Madden throw up?','Yes','No']];
+['mad','Night','Does Madden throw up?','Yes','No'],
+['ps','Night','Pete & Sepi: big night at home? (O/U 0.5)','Over','Under'],
+['sbh','Drinks',"Sepi's drinks at Bowie House: O/U 2.5",'Over','Under']];
 let S={v:1,bets:[],settled:{},players:{}},me=localStorage.getItem('tf_night_me'),cur=null,lastOk=0;
 const K='abcd',opts=m=>m.slice(3),lab=(m,s)=>m[3+K.indexOf(s)];
 const $=id=>document.getElementById(id),fmt=n=>'$'+(Math.round(n*100)/100).toLocaleString(undefined,{maximumFractionDigits:2});
