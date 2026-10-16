@@ -85,7 +85,8 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}</style></head><b
 <div class="toast" id="toast"></div>
 
 <script>
-const STORE='https://api.restful-api.dev/objects/ff808181a09d98f701a145c22712751e';
+const STORE='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/thirstyfrog.json';
+const norm=d=>({v:(d&&d.v)||1,bets:(d&&d.bets?Object.values(d.bets):[]),settled:(d&&d.settled)||{}});let fails=0,pollT=null;
 const P={Papini:4,Fitz:5,Chuckie:13,Mads:13};const NAMES=Object.keys(P);
 const M=[
 ['pf','Golf','Papini vs Fitz: low gross score','Papini','Fitz'],
@@ -140,12 +141,13 @@ function render(){const c=compute();
  ev.sort((a,b)=>b.t-a.t);$('wire').innerHTML=ev.length?ev.slice(0,60).map(e=>`<div><time>${tm(e.t)}</time>${e.x}</div>`).join(''):'<div>No action yet. Somebody get it started.</div>';
  const mb=me?S.bets.filter(b=>b.p===me):[];
  $('mybets').innerHTML=!me?'<div>Pick who you are to see your record.</div>':mb.length?mb.slice().reverse().map(b=>{const m=mk(b.m),st=S.settled[b.m],g=c.pay[b.id];return`<div><time>${tm(b.t)}</time>${fmt(b.a)} on <b>${lab(m,b.s)}</b> · ${m[2]} · ${st?(g>b.a?`<span class="up">won ${fmt(g)}</span>`:g===b.a?'refunded':`<span class="dn">lost</span>`):'open'}</div>`}).join(''):'<div>No bets yet. The board is waiting.</div>'}
-async function load(){try{const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();S=j.data&&j.data.bets?j.data:S;lastOk=Date.now();localStorage.setItem('mm_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(lastOk)}catch(e){$('sync').textContent='🟠 Offline, retrying… (showing last saved board)'}render()}
-async function mutate(fn,check){for(let k=0;k<5;k++){try{const r=await fetch(STORE,{cache:'no-store'});const j=await r.json();const d=j.data&&j.data.bets?j.data:{v:1,bets:[],settled:{}};
+async function load(){try{const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();if(j)S=norm(j);fails=0;lastOk=Date.now();localStorage.setItem('mm_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(lastOk)}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying… (showing last saved board)'}render()}
+async function getD(){const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
+async function mutate(fn,check){for(let k=0;k<5;k++){try{const d=await getD();
  const err=fn(d);if(err){S=d;render();return err}
- await fetch(STORE,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'thirsty-frog',data:d})});
- await new Promise(r=>setTimeout(r,300+Math.random()*500));const v=await (await fetch(STORE,{cache:'no-store'})).json();
- if(check(v.data)){S=v.data;render();return null}}catch(e){}await new Promise(r=>setTimeout(r,400+Math.random()*900))}return 'Could not save. Check your signal and try again.'}
+ const w=await fetch(STORE,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!w.ok)throw w.status;
+ await new Promise(r=>setTimeout(r,200+Math.random()*400));const v=await getD();
+ if(check(v)){S=v;fails=0;render();return null}}catch(e){}await new Promise(r=>setTimeout(r,500*(k+1)+Math.random()*900))}return 'Save failed. Your bet did NOT go through. Check your signal and try again.'}
 function openWho(){$('pick').innerHTML=NAMES.map(n=>`<button onclick="setMe('${n}')">${n}<small>${P[n]} handicap</small></button>`).join('');$('whoM').classList.add('s')}
 function setMe(n){me=n;localStorage.setItem('mm_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' to play with.')}
 function closeM(id){$(id).classList.remove('s')}
@@ -163,5 +165,5 @@ async function settle(id,w){const m=M.find(x=>x[0]===id);if(!confirm(`Settle "${
  const err=await mutate(d=>{if(d.settled[id])return'Already settled.';d.settled[id]={w,by:me,t:Date.now()}},d=>d&&d.settled&&d.settled[id]);toast(err||'Settled. Payouts are in.')}
 try{const c=JSON.parse(localStorage.getItem('mm_cache'));if(c&&c.bets)S=c}catch(e){}
 render();load();if(!me)openWho();
-setInterval(()=>{if(!document.hidden)load()},6000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+function sched(){clearTimeout(pollT);pollT=setTimeout(async()=>{if(!document.hidden)await load();sched()},Math.min(120000,10000*Math.pow(2,Math.min(fails,4))))}sched();document.addEventListener('visibilitychange',()=>{if(!document.hidden){load();sched()}});
 </script></body></html>
