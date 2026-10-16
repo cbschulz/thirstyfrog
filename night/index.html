@@ -58,7 +58,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}</style></head><b
 <p class="sync" id="sync">Connecting…</p>
 
 <h2>The board</h2><p class="sub">Everyone starts with $100 of fake money. Odds = share of the pot on each side. Winners split the pot.</p>
-<div id="markets"></div>
+<div class="done" id="closedB" style="display:none;background:#ece3f5;color:#4D1979;margin:0 0 12px">🔒 Betting closed. Settling in progress.</div><div style="display:flex;justify-content:flex-end;margin:0 0 10px"><button class="settle" id="closeBtn" onclick="toggleClose()" style="font-size:13px">🔒 Close betting</button></div><div id="markets"></div>
 
 <h2>Leaderboard</h2><p class="sub">Cash on hand, plus what's riding on open markets.</p>
 <div class="card lb" id="lb"></div>
@@ -86,7 +86,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}</style></head><b
 
 <script>
 const STORE='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/night.json';
-const norm=d=>({v:(d&&d.v)||1,bets:(d&&d.bets?Object.values(d.bets):[]),settled:(d&&d.settled)||{},players:(d&&d.players)||{}});let fails=0,pollT=null;
+const norm=d=>({v:(d&&d.v)||1,bets:(d&&d.bets?Object.values(d.bets):[]),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{}});let fails=0,pollT=null;
 let NAMES=[];const clean=n=>(n||'').replace(/[^A-Za-z0-9 .\-]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
 const M=[
 ['mw','Night','Mark & his wife: big night at home? (O/U 0.5)','Over','Under'],
@@ -122,7 +122,7 @@ function render(){const c=compute();
   else h+=`<div class="row" style="flex-wrap:wrap">${O.map((o,i)=>`<button class="${i%2?'no':'yes'}" style="flex:1 1 45%" onclick="openBet('${id}','${K[i]}')">${o}</button>`).join('')}</div>`;
   if(mine.length)h+=`<div class="mine">Your action: ${mine.map(b=>fmt(b.a)+' on '+lab(m,b.s)+(st?' → '+fmt(c.pay[b.id]||0):'')).join(', ')}</div>`;
   h+=`<div class="meta"><span>Pot ${fmt(tot)} · ${S.bets.filter(b=>b.m===id).length} bets</span>${st?'':`<button class="settle" onclick="openSettle('${id}')">Settle ⚑</button>`}</div></div>`});
- $('markets').innerHTML=h;$('chips').innerHTML=NAMES.length?NAMES.map(n=>`<span><b>${n}</b></span>`).join(''):'<span>No one yet. Be first.</span>';
+ $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';$('closeBtn').textContent=S.closed?'↺ Reopen betting':'🔒 Close betting';document.querySelectorAll('#markets .yes,#markets .no').forEach(b=>{b.disabled=!!S.closed;b.style.opacity=S.closed?.45:1});$('chips').innerHTML=NAMES.length?NAMES.map(n=>`<span><b>${n}</b></span>`).join(''):'<span>No one yet. Be first.</span>';
  $('lb').innerHTML=NAMES.slice().sort((x,y)=>(c.bal[y]+c.play[y])-(c.bal[x]+c.play[x])).map((n,i)=>`<div><span>${(['🥇','🥈','🥉'][i]||(i+1)+'.')} <b>${n}</b></span><span>${fmt(c.bal[n])} <small style="color:#6b7280">+ ${fmt(c.play[n])} in play</small></span></div>`).join('');
  const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-100)*100)/100);
  let o=NAMES.map(n=>`<div><span>${n}</span><span class="${net[n]>0?'up':net[n]<0?'dn':''}">${net[n]>0?'+':''}${fmt(net[n]).replace('$-','-$')}</span></div>`).join('');
@@ -148,18 +148,19 @@ async function join(){const n=clean($('nm').value);if(!n)return toast('Type your
  const err=await mutate(d=>{d.players=d.players||{};if(!d.players[n])d.players[n]=Date.now()},d=>d&&d.players&&d.players[n]);if(err)return toast(err);setMe(n)}
 function setMe(n){me=n;localStorage.setItem('tf_night_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' to play with.')}
 function closeM(id){$(id).classList.remove('s')}
-function openBet(id,s){if(!me)return openWho();const m=M.find(x=>x[0]===id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Your side: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';$('betM').classList.add('s');setTimeout(()=>$('amt').focus(),50)}
+async function toggleClose(){if(!me)return openWho();const c=!S.closed;if(!confirm(c?'Close betting for everyone? New bets get blocked so you can settle.':'Reopen betting? People can bet again, including with any winnings.'))return;const err=await mutate(d=>{d.closed=c},d=>d&&!!d.closed===c);toast(err||(c?'Betting closed. Settle away.':'Betting reopened.'))}
+function openBet(id,s){if(!me)return openWho();if(S.closed)return toast('Betting closed. Settling in progress.');const m=M.find(x=>x[0]===id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Your side: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';$('betM').classList.add('s');setTimeout(()=>$('amt').focus(),50)}
 function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]*100)/100:v}
 async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter an amount.');
  const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};
  $('bGo').disabled=true;$('bGo').textContent='Placing…';
- const err=await mutate(d=>{if(d.settled[b.m])return'That market just settled.';const bal=100-d.bets.filter(x=>x.p===me).reduce((s,x)=>s+x.a,0)+Object.keys(d.settled).reduce((s,id)=>{const all=d.bets.filter(x=>x.m===id),w=d.settled[id].w,tot=all.reduce((t,x)=>t+x.a,0),ws=all.filter(x=>x.s===w).reduce((t,x)=>t+x.a,0);return s+all.filter(x=>x.p===me).reduce((t,x)=>t+(ws>0?(x.s===w?tot*x.a/ws:0):x.a),0)},0);
+ const err=await mutate(d=>{if(d.closed)return'Betting closed. Settling in progress.';if(d.settled[b.m])return'That market just settled.';const bal=100-d.bets.filter(x=>x.p===me).reduce((s,x)=>s+x.a,0)+Object.keys(d.settled).reduce((s,id)=>{const all=d.bets.filter(x=>x.m===id),w=d.settled[id].w,tot=all.reduce((t,x)=>t+x.a,0),ws=all.filter(x=>x.s===w).reduce((t,x)=>t+x.a,0);return s+all.filter(x=>x.p===me).reduce((t,x)=>t+(ws>0?(x.s===w?tot*x.a/ws:0):x.a),0)},0);
   if(a>bal+0.001)return'Not enough fake money. Balance '+fmt(bal)+'.';d.bets.push(b)},d=>d&&d.bets&&d.bets.some(x=>x.id===b.id));
  $('bGo').disabled=false;$('bGo').textContent='Place bet';
  if(err)return toast(err);closeM('betM');toast('Locked in: '+fmt(a)+'. Bold.')}
-function openSettle(id){if(!me)return openWho();const m=M.find(x=>x[0]===id);$('sQ').textContent=m[2];$('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')">${o}</button>`).join('');$('setM').classList.add('s')}
+function openSettle(id){if(!me)return openWho();if(!S.closed)return toast('Close betting first (button above the board), then settle.');const m=M.find(x=>x[0]===id);$('sQ').textContent=m[2];$('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')">${o}</button>`).join('');$('setM').classList.add('s')}
 async function settle(id,w){const m=M.find(x=>x[0]===id);if(!confirm(`Settle "${m[2]}" as ${lab(m,w)}? This pays out and can't be undone.`))return;closeM('setM');
- const err=await mutate(d=>{if(d.settled[id])return'Already settled.';d.settled[id]={w,by:me,t:Date.now()}},d=>d&&d.settled&&d.settled[id]);toast(err||'Settled. Payouts are in.')}
+ const err=await mutate(d=>{if(!d.closed)return'Close betting first, then settle.';if(d.settled[id])return'Already settled.';d.settled[id]={w,by:me,t:Date.now()}},d=>d&&d.settled&&d.settled[id]);toast(err||'Settled. Payouts are in.')}
 try{const c=JSON.parse(localStorage.getItem('tf_night_cache'));if(c&&c.bets)S=c}catch(e){}
 render();load();if(!me)openWho();
 function sched(){clearTimeout(pollT);pollT=setTimeout(async()=>{if(!document.hidden)await load();sched()},Math.min(120000,10000*Math.pow(2,Math.min(fails,4))))}sched();document.addEventListener('visibilitychange',()=>{if(!document.hidden){load();sched()}});
