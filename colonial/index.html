@@ -64,7 +64,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <div class="model">Odds model: GHIN handicap data · Monte Carlo</div>
 <div class="chips"><span><b>Proctor</b> · HI 14.6 · CH 19</span><span><b>Silva</b> · HI 21.3 · CH 27</span></div>
 <div class="chips" id="chips2" style="margin-top:8px"></div>
-<div class="stat"><div><b id="sBal">$100</b>Your balance</div><div><b id="sPlay">$0</b>Positions value</div><div><b id="sPot">$0</b>Volume</div></div>
+<div class="stat"><div><b id="sBal">$250</b>Your balance</div><div><b id="sPlay">$0</b>Positions value</div><div><b id="sPot">$0</b>Volume</div></div>
 </section>
 <p class="sync" id="sync">Connecting…</p>
 <div class="card" id="sb"></div>
@@ -72,13 +72,13 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <div id="tabS" style="display:none"><h2>Live scorecard</h2><p class="sub">Colonial CC · Tee III · Par 70. Updates for everyone every 10 seconds.</p><div class="card" id="scard"></div></div>
 <div id="tabM">
 
-<h2>The board</h2><p class="sub">Everyone starts with $100 of fake money. Price = the market's implied chance. Buy at the current price; your price locks when you buy. Each winning share pays $1. Opening prices come from 100,000 simulated rounds built on each player's last 20 GHIN differentials.</p>
+<h2>The board</h2><p class="sub">Everyone starts with $250 of fake money. Price = the market's implied chance. Buy at the current price; your price locks when you buy. Each winning share pays $1. Opening prices come from 100,000 simulated rounds built on each player's last 20 GHIN differentials.</p>
 <div class="done" id="closedB" style="display:none;background:#ece3f5;color:#4D1979;margin:0 0 12px">🔒 Betting closed. Settling in progress.</div><div style="display:flex;justify-content:flex-end;margin:0 0 10px"><button class="settle" id="closeBtn" onclick="toggleClose()" style="font-size:13px">🔒 Close betting</button></div><div id="markets"></div>
 
 <h2>Leaderboard</h2><p class="sub">Cash on hand, plus open positions at current prices.</p>
 <div class="card lb" id="lb"></div>
 
-<h2>Who owes who</h2><p class="sub">Settled results only, versus the $100 start. The House is the market maker and covers the difference.</p>
+<h2>Who owes who</h2><p class="sub">Settled results only, versus the $250 start. The House is the market maker and covers the difference.</p>
 <div class="card ow" id="ow"></div>
 
 <h2>My bets</h2><div class="card wire" id="mybets"></div>
@@ -91,7 +91,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 </main>
 <footer>Thirsty Frog: Colonial Showdown · One-Off Event page · Thirsty Frog Prediction Markets</footer>
 
-<div class="modal" id="whoM"><div class="sheet"><h3>Who's playing?</h3><p>Type your name to join, or tap yours if you're already in. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" style="margin-top:10px" onclick="join()">Join with $100</button><div class="pick" id="pick" style="margin-top:12px"></div></div></div>
+<div class="modal" id="whoM"><div class="sheet"><h3>Who's playing?</h3><p>Type your name to join, or tap yours if you're already in. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" style="margin-top:10px" onclick="join()">Join with $250</button><div class="pick" id="pick" style="margin-top:12px"></div></div></div>
 <div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p>
 <input id="amt" oninput="quote()" type="number" inputmode="numeric" min="1" placeholder="Amount ($)">
 <div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
@@ -110,7 +110,7 @@ const SCORER_PIN='1234'; // change the scorer PIN here
 const arr=x=>x?Object.values(x):[];
 const norm=d=>({v:(d&&d.v)||1,bets:arr(d&&d.bets),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{},scores:{p:(d&&d.scores&&d.scores.p)||{},w:(d&&d.scores&&d.scores.w)||{}},anchors:arr(d&&d.anchors),sug:(d&&d.sug)||{}});let fails=0,pollT=null;
 let NAMES=[];const clean=n=>(n||'').replace(/[^A-Za-z0-9 .\-]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
-const LIQ=300;
+const LIQ=750;
 // Colonial CC (Fort Worth) par & men's stroke index: GolfPass scorecard.
 const TEEINFO={name:'III',cr:72.0,slope:130,par:70}; // event tee (confirmed III). If changed, refit model.py.
 const PARTOT=TEEINFO.par,NSTR=8; // Silva gets CH 27 - 19 = 8 strokes, on stroke-index 1-8 holes
@@ -191,7 +191,7 @@ function buy(q,i,stake){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ))
  const target=s*Math.exp(stake/LIQ)-(s-e[i]);return mx+LIQ*Math.log(target)-q[i]}
 const susp=(d,id)=>{const A=anc(d);return !!(A&&A.dec&&A.dec[id])};
 function compute(){const ns=new Set(Object.keys(S.players||{}));S.bets.forEach(b=>ns.add(b.p));if(me)ns.add(me);NAMES=[...ns];
- const bal={},play={},mtm={};NAMES.forEach(n=>{bal[n]=100;play[n]=0;mtm[n]=0});
+ const bal={},play={},mtm={};NAMES.forEach(n=>{bal[n]=250;play[n]=0;mtm[n]=0});
  const px={};M.forEach(m=>px[m[0]]=prices(qv(m,S)));
  const pay={};
  S.bets.forEach(b=>{const m=mk(b.m);if(!m)return;bal[b.p]-=b.a;const st=S.settled[b.m];
@@ -248,7 +248,7 @@ function render(){const c=compute();
  $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';$('closeBtn').textContent=S.closed?'↺ Reopen betting':'🔒 Close betting';document.querySelectorAll('#markets .yes,#markets .no').forEach(b=>{b.disabled=!!S.closed;b.style.opacity=S.closed?.45:1});
  $('chips2').innerHTML=NAMES.length?NAMES.map(n=>`<span><b>${n}</b></span>`).join(''):'<span>No one yet. Be first.</span>';
  $('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.mtm[y])-(c.bal[x]+c.mtm[x])).map((n,i)=>`<div><span>${(['🥇','🥈','🥉'][i]||(i+1)+'.')} <b>${n}</b></span><span>${fmt(c.bal[n])} <small style="color:#6b7280">+ ${fmt(c.mtm[n])} positions</small></span></div>`).join(''):'<div>No players yet.</div>';
- const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-100)*100)/100);
+ const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-250)*100)/100);
  let o=NAMES.map(n=>`<div><span>${n}</span><span class="${net[n]>0?'up':net[n]<0?'dn':''}">${net[n]>0?'+':''}${fmt(net[n]).replace('$-','-$')}</span></div>`).join('');
  const hs=-Math.round(NAMES.reduce((s,n)=>s+net[n],0)*100)/100,HN='🐸 The House';
  if(Math.abs(hs)>0.004)o+=`<div><span>${HN} <small style="color:#6b7280">(market maker)</small></span><span class="${hs>0?'up':'dn'}">${hs>0?'+':''}${fmt(hs).replace('$-','-$')}</span></div>`;
@@ -286,7 +286,7 @@ async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100
  const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};
  $('bGo').disabled=true;$('bGo').textContent='Placing…';let lock=0;
  const err=await mutate(d=>{if(d.closed)return'Betting closed. Settling in progress.';if(d.settled[b.m])return'That market just settled.';if(susp(d,b.m))return'That market is decided. Suspended.';
-  let bal=100;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;const st=d.settled[x.m];if(st&&x.s===st.w)bal+=x.sh});
+  let bal=250;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;const st=d.settled[x.m];if(st&&x.s===st.w)bal+=x.sh});
   if(a>bal+0.001)return'Not enough fake money. Balance '+fmt(bal)+'.';
   d.bets=d.bets.filter(x=>x.id!==b.id);const m=mk(b.m),qq=qv(m,d),k=K.indexOf(b.s);b.sh=Math.round(buy(qq,k,a)*10000)/10000;qq[k]+=b.sh;b.px=prices(qq).map(x=>Math.round(x*10000)/10000);lock=a/b.sh;
   d.bets.push(b)},d=>d&&d.bets&&d.bets.some(x=>x.id===b.id));
