@@ -257,7 +257,7 @@ function render(){const c=compute();
   else h+=`<div class="row" style="flex-wrap:wrap">${O.map((o,k)=>`<button class="${k===0?'yes':'no'}" style="flex:1 1 ${O.length>2?'30':'45'}%" onclick="openBet('${id}','${K[k]}')">Buy ${o} ${ct(pr[k])}</button>`).join('')}</div>`;
   if(!st&&oneSided(S,id))h+=`<div class="mine" style="color:#b45309;font-weight:700">⚠️ One-sided so far: if nobody takes the other side, this is a no bet.</div>`;
   if(mine.length)h+=`<div class="mine">Your position: ${mine.map(b=>b.sh.toFixed(1)+' '+lab(m,b.s)+' @ '+ct(b.a/b.sh)+(st?' → '+fmt(c.pay[b.id]||0):'')).join(', ')}</div>`;
-  h+=`<div class="meta"><span>Volume ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades</span>${st?'':`<button class="settle" onclick="openSettle('${id}')">Settle ⚑</button>`}</div></div>`});
+  h+=`<div class="meta"><span>Volume ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades</span>${st&&!st.auto?'':`<button class="settle" onclick="openSettle('${id}')">${st?'Override ⚑':'Settle ⚑'}</button>`}</div></div>`});
  $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';$('closeBtn').textContent=S.closed?'↺ Reopen betting':'🔒 Close betting';document.querySelectorAll('#markets .yes,#markets .no').forEach(b=>{b.disabled=!!S.closed;b.style.opacity=S.closed?.45:1});
  $('chips2').innerHTML=NAMES.length?NAMES.map(n=>`<span><b>${n}</b></span>`).join(''):'<span>No one yet. Be first.</span>';
  $('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.mtm[y])-(c.bal[x]+c.mtm[x])).map((n,i)=>`<div><span>${(['🥇','🥈','🥉'][i]||(i+1)+'.')} <b>${n}</b></span><span>${fmt(c.bal[n])} <small style="color:#6b7280">+ ${fmt(c.mtm[n])} in open bets</small></span></div>`).join(''):'<div>No players yet.</div>';
@@ -308,7 +308,10 @@ function openSettle(id){if(!me)return openWho();if(!S.closed)return toast('Close
  $('setVoid').style.display=oneSided(S,id)?'block':'none';
  $('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')" ${sg===K[i]?'style="border:2px solid #16a34a;background:#ecfdf3"':''}>${o}${sg===K[i]?'<small>Suggested ✓</small>':''}</button>`).join('');$('setM').classList.add('s')}
 async function settle(id,w){const m=mk(id),vd=noWin(S,id,w);if(!confirm(vd?`Settle "${m[2]}" as ${lab(m,w)}? No bet: ${noWin(S,id,w)}, all stakes refunded. Can't be undone.`:`Settle "${m[2]}" as ${lab(m,w)}? This pays out and can't be undone.`))return;closeM('setM');
- const err=await mutate(d=>{if(!d.closed)return'Close betting first, then settle.';if(d.settled[id])return'Already settled.';const o={w,by:me,t:Date.now()};if(noWin(d,id,w))o.void=true;d.settled[id]=o},d=>d&&d.settled&&d.settled[id]);toast(err||(S.settled[id]&&SP(S,id).refund?'No bet: '+SP(S,id).why+', stakes refunded.':'Settled. Winners split the pot by shares.'))}
+ const err=await mutate(d=>{if(!d.closed)return'Close betting first, then settle.';if(d.settled[id]&&!d.settled[id].auto)return'Already settled.';const o={w,by:me,t:Date.now()};if(noWin(d,id,w))o.void=true;d.settled[id]=o},d=>d&&d.settled&&d.settled[id]&&d.settled[id].w===w&&!d.settled[id].auto);toast(err||(S.settled[id]&&SP(S,id).refund?'No bet: '+SP(S,id).why+', stakes refunded.':'Settled. Winners split the pot by shares.'))}
+// ---- auto-settle (auto:true marks; manual settlements are never touched) ----
+function autoSettle(d,dec,fin){let n=0;for(const id in d.settled){const s=d.settled[id];if(s&&s.auto&&(!fin||!dec[id])){delete d.settled[id];n++}}
+ if(fin)for(const id in dec){if(!mk(id))continue;const s=d.settled[id];if(s&&!s.auto)continue;const w=dec[id];if(s&&s.w===w)continue;const o={w,by:'Auto',t:Date.now(),auto:true};if(noWin(d,id,w))o.void=true;d.settled[id]=o;n++}return n}
 // ---- scorer ----
 function scorerLogin(){const p=prompt('Scorer PIN');if(p===null)return;if(p===SCORER_PIN){scorer=true;sessionStorage.setItem('tf_colonial_pin',p);render();toast('Scorer mode on. Tap a hole to enter scores.')}else toast('Wrong PIN.')}
 function onHole(d){for(const h of ORDER)if(!sc(d,'p',h)||!sc(d,'w',h))return h;return null}
@@ -318,12 +321,12 @@ function openHole(h){if(!scorer)return;curHole=h;$('hQ').textContent=`Hole ${h+1
 function bump(id,d){const e=$(id);e.value=Math.max(1,Math.min(15,(parseInt(e.value)||PAR[curHole])+d))}
 function applyScores(d,h,pv,wv){const k='h'+(h+1);if(pv)d.scores.p[k]=pv;else delete d.scores.p[k];if(wv)d.scores.w[k]=wv;else delete d.scores.w[k];
  const f=fair(d),r=round(d);d.anchors.push({t:Date.now(),bc:d.bets.length,thru:r.thru,hole:h+1,lab:r.done?'Final':'thru '+r.thru+' (hole '+(h+1)+')',p:f.p,dec:f.dec});
- if(r.done){d.closed=true;d.sug=f.dec}else d.sug={}}
+ if(r.done){d.closed=true;d.sug=f.dec;autoSettle(d,f.dec,true)}else{d.sug={};autoSettle(d,{},false)}}
 async function saveHole(clear){const h=curHole,pv=clear?0:parseInt($('hp').value),wv=clear?0:parseInt($('hw').value);if(!clear&&!(pv>0&&wv>0))return toast('Enter both scores.');
  const prev={h,p:sc(S,'p',h),w:sc(S,'w',h)};$('hGo').disabled=true;$('hGo').textContent='Saving…';
  const err=await mutate(d=>{applyScores(d,h,pv,wv)},d=>(sc(d,'p',h)||0)===(pv||0)&&(sc(d,'w',h)||0)===(wv||0));
  $('hGo').disabled=false;$('hGo').textContent='Save hole';if(err)return toast(err);undoStack.push(prev);closeM('holeM');
- const r=round(S);toast(r.done?'Round complete. Betting auto-closed. Settle each market (winners are pre-filled).':`Hole ${h+1} saved. Odds repriced (thru ${r.thru}).`)}
+ const r=round(S);toast(r.done?'Round complete. Betting closed and markets auto-settled. Tap Override ⚑ to change one.':`Hole ${h+1} saved. Odds repriced (thru ${r.thru}).`)}
 async function undo(){const u=undoStack.pop();if(!u)return;const err=await mutate(d=>{applyScores(d,u.h,u.p,u.w)},d=>(sc(d,'p',u.h)||0)===(u.p||0)&&(sc(d,'w',u.h)||0)===(u.w||0));
  if(err){undoStack.push(u);return toast(err)}toast('Undid hole '+(u.h+1)+'.')}
 try{const c=JSON.parse(localStorage.getItem('tf_colonial_cache'));if(c&&c.bets)S=norm(c)}catch(e){}
