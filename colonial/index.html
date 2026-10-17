@@ -64,7 +64,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <div class="model">Odds model: GHIN handicap data · Monte Carlo</div>
 <div class="chips"><span><b>Proctor</b> · HI 14.6 · CH 19</span><span><b>Silva</b> · HI 21.3 · CH 27</span></div>
 <div class="chips" id="chips2" style="margin-top:8px"></div>
-<div class="stat"><div><b id="sBal">$250</b>Your balance</div><div><b id="sPlay">$0</b>Positions value</div><div><b id="sPot">$0</b>Volume</div></div>
+<div class="stat"><div><b id="sBal">$250</b>Your balance</div><div><b id="sPlay">$0</b>In open bets</div><div><b id="sPot">$0</b>Volume</div></div>
 </section>
 <p class="sync" id="sync">Connecting…</p>
 <div class="card" id="sb"></div>
@@ -72,13 +72,13 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <div id="tabS" style="display:none"><h2>Live scorecard</h2><p class="sub">Colonial CC · Tee III · Par 70. Updates for everyone every 10 seconds.</p><div class="card" id="scard"></div></div>
 <div id="tabM">
 
-<h2>The board</h2><p class="sub">Everyone starts with $250 of fake money. Price = the market's implied chance. Buy at the current price; your price locks when you buy. Each winning share pays $1. <b>No bet rule:</b> if every bet on a market is on the same side (the House would be the only one on the other side), it's a no bet and all stakes are refunded. Opening prices come from 100,000 simulated rounds built on each player's last 20 GHIN differentials.</p>
+<h2>The board</h2><p class="sub">Everyone starts with $250 of fake money. Price = the market's implied chance. Buy at the current price; your price locks when you buy. Winners split the market's pot (every stake on it) by shares, so the House pays nothing; buying earlier at a lower price gets you more shares. <b>No bet rule:</b> if every bet on a market is on the same side, or nobody holds the winning option, it's a no bet and all stakes are refunded. Opening prices come from 100,000 simulated rounds built on each player's last 20 GHIN differentials.</p>
 <div class="done" id="closedB" style="display:none;background:#ece3f5;color:#4D1979;margin:0 0 12px">🔒 Betting closed. Settling in progress.</div><div style="display:flex;justify-content:flex-end;margin:0 0 10px"><button class="settle" id="closeBtn" onclick="toggleClose()" style="font-size:13px">🔒 Close betting</button></div><div id="markets"></div>
 
-<h2>Leaderboard</h2><p class="sub">Cash on hand, plus open positions at current prices.</p>
+<h2>Leaderboard</h2><p class="sub">Cash on hand, plus open bets at cost (stakes still riding).</p>
 <div class="card lb" id="lb"></div>
 
-<h2>Who owes who</h2><p class="sub">Settled results only, versus the $250 start. The House is the market maker and covers the difference.</p>
+<h2>Who owes who</h2><p class="sub">Settled results only, versus the $250 start. Winners are paid from the losers' stakes; the House pays nothing.</p>
 <div class="card ow" id="ow"></div>
 
 <h2>My bets</h2><div class="card wire" id="mybets"></div>
@@ -96,7 +96,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <input id="amt" oninput="quote()" type="number" inputmode="numeric" min="1" placeholder="Amount ($)">
 <div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
 <p id="bQuote" style="font-size:13px;color:#4D1979;font-weight:600;margin:0 0 10px"></p><button class="btn" id="bGo" onclick="placeBet()">Place bet</button><button class="btn ghost" onclick="closeM('betM')">Cancel</button></div></div>
-<div class="modal" id="setM"><div class="sheet"><h3 id="sQ"></h3><p>Organizer control: who won? Winning shares pay $1 each. This can't be undone.</p>
+<div class="modal" id="setM"><div class="sheet"><h3 id="sQ"></h3><p>Organizer control: who won? Winners split the pot by shares. This can't be undone.</p>
 <p id="setVoid" style="display:none;background:#fff4d6;color:#7c4a03;border-radius:10px;padding:8px 10px;font-weight:700;font-size:13px">↩️ No bet: one-sided action, stakes refunded. Whatever result you pick, every stake on this market is returned.</p><p id="setHint" style="color:#16a34a;font-weight:700;font-size:13px"></p><div class="pick" id="setPick"></div><button class="btn ghost" onclick="closeM('setM')">Cancel</button></div></div>
 <div class="modal" id="holeM"><div class="sheet"><h3 id="hQ"></h3><p>Gross strokes on this hole.</p>
 <div class="hrow"><b>Proctor</b><button onclick="bump('hp',-1)">−</button><input id="hp" type="number" inputmode="numeric" min="1" max="15"><button onclick="bump('hp',1)">+</button></div>
@@ -147,7 +147,15 @@ function toast(t){const e=$('toast');e.textContent=t;e.classList.add('s');setTim
 function tm(t){return new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
 const mk=id=>M.find(m=>m[0]===id);
 // No-bet rule: if all of a market's bets sit on a single option, the House is the only counterparty -> void, stakes refunded.
+// Pari-mutuel settlement: pot = all stakes in the market; winners split it by shares; the House pays nothing.
+// No bet (full refund) if action is one-sided, or nobody holds the winning option.
 const sidesOf=(d,id)=>new Set(d.bets.filter(b=>b.m===id).map(b=>b.s)),oneSided=(d,id)=>sidesOf(d,id).size===1;
+function noWin(d,id,w){const bs=d.bets.filter(b=>b.m===id);if(!bs.length)return '';if(sidesOf(d,id).size<2)return 'one-sided action';if(!bs.some(b=>b.s===w&&b.sh>0))return 'nobody held the winning option';return ''}
+function SP(d,id){const st=d.settled[id],bs=d.bets.filter(b=>b.m===id),pot=bs.reduce((s,b)=>s+b.a,0),pay={};if(!st)return{pay,pot,refund:false,why:''};
+ const why=noWin(d,id,st.w);if(why){bs.forEach(b=>pay[b.id]=b.a);return{pay,pot,refund:true,why}}
+ const W=bs.filter(b=>b.s===st.w).reduce((s,b)=>s+b.sh,0);bs.forEach(b=>pay[b.id]=b.s===st.w?pot*b.sh/W:0);return{pay,pot,refund:false,why:''}}
+function estOpen(d,b){const bs=d.bets.filter(x=>x.m===b.m),pot=bs.reduce((t,x)=>t+x.a,0),W=bs.filter(x=>x.s===b.s).reduce((t,x)=>t+x.sh,0);return W>0?pot*b.sh/W:0}
+function estPay(d,id,s,sh,stake){const bs=d.bets.filter(b=>b.m===id),pot=bs.reduce((t,b)=>t+b.a,0)+stake,W=bs.filter(b=>b.s===s).reduce((t,b)=>t+b.sh,0)+sh;return W>0?pot*sh/W:0}
 // ---- round state ----
 function sc(d,k,h){const v=d.scores[k]['h'+(h+1)];return v>0?v:null}
 function round(d){const r={};['p','w'].forEach(k=>{let g=0,par=0,n=0,str=0;const rem=[];for(let h=0;h<18;h++){const v=sc(d,k,h);if(v){g+=v;par+=PAR[h];n++;if(k==='w')str+=WSTR[h]}else rem.push(h)}r[k]={g,par,n,str,rem}});
@@ -199,7 +207,7 @@ function compute(){const ns=new Set(Object.keys(S.players||{}));S.bets.forEach(b
  const px={};M.forEach(m=>px[m[0]]=prices(qv(m,S)));
  const pay={};
  S.bets.forEach(b=>{const m=mk(b.m);if(!m)return;bal[b.p]-=b.a;const st=S.settled[b.m];
-  if(st){const g=st.void?b.a:(b.s===st.w?b.sh:0);bal[b.p]+=g;pay[b.id]=g}else{play[b.p]+=b.a;mtm[b.p]+=b.sh*px[b.m][K.indexOf(b.s)]}});
+  if(st){const g=SP(S,b.m).pay[b.id]||0;bal[b.p]+=g;pay[b.id]=g}else{play[b.p]+=b.a;mtm[b.p]+=b.a}});
  return{bal,play,mtm,px,pay}}
 function chart(m){const id=m[0],O=opts(m),pts=[{p:m[3]}];
  let ai=0;const A=S.anchors;
@@ -244,30 +252,28 @@ function render(){const c=compute();
   h+=`<div class="card"><div class="cat">${cat}${sp&&!st?' · <span style="color:#dc2626">Decided: '+lab(m,A.dec[id])+' · suspended</span>':''}</div><div class="q">${q}</div>`;
   h+=O.map((o,k)=>{const d=Math.round(pr[k]*100)-Math.round(op[k]*100);return `<div class="ol"><span><i style="background:${COL[k]}"></i>${o}</span><span><b>${ct(pr[k])}</b> <small class="${d>0?'up':d<0?'dn':''}">${d>0?'▲'+d:d<0?'▼'+(-d):'–'}¢ since open</small></span></div>`}).join('');
   h+=chart(m);
-  if(st)h+=st.void?`<div class="done" style="background:#fff4d6;color:#7c4a03">↩️ No bet: one-sided action, stakes refunded. (Result: ${lab(m,st.w)}, by ${st.by})</div>`:`<div class="done">✅ Settled: ${lab(m,st.w)} (by ${st.by}). Winning shares paid $1 each.</div>`;
-  if(!st&&oneSided(S,id))h+=`<div class="mine" style="color:#b45309;font-weight:700">⚠️ One-sided so far: if nobody takes the other side, this is a no bet.</div>`;
+  if(st)h+=SP(S,id).refund?`<div class="done" style="background:#fff4d6;color:#7c4a03">↩️ No bet: ${SP(S,id).why}, stakes refunded. (Result: ${lab(m,st.w)}, by ${st.by})</div>`:`<div class="done">✅ Settled: ${lab(m,st.w)} (by ${st.by}). Pot ${fmt(SP(S,id).pot)} split among winners by shares.</div>`;
   else if(sp)h+=`<div class="done">⏸ Market decided. Waiting for Charlie to settle.</div>`;
   else h+=`<div class="row" style="flex-wrap:wrap">${O.map((o,k)=>`<button class="${k===0?'yes':'no'}" style="flex:1 1 ${O.length>2?'30':'45'}%" onclick="openBet('${id}','${K[k]}')">Buy ${o} ${ct(pr[k])}</button>`).join('')}</div>`;
+  if(!st&&oneSided(S,id))h+=`<div class="mine" style="color:#b45309;font-weight:700">⚠️ One-sided so far: if nobody takes the other side, this is a no bet.</div>`;
   if(mine.length)h+=`<div class="mine">Your position: ${mine.map(b=>b.sh.toFixed(1)+' '+lab(m,b.s)+' @ '+ct(b.a/b.sh)+(st?' → '+fmt(c.pay[b.id]||0):'')).join(', ')}</div>`;
   h+=`<div class="meta"><span>Volume ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades</span>${st?'':`<button class="settle" onclick="openSettle('${id}')">Settle ⚑</button>`}</div></div>`});
  $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';$('closeBtn').textContent=S.closed?'↺ Reopen betting':'🔒 Close betting';document.querySelectorAll('#markets .yes,#markets .no').forEach(b=>{b.disabled=!!S.closed;b.style.opacity=S.closed?.45:1});
  $('chips2').innerHTML=NAMES.length?NAMES.map(n=>`<span><b>${n}</b></span>`).join(''):'<span>No one yet. Be first.</span>';
- $('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.mtm[y])-(c.bal[x]+c.mtm[x])).map((n,i)=>`<div><span>${(['🥇','🥈','🥉'][i]||(i+1)+'.')} <b>${n}</b></span><span>${fmt(c.bal[n])} <small style="color:#6b7280">+ ${fmt(c.mtm[n])} positions</small></span></div>`).join(''):'<div>No players yet.</div>';
+ $('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.mtm[y])-(c.bal[x]+c.mtm[x])).map((n,i)=>`<div><span>${(['🥇','🥈','🥉'][i]||(i+1)+'.')} <b>${n}</b></span><span>${fmt(c.bal[n])} <small style="color:#6b7280">+ ${fmt(c.mtm[n])} in open bets</small></span></div>`).join(''):'<div>No players yet.</div>';
  const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-250)*100)/100);
  let o=NAMES.map(n=>`<div><span>${n}</span><span class="${net[n]>0?'up':net[n]<0?'dn':''}">${net[n]>0?'+':''}${fmt(net[n]).replace('$-','-$')}</span></div>`).join('');
- const hs=-Math.round(NAMES.reduce((s,n)=>s+net[n],0)*100)/100,HN='🐸 The House';
- if(Math.abs(hs)>0.004)o+=`<div><span>${HN} <small style="color:#6b7280">(market maker)</small></span><span class="${hs>0?'up':'dn'}">${hs>0?'+':''}${fmt(hs).replace('$-','-$')}</span></div>`;
- const all=NAMES.map(n=>[n,net[n]]);if(Math.abs(hs)>0.004)all.push([HN,hs]);
+ const all=NAMES.map(n=>[n,net[n]]);
  const cr=all.filter(x=>x[1]>0.004).map(x=>[x[0],x[1]]),db=all.filter(x=>x[1]<-0.004).map(x=>[x[0],-x[1]]),pays=[];
  cr.sort((a,b)=>b[1]-a[1]);db.sort((a,b)=>b[1]-a[1]);let i=0,j=0;
  while(i<db.length&&j<cr.length){const x=Math.min(db[i][1],cr[j][1]);pays.push(`${db[i][0]} pays ${cr[j][0]} ${fmt(x)}`);db[i][1]-=x;cr[j][1]-=x;if(db[i][1]<0.005)i++;if(cr[j][1]<0.005)j++}
  o+=`<div style="display:block"><b>Settle-up:</b> ${pays.length?pays.join(' · '):'All square so far.'}</div>`;$('ow').innerHTML=o||'<div>No players yet.</div>';
  const ev=S.bets.filter(b=>mk(b.m)).map(b=>({t:b.t,x:`<b>${b.p}</b> bought ${b.sh.toFixed(1)} <b>${lab(mk(b.m),b.s)}</b> @ ${ct(b.a/b.sh)} (${fmt(b.a)}) · ${mk(b.m)[2]}`}));
  S.anchors.forEach(a=>{if(a.t)ev.push({t:a.t,x:`⛳ <b>${a.lab}</b>: odds repriced from the live scorecard`})});
- for(const id in S.settled){const s=S.settled[id],m=mk(id);if(m)ev.push({t:s.t,x:`⚑ <b>${s.by}</b> settled “${m[2]}”: <b>${lab(m,s.w)}</b>${s.void?' · no bet, stakes refunded':''}`})}
+ for(const id in S.settled){const s=S.settled[id],m=mk(id);if(m)ev.push({t:s.t,x:`⚑ <b>${s.by}</b> settled “${m[2]}”: <b>${lab(m,s.w)}</b>${SP(S,id).refund?' · no bet, stakes refunded':''}`})}
  ev.sort((a,b)=>b.t-a.t);$('wire').innerHTML=ev.length?ev.slice(0,60).map(e=>`<div><time>${tm(e.t)}</time>${e.x}</div>`).join(''):'<div>No action yet. Somebody get it started.</div>';
  const mb=me?S.bets.filter(b=>b.p===me):[];
- $('mybets').innerHTML=!me?'<div>Pick who you are to see your record.</div>':mb.length?mb.slice().reverse().map(b=>{const m=mk(b.m);if(!m)return'';const st=S.settled[b.m],g=c.pay[b.id];return`<div><time>${tm(b.t)}</time>${fmt(b.a)} → ${b.sh.toFixed(1)} shares <b>${lab(m,b.s)}</b> @ ${ct(b.a/b.sh)} · ${m[2]} · ${st?(g>0?(st.void?`<span>refunded (no bet)</span>`:`<span class="up">won ${fmt(g)}</span>`):`<span class="dn">lost</span>`):'open, pays '+fmt(b.sh)+' if right'}</div>`}).join(''):'<div>No bets yet. The board is waiting.</div>'}
+ $('mybets').innerHTML=!me?'<div>Pick who you are to see your record.</div>':mb.length?mb.slice().reverse().map(b=>{const m=mk(b.m);if(!m)return'';const st=S.settled[b.m],g=c.pay[b.id];return`<div><time>${tm(b.t)}</time>${fmt(b.a)} → ${b.sh.toFixed(1)} shares <b>${lab(m,b.s)}</b> @ ${ct(b.a/b.sh)} · ${m[2]} · ${st?(g>0?(SP(S,b.m).refund?`<span>refunded (no bet)</span>`:`<span class="up">won ${fmt(g)}</span>`):`<span class="dn">lost</span>`):'open, est. '+fmt(estOpen(S,b))+' if right (depends on final pot)'}</div>`}).join(''):'<div>No bets yet. The board is waiting.</div>'}
 function setTab(t){tab=t;render();window.scrollTo({top:$('tabs').offsetTop-60,behavior:'smooth'})}
 async function load(){try{const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();S=norm(j);fails=0;lastOk=Date.now();localStorage.setItem('tf_colonial_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(lastOk)}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying… (showing last saved board)'}render()}
 async function getD(){const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
@@ -283,15 +289,15 @@ function setMe(n){me=n;localStorage.setItem('tf_colonial_me',n);closeM('whoM');r
 function closeM(id){$(id).classList.remove('s')}
 async function toggleClose(){if(!me)return openWho();const c=!S.closed;if(!confirm(c?'Close betting for everyone? New bets get blocked so you can settle.':'Reopen betting? People can bet again, including with any winnings.'))return;const err=await mutate(d=>{d.closed=c},d=>d&&!!d.closed===c);toast(err||(c?'Betting closed. Settle away.':'Betting reopened.'))}
 function quote(){const a=parseFloat($('amt').value);const m=mk(cur.id),q=qv(m,S),k=K.indexOf(cur.s),p=prices(q)[k];
- if(!(a>0)){$('bQuote').textContent='Price now '+ct(p)+'. Each winning share pays $1.';return}
- const sh=buy(q,k,a),q2=q.slice();q2[k]+=sh;$('bQuote').textContent=`${sh.toFixed(1)} shares @ avg ${ct(a/sh)} · pays ${fmt(sh)} if right · moves price ${ct(p)} → ${ct(prices(q2)[k])}`}
+ if(!(a>0)){$('bQuote').textContent='Price now '+ct(p)+'. Winners split the pot by shares.';return}
+ const sh=buy(q,k,a),q2=q.slice();q2[k]+=sh;$('bQuote').textContent=`${sh.toFixed(1)} shares @ avg ${ct(a/sh)} · est. payout ${fmt(estPay(S,cur.id,cur.s,sh,a))} if right (est., depends on final pot) · moves price ${ct(p)} → ${ct(prices(q2)[k])}`}
 function openBet(id,s){if(!me)return openWho();if(S.closed)return toast('Betting closed. Settling in progress.');if(susp(S,id))return toast('That market is decided. Suspended.');const m=mk(id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Buying: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';quote();$('betM').classList.add('s');setTimeout(()=>$('amt').focus(),50)}
 function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]*100)/100:v;quote()}
 async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter an amount.');
  const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};
  $('bGo').disabled=true;$('bGo').textContent='Placing…';let lock=0;
  const err=await mutate(d=>{if(d.closed)return'Betting closed. Settling in progress.';if(d.settled[b.m])return'That market just settled.';if(susp(d,b.m))return'That market is decided. Suspended.';
-  let bal=250;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;const st=d.settled[x.m];if(st&&st.void)bal+=x.a;else if(st&&x.s===st.w)bal+=x.sh});
+  let bal=250;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;const st=d.settled[x.m];if(st)bal+=SP(d,x.m).pay[x.id]||0});
   if(a>bal+0.001)return'Not enough fake money. Balance '+fmt(bal)+'.';
   d.bets=d.bets.filter(x=>x.id!==b.id);const m=mk(b.m),qq=qv(m,d),k=K.indexOf(b.s);b.sh=Math.round(buy(qq,k,a)*10000)/10000;qq[k]+=b.sh;b.px=prices(qq).map(x=>Math.round(x*10000)/10000);lock=a/b.sh;
   d.bets.push(b)},d=>d&&d.bets&&d.bets.some(x=>x.id===b.id));
@@ -301,8 +307,8 @@ function openSettle(id){if(!me)return openWho();if(!S.closed)return toast('Close
  $('setHint').textContent=sg?'Suggested from the scorecard: '+lab(m,sg)+'. Confirm or pick another.':'';
  $('setVoid').style.display=oneSided(S,id)?'block':'none';
  $('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')" ${sg===K[i]?'style="border:2px solid #16a34a;background:#ecfdf3"':''}>${o}${sg===K[i]?'<small>Suggested ✓</small>':''}</button>`).join('');$('setM').classList.add('s')}
-async function settle(id,w){const m=mk(id),vd=oneSided(S,id);if(!confirm(vd?`Settle "${m[2]}" as ${lab(m,w)}? No bet: one-sided action, all stakes refunded. Can't be undone.`:`Settle "${m[2]}" as ${lab(m,w)}? This pays out and can't be undone.`))return;closeM('setM');
- const err=await mutate(d=>{if(!d.closed)return'Close betting first, then settle.';if(d.settled[id])return'Already settled.';const o={w,by:me,t:Date.now()};if(oneSided(d,id))o.void=true;d.settled[id]=o},d=>d&&d.settled&&d.settled[id]);toast(err||(S.settled[id]&&S.settled[id].void?'No bet: one-sided action, stakes refunded.':'Settled. Winning shares paid $1 each.'))}
+async function settle(id,w){const m=mk(id),vd=noWin(S,id,w);if(!confirm(vd?`Settle "${m[2]}" as ${lab(m,w)}? No bet: ${noWin(S,id,w)}, all stakes refunded. Can't be undone.`:`Settle "${m[2]}" as ${lab(m,w)}? This pays out and can't be undone.`))return;closeM('setM');
+ const err=await mutate(d=>{if(!d.closed)return'Close betting first, then settle.';if(d.settled[id])return'Already settled.';const o={w,by:me,t:Date.now()};if(noWin(d,id,w))o.void=true;d.settled[id]=o},d=>d&&d.settled&&d.settled[id]);toast(err||(S.settled[id]&&SP(S,id).refund?'No bet: '+SP(S,id).why+', stakes refunded.':'Settled. Winners split the pot by shares.'))}
 // ---- scorer ----
 function scorerLogin(){const p=prompt('Scorer PIN');if(p===null)return;if(p===SCORER_PIN){scorer=true;sessionStorage.setItem('tf_colonial_pin',p);render();toast('Scorer mode on. Tap a hole to enter scores.')}else toast('Wrong PIN.')}
 function onHole(d){for(const h of ORDER)if(!sc(d,'p',h)||!sc(d,'w',h))return h;return null}
