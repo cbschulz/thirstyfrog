@@ -60,7 +60,7 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <section class="hero"><small>ONE-OFF EVENT · COLONIAL CC, FORT WORTH · TEE III 72.0 / 130 · PAR 70</small>
 <span class="live" id="live">PRE-ROUND</span> <span class="live" id="tee" style="display:none"></span>
 <h1>Thirsty Frog: Colonial Showdown</h1>
-<p>Jake Proctor vs Al Silva, one 18-hole round. Thirteen markets priced like an exchange: buy shares, each winning share pays $1. Prices move with every trade and reprice live after every hole. ⛳</p>
+<p>Jake Proctor vs Al Silva, one 18-hole round. Fourteen markets priced like an exchange: buy shares, each winning share pays $1. Prices move with every trade and reprice live after every hole. ⛳</p>
 <div class="model">Odds model: GHIN handicap data · Monte Carlo</div>
 <div class="chips"><span><b>Proctor</b> · HI 14.6 · CH 19</span><span><b>Silva</b> · HI 21.3 · CH 27</span></div>
 <div class="chips" id="chips2" style="margin-top:8px"></div>
@@ -122,7 +122,9 @@ const WSTR=SI.map(s=>s<=NSTR?1:0);
 const PL={p:{n:'Proctor',E:93.39,SD:6.999},w:{n:'Silva',E:99.04,SD:4.029}};
 const WT=(()=>{const r=PAR.map((p,i)=>(p/4)*(1+0.5*(9.5-SI[i])/8.5)),s=r.reduce((a,b)=>a+b,0);return r.map(x=>x/s)})();
 const hmu=(k,h)=>PAR[h]+(PL[k].E-PARTOT)*WT[h],hvar=k=>PL[k].SD*PL[k].SD/18;
+const PROPS=new Set(['cad']); // pre-event props: not simulated, never re-anchored or auto-decided
 const M=[
+['cad','Pre-event prop','Who caddies for Proctor?',[0.40,0.40,0.20],'Nathan Rader','Matt Stadler','Field (anyone else)'],
 ['hg','Head to head · Gross','Low gross score: Proctor vs Silva',[0.741,0.221,0.038],'Proctor','Silva','Tie'],
 ['hn','Head to head · Net','Low net score: Silva gets 8 strokes (CH 19 vs 27)',[0.366,0.588,0.047],'Proctor','Silva','Tie'],
 ['pou','Proctor','Proctor gross score: O/U 93.5',[0.486,0.514],'Over','Under'],
@@ -185,11 +187,11 @@ function fair(d,N=20000){const r=round(d),R=rng(1000+r.p.n*19+r.w.n*7+r.p.g*3+r.
  return{p:out,dec,thru:r.thru}}
 // ---- LMSR, re-anchored to the latest fair prices; existing shares keep their locked prices ----
 function anc(d){return d.anchors.length?d.anchors[d.anchors.length-1]:null}
-function qv(m,d){const A=anc(d),base=A&&A.p&&A.p[m[0]]?A.p[m[0]]:m[3],q=base.map(p=>LIQ*Math.log(p));d.bets.slice(A?A.bc:0).forEach(b=>{if(b.m===m[0])q[K.indexOf(b.s)]+=b.sh});return q}
+function qv(m,d){const A=PROPS.has(m[0])?null:anc(d),base=A&&A.p&&A.p[m[0]]?A.p[m[0]]:m[3],q=base.map(p=>LIQ*Math.log(p));d.bets.slice(A?A.bc:0).forEach(b=>{if(b.m===m[0])q[K.indexOf(b.s)]+=b.sh});return q}
 function prices(q){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);return e.map(x=>x/s)}
 function buy(q,i,stake){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);
  const target=s*Math.exp(stake/LIQ)-(s-e[i]);return mx+LIQ*Math.log(target)-q[i]}
-const susp=(d,id)=>{const A=anc(d);return !!(A&&A.dec&&A.dec[id])};
+const susp=(d,id)=>{if(PROPS.has(id))return false;const A=anc(d);return !!(A&&A.dec&&A.dec[id])};
 function compute(){const ns=new Set(Object.keys(S.players||{}));S.bets.forEach(b=>ns.add(b.p));if(me)ns.add(me);NAMES=[...ns];
  const bal={},play={},mtm={};NAMES.forEach(n=>{bal[n]=250;play[n]=0;mtm[n]=0});
  const px={};M.forEach(m=>px[m[0]]=prices(qv(m,S)));
