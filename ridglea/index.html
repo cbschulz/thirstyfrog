@@ -58,9 +58,9 @@ header .wrap .logo{font-size:15px!important;white-space:nowrap}
 <header><div class="wrap"><div class="logo">Thirsty Frog<span> Prediction Markets</span></div><button class="me" id="meBtn" onclick="openWho()">Who are you?</button></div></header>
 <main class="wrap">
 <section class="hero"><small>ONE-OFF EVENT · RIDGLEA CC NORTH · BLUE TEES 72.2 / 138 · PAR 71</small>
-<span class="live" id="live">PRE-ROUND</span>
+<span class="live" id="live">PRE-ROUND</span> <span class="live" id="tee" style="display:none"></span>
 <h1>Thirsty Frog: Ridglea Match</h1>
-<p>Mark Papini vs Rudy Weiser, one 18-hole round. Six markets priced like an exchange: buy shares, each winning share pays $1. Prices move with every trade and reprice live after every hole. ⛳</p>
+<p>Mark Papini vs Rudy Weiser, one 18-hole round. Thirteen markets priced like an exchange: buy shares, each winning share pays $1. Prices move with every trade and reprice live after every hole. ⛳</p>
 <div class="model">Odds model: GHIN handicap data · Monte Carlo</div>
 <div class="chips"><span><b>Papini</b> · HI 2.1 · CH 4</span><span><b>Weiser</b> · HI 6.7 · CH 9</span></div>
 <div class="chips" id="chips2" style="margin-top:8px"></div>
@@ -124,7 +124,14 @@ const M=[
 ['pou','Papini','Papini gross score: O/U 77.5',[0.442,0.558],'Over','Under'],
 ['wou','Weiser','Weiser gross score: O/U 84.5',[0.445,0.555],'Over','Under'],
 ['p75','Papini','Papini breaks 75 (74 or better)?',[0.205,0.795],'Yes','No'],
-['w80','Weiser','Weiser breaks 80 (79 or better)?',[0.129,0.871],'Yes','No']];
+['w80','Weiser','Weiser breaks 80 (79 or better)?',[0.129,0.871],'Yes','No'],
+['f9','Front 9 · Gross','Front 9 low gross (holes 1–9)',[0.807,0.125,0.068],'Papini','Weiser','Tie'],
+['b9','Back 9 · Gross','Back 9 low gross (holes 10–18)',[0.788,0.138,0.074],'Papini','Weiser','Tie'],
+['hw','Holes won · Gross','Most holes won (gross, hole by hole)',[0.864,0.082,0.054],'Papini','Weiser','Tie'],
+['pb','Papini','Papini birdies or better: O/U 2.5',[0.612,0.388],'Over','Under'],
+['wb','Weiser','Weiser birdies or better: O/U 1.5',[0.364,0.636],'Over','Under'],
+['wd','Weiser','Weiser double bogeys or worse: O/U 2.5',[0.494,0.506],'Over','Under'],
+['eg','Eagles','Anyone makes an eagle or better?',[0.044,0.956],'Yes','No']];
 const COL=['#16a34a','#dc2626','#9ca3af'];
 let S=norm(null),me=localStorage.getItem('tf_ridglea_me'),cur=null,lastOk=0,tab='m',scorer=sessionStorage.getItem('tf_ridglea_pin')===SCORER_PIN,undoStack=[],curHole=null;
 const K='abcdef',opts=m=>m.slice(4),lab=(m,s)=>m[4+K.indexOf(s)];
@@ -139,18 +146,35 @@ function round(d){const r={};['p','w'].forEach(k=>{let g=0,par=0,n=0,str=0;const
  let thru=0;for(let h=0;h<18;h++)if(sc(d,'p',h)&&sc(d,'w',h))thru++;r.thru=thru;r.done=r.p.n===18&&r.w.n===18;return r}
 // ---- live Monte Carlo over remaining holes ----
 function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+// Per-hole score tables (rel. to par: -2..+4), calibrated in hole_model.py: Papini ~3.0 birdies & ~1.1 doubles+/round,
+// Weiser ~1.25 birdies & ~2.6 doubles+, eagle in a round ~3% / ~1.4%. Full-round mean/SD match model.md via shrink factor C.
+const HK=[-2,-1,0,1,2,3,4],HT={"p": [[0.007, 0.30879, 0.06907, 0.57549, 0.02973, 0.00793, 0.00198], [0.0008, 0.10352, 0.42382, 0.38561, 0.06469, 0.01725, 0.00431], [0.0008, 0.14562, 0.43324, 0.3561, 0.04817, 0.01285, 0.00321], [0.0003, 0.14601, 0.58619, 0.22529, 0.03166, 0.00844, 0.00211], [0.0008, 0.08948, 0.42068, 0.39544, 0.0702, 0.01872, 0.00468], [0.0008, 0.15966, 0.43638, 0.34627, 0.04267, 0.01138, 0.00284], [0.0003, 0.09143, 0.59024, 0.23912, 0.05918, 0.01578, 0.00395], [0.0008, 0.13159, 0.4301, 0.36594, 0.05368, 0.01431, 0.00358], [0.007, 0.3587, 0.05588, 0.55053, 0.02092, 0.00558, 0.00139], [0.0008, 0.16668, 0.43795, 0.34135, 0.03991, 0.01064, 0.00266], [0.0008, 0.15264, 0.43481, 0.35118, 0.04542, 0.01211, 0.00303], [0.0008, 0.11053, 0.42539, 0.38069, 0.06194, 0.01652, 0.00413], [0.0008, 0.0965, 0.42225, 0.39053, 0.06744, 0.01798, 0.0045], [0.0008, 0.19475, 0.44424, 0.32168, 0.0289, 0.00771, 0.00193], [0.0003, 0.1078, 0.58902, 0.23497, 0.05093, 0.01358, 0.0034], [0.0008, 0.12457, 0.42853, 0.37086, 0.05643, 0.01505, 0.00376], [0.0003, 0.14055, 0.58659, 0.22667, 0.03441, 0.00918, 0.00229], [0.007, 0.37117, 0.05258, 0.54428, 0.01872, 0.00499, 0.00125]], "w": [[0.003, 0.12866, 0.12241, 0.65224, 0.07027, 0.01874, 0.00468], [0.0004, 0.04313, 0.1567, 0.59589, 0.1529, 0.04077, 0.01019], [0.0004, 0.06068, 0.31459, 0.47251, 0.11386, 0.03036, 0.00759], [0.0002, 0.06084, 0.63274, 0.20646, 0.07482, 0.01995, 0.00499], [0.0004, 0.03728, 0.10407, 0.63702, 0.16592, 0.04424, 0.01106], [0.0004, 0.06652, 0.36722, 0.43138, 0.10085, 0.02689, 0.00672], [0.0002, 0.0381, 0.4652, 0.30999, 0.13989, 0.0373, 0.00933], [0.0004, 0.05483, 0.26196, 0.51364, 0.12688, 0.03383, 0.00846], [0.003, 0.14946, 0.26194, 0.51967, 0.04945, 0.01319, 0.0033], [0.0004, 0.06945, 0.39354, 0.41082, 0.09434, 0.02516, 0.00629], [0.0004, 0.0636, 0.34091, 0.45195, 0.10736, 0.02863, 0.00716], [0.0004, 0.04606, 0.18302, 0.57533, 0.1464, 0.03904, 0.00976], [0.0004, 0.04021, 0.13039, 0.61646, 0.15941, 0.04251, 0.01063], [0.0004, 0.08115, 0.4988, 0.32857, 0.06832, 0.01822, 0.00455], [0.0002, 0.04492, 0.51546, 0.27893, 0.12037, 0.0321, 0.00802], [0.0004, 0.0519, 0.23565, 0.5342, 0.13338, 0.03557, 0.00889], [0.0002, 0.05856, 0.61599, 0.21681, 0.08133, 0.02169, 0.00542], [0.003, 0.15466, 0.29682, 0.48653, 0.04424, 0.0118, 0.00295]]},HC={"p": 0.8363, "w": 1.0494};
+const HCUM={},HMU={};['p','w'].forEach(k=>{HCUM[k]=HT[k].map(r=>{let c=0;return r.map(x=>c+=x)});HMU[k]=HT[k].map(r=>r.reduce((s,x,i)=>s+x*HK[i],0))});
 function fair(d,N=20000){const r=round(d),R=rng(1000+r.p.n*19+r.w.n*7+r.p.g*3+r.w.g);
- const gs=k=>{const x=r[k];return{mu:x.rem.reduce((s,h)=>s+hmu(k,h),0),sd:Math.sqrt(x.rem.length*hvar(k)),n:x.rem.length,g:x.g}};
- const P=gs('p'),W=gs('w');const c={hg:[0,0,0],hn:[0,0,0],pou:[0,0],wou:[0,0],p75:[0,0],w80:[0,0]};
- const nrm=()=>{let u=0,v=0;while(!u)u=R();v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
- for(let i=0;i<N;i++){const p=P.n?P.g+Math.round(P.mu+P.sd*nrm()):P.g,w=W.n?W.g+Math.round(W.mu+W.sd*nrm()):W.g,wn=w-5;
-  c.hg[p<w?0:p>w?1:2]++;c.hn[p<wn?0:p>wn?1:2]++;c.pou[p>77.5?0:1]++;c.wou[w>84.5?0:1]++;c.p75[p<=74?0:1]++;c.w80[w<=79?0:1]++}
- const out={};for(const id in c)out[id]=c[id].map(x=>x/N);
+ const kn={p:[],w:[]};['p','w'].forEach(k=>{for(let h=0;h<18;h++){const v=sc(d,k,h);kn[k][h]=v?v-PAR[h]:null}});
+ const cnt={hg:[0,0,0],hn:[0,0,0],pou:[0,0],wou:[0,0],p75:[0,0],w80:[0,0],f9:[0,0,0],b9:[0,0,0],hw:[0,0,0],pb:[0,0],wb:[0,0],wd:[0,0],eg:[0,0]};
+ const tot={p:[0,0,0],w:[0,0,0]},rnd={p:[0,0,0],w:[0,0,0]},x={p:new Array(18),w:new Array(18)};
+ const fin=(v,hasR)=>hasR?Math.round(v+R()-0.5):Math.round(v);
+ for(let i=0;i<N;i++){let pb=0,wb=0,wd=0,eg=0;
+  for(const k of ['p','w']){const T=tot[k],Z=rnd[k];T[0]=T[1]=T[2]=0;Z[0]=Z[1]=Z[2]=0;
+   for(let h=0;h<18;h++){let v=kn[k][h],a;if(v===null){const u=R(),cu=HCUM[k][h];let j=0;while(j<6&&u>cu[j])j++;v=HK[j];a=HMU[k][h]+HC[k]*(v-HMU[k][h]);Z[0]=1;Z[h<9?1:2]=1}else a=v;
+    x[k][h]=v;T[0]+=a;T[h<9?1:2]+=a;if(v<=-1){if(k==='p')pb++;else wb++}if(v<=-2)eg=1;if(k==='w'&&v>=2)wd++}}
+  const p=71+fin(tot.p[0],rnd.p[0]),w=71+fin(tot.w[0],rnd.w[0]),wn=w-5,pf=fin(tot.p[1],rnd.p[1]),wf=fin(tot.w[1],rnd.w[1]),pk=fin(tot.p[2],rnd.p[2]),wk=fin(tot.w[2],rnd.w[2]);
+  let hp=0,hw=0;for(let h=0;h<18;h++){if(x.p[h]<x.w[h])hp++;else if(x.p[h]>x.w[h])hw++}
+  cnt.hg[p<w?0:p>w?1:2]++;cnt.hn[p<wn?0:p>wn?1:2]++;cnt.pou[p>77.5?0:1]++;cnt.wou[w>84.5?0:1]++;cnt.p75[p<=74?0:1]++;cnt.w80[w<=79?0:1]++;
+  cnt.f9[pf<wf?0:pf>wf?1:2]++;cnt.b9[pk<wk?0:pk>wk?1:2]++;cnt.hw[hp>hw?0:hp<hw?1:2]++;cnt.pb[pb>2.5?0:1]++;cnt.wb[wb>1.5?0:1]++;cnt.wd[wd>2.5?0:1]++;cnt.eg[eg?0:1]++}
+ const out={};for(const id in cnt)out[id]=cnt[id].map(v=>v/N);
  // decided markets
- const dec={};const pf=r.p.n===18,wf=r.w.n===18;
+ const dec={};const pf=r.p.n===18,wf=r.w.n===18,both=h=>kn.p[h]!==null&&kn.w[h]!==null,w3=(a,b)=>a<b?'a':a>b?'b':'c';
  if(r.p.g>77.5||pf)dec.pou=r.p.g>77.5?'a':'b';if(r.w.g>84.5||wf)dec.wou=r.w.g>84.5?'a':'b';
  if(r.p.g>=75||pf)dec.p75=r.p.g<=74?'a':'b';if(r.w.g>=80||wf)dec.w80=r.w.g<=79?'a':'b';
- if(pf&&wf){const p=r.p.g,w=r.w.g,wn=w-5;dec.hg=p<w?'a':p>w?'b':'c';dec.hn=p<wn?'a':p>wn?'b':'c'}
+ if(pf&&wf){const p=r.p.g,w=r.w.g;dec.hg=w3(p,w);dec.hn=w3(p,w-5)}
+ const seg=(a,b)=>{for(let h=a;h<b;h++)if(!both(h))return null;let P=0,W=0;for(let h=a;h<b;h++){P+=kn.p[h];W+=kn.w[h]}return w3(P,W)};
+ const f9=seg(0,9),b9=seg(9,18);if(f9)dec.f9=f9;if(b9)dec.b9=b9;
+ {let hp=0,hw=0,rem=0;for(let h=0;h<18;h++){if(!both(h)){rem++;continue}if(kn.p[h]<kn.w[h])hp++;else if(kn.p[h]>kn.w[h])hw++}
+  if(hp-hw>rem)dec.hw='a';else if(hw-hp>rem)dec.hw='b';else if(!rem)dec.hw=w3(-hp,-hw)}
+ const c=(k,f)=>kn[k].filter(v=>v!==null&&f(v)).length,PB=c('p',v=>v<=-1),WB=c('w',v=>v<=-1),WD=c('w',v=>v>=2),EG=c('p',v=>v<=-2)+c('w',v=>v<=-2);
+ if(PB>2.5||pf)dec.pb=PB>2.5?'a':'b';if(WB>1.5||wf)dec.wb=WB>1.5?'a':'b';if(WD>2.5||wf)dec.wd=WD>2.5?'a':'b';if(EG||(pf&&wf))dec.eg=EG?'a':'b';
  for(const id in out){let p=out[id];if(dec[id]){const k=K.indexOf(dec[id]),o=0.01;p=p.map((x,i)=>i===k?1-o*(p.length-1):o)}
   else{p=p.map(x=>Math.max(0.01,x));const s=p.reduce((a,b)=>a+b,0);p=p.map(x=>x/s)}
   out[id]=p.map(x=>Math.round(x*10000)/10000)}
@@ -199,7 +223,7 @@ function scorecard(){const r=round(S);let h=`<div class="tbl"><div class="tr th"
  return h}
 function badge(){const r=round(S);return r.done?'FINAL':r.thru||r.p.n||r.w.n?'LIVE · thru '+r.thru:'PRE-ROUND'}
 function render(){const c=compute();
- $('live').textContent=badge();$('live').className='live'+(badge().startsWith('LIVE')?' on':'');
+ $('live').textContent=badge();if(typeof teeTick==='function'&&typeof TEE!=='undefined')teeTick();$('live').className='live'+(badge().startsWith('LIVE')?' on':'');
  $('meBtn').textContent=me?me+' · '+fmt(c.bal[me])+' ▾':'Who are you?';
  $('sBal').textContent=me?fmt(c.bal[me]):'—';$('sPlay').textContent=me?fmt(c.mtm[me]):'—';
  $('sPot').textContent=fmt(S.bets.reduce((s,b)=>s+b.a,0));
@@ -286,6 +310,10 @@ async function saveHole(clear){const h=curHole,pv=clear?0:parseInt($('hp').value
 async function undo(){const u=undoStack.pop();if(!u)return;const err=await mutate(d=>{applyScores(d,u.h,u.p,u.w)},d=>(sc(d,'p',u.h)||0)===(u.p||0)&&(sc(d,'w',u.h)||0)===(u.w||0));
  if(err){undoStack.push(u);return toast(err)}toast('Undid hole '+(u.h+1)+'.')}
 try{const c=JSON.parse(localStorage.getItem('tf_ridglea_cache'));if(c&&c.bets)S=norm(c)}catch(e){}
-render();load();if(!me)openWho();
+const TEE=Date.parse('2026-10-17T12:40:00-05:00');
+function teeTick(){const e=$('tee'),r=round(S);if(r.p.n||r.w.n){e.style.display='none';$('live').style.display='inline-block';return}e.style.display='inline-block';$('live').style.display='none';const ms=TEE-Date.now();
+ if(ms>0){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sec=t%60;e.textContent=`Tee time 12:40 PM CT · starts in ${h?h+'h ':''}${m}m ${sec}s`}else e.textContent='On the course · waiting for first score'}
+setInterval(teeTick,1000);
+render();load();if(!me)openWho();teeTick();
 function sched(){clearTimeout(pollT);pollT=setTimeout(async()=>{if(!document.hidden)await load();sched()},Math.min(120000,10000*Math.pow(2,Math.min(fails,4))))}sched();document.addEventListener('visibilitychange',()=>{if(!document.hidden){load();sched()}});
 </script></body></html>
