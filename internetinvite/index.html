@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><title>The Internet Invitational Board · Thirsty Frog concept demo</title>
+<meta name="robots" content="noindex,nofollow"><title>The Internet Invitational Board · concept demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#14213d;--green:#2f7d4a;--gd:#1f5a34;--cream:#f3ead7;--cork:#c9a26b;--red:#c8102e;--t:#14213d;--m:#5b6170}
@@ -65,8 +65,8 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 .hrow{display:flex;align-items:center;gap:6px;margin:0 0 6px}.hrow b{flex:1;font-size:14px}.hrow input{width:62px;text-align:center;padding:8px;font-size:16px}.hrow button{width:40px;height:40px;border:2px solid var(--navy);background:#fff;font-size:20px;font-weight:800;cursor:pointer}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:var(--cream);padding:12px 16px;font-size:13px;opacity:0;transition:.3s;width:88%;max-width:420px;text-align:center;pointer-events:none;z-index:30}.toast.s{opacity:1}
 </style></head><body>
-<header><div class="wrap"><div class="logo">Thirsty Frog <span>× The Internet Invitational</span></div><button class="me" id="meBtn" onclick="openWho()">Join</button></div></header>
-<div class="tag">Unofficial concept demo by Thirsty Frog, not affiliated with Barstool Sports</div>
+<header><div class="wrap"><div class="logo">The Internet Invitational <span>Board</span></div><button class="me" id="meBtn" onclick="openWho()">Join</button></div></header>
+<div class="tag">Unofficial concept demo, not affiliated with Barstool Sports</div>
 <main class="wrap">
 <section class="hero"><small>SEASON 2 · BIG CEDAR LODGE, MO · OCT 26 – NOV 12, 2026</small><br><span class="live" id="live">PRE-ROUND</span>
 <h1><em>The</em>Internet Invitational<em>Prediction Board</em></h1>
@@ -84,8 +84,8 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 <div class="cols"><div><h2>Bettor leaderboard</h2><p class="sub">Everyone starts with $250 of play money.</p><div class="card lb" id="lb"></div></div>
 <div><h2>Who owes who</h2><p class="sub">Settled markets only. Winners are paid from losers' stakes; the House pays nothing.</p><div class="card ow" id="ow"></div></div></div>
 <h2>Market wire</h2><div class="card wire" id="wire"></div>
-<div class="disc"><b>Play money, real bragging rights.</b> Every dollar here is pretend and has no cash value. Thirsty Frog doesn't hold, collect or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
-</main><footer>Built by Thirsty Frog Prediction Markets · concept demo</footer>
+<div class="disc"><b>Play money, real bragging rights.</b> Every dollar here is pretend and has no cash value. This board doesn't hold, collect or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
+</main><footer>Concept demo</footer>
 <div class="modal" id="whoM"><div class="sheet"><h3>Who's betting?</h3><p>Type your name to join, or tap yours. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" onclick="join()">Join with $250</button><div class="pick" id="pick" style="margin-top:10px"></div><button class="btn ghost" onclick="closeM('whoM')">Just looking</button></div></div>
 <div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="decimal" min="1" placeholder="Amount ($)">
 <div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
