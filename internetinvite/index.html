@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>The Internet Invitational Board · Thirsty Frog concept demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#14213d;--green:#2f7d4a;--gd:#1f5a34;--cream:#f3ead7;--cork:#c9a26b;--red:#c8102e;--t:#14213d;--m:#5b6170}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--t);background-image:radial-gradient(#e6d8ba 1px,transparent 1px);background-size:14px 14px}
+.c,h1,h2,h3,.cat,.tabs button,.live,.pct{font-family:Oswald,Impact,'Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.wrap{max-width:1100px;margin:auto;padding:0 14px}
+header{background:var(--navy);color:var(--cream);position:sticky;top:0;z-index:5;border-bottom:4px solid var(--green)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;padding:9px 14px}
+.logo{font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.04em}.logo span{color:#9fd3a9}
+.me{border:2px solid var(--cream);background:none;color:var(--cream);border-radius:6px;padding:5px 10px;font:700 13px Inter,sans-serif;cursor:pointer}
+.tag{background:var(--red);color:#fff;font-size:11px;font-weight:800;text-align:center;padding:5px 10px}
+.hero{background:var(--green);color:var(--cream);border:4px solid var(--navy);box-shadow:6px 6px 0 var(--navy);padding:22px 18px 18px;margin:18px 0;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;border:18px solid #ffffff14}
+.hero small{font-size:11px;font-weight:800;letter-spacing:.12em}
+.hero h1{font-size:clamp(38px,11vw,78px);line-height:.92;margin:8px 0 6px;font-weight:700;color:#fff;text-shadow:3px 3px 0 var(--navy)}
+.hero h1 em{font-style:normal;color:var(--cream);display:block;font-size:.5em;letter-spacing:.08em}
+.hero p{margin:0;max-width:640px;font-size:15px}
+.pill{display:inline-block;background:var(--navy);color:var(--cream);font-family:Oswald,sans-serif;text-transform:uppercase;padding:4px 10px;font-size:13px;margin:10px 6px 0 0;border-radius:3px}
+.live{background:var(--red);color:#fff;font-size:13px;padding:4px 10px;display:inline-block;border-radius:3px}.live.on{animation:bl 1.6s infinite}@keyframes bl{50%{opacity:.6}}
+.stat{display:flex;gap:10px;margin-top:16px}.stat div{flex:1;background:#00000026;padding:8px 10px;font-size:11px;border-radius:4px}.stat b{display:block;font-size:22px;font-family:Oswald,sans-serif}
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:6px 0 12px}
+.pc{background:#fffdf7;border:2px solid var(--navy);padding:9px 10px 8px;box-shadow:3px 3px 0 #0002;transform:rotate(-.6deg);position:relative}.pc:nth-child(2n){transform:rotate(.7deg)}
+.pc:before{content:"";position:absolute;top:-6px;left:50%;width:11px;height:11px;margin-left:-5px;border-radius:50%;background:var(--red);box-shadow:0 1px 2px #0006}
+.pc b{display:block;font-family:Oswald,sans-serif;text-transform:uppercase;font-size:16px;line-height:1.05}.pc span{font-size:11px;color:var(--m);font-weight:700}.pc i{font-style:normal;float:right;font-family:Oswald;color:var(--green);font-size:15px}
+.sync{font-size:11px;color:var(--m)}
+.tabs{display:flex;gap:6px;margin:10px 0}.tabs button{flex:1;padding:11px 4px;border:3px solid var(--navy);background:#fffdf7;color:var(--navy);font-size:16px;font-weight:700;cursor:pointer}.tabs button.on{background:var(--navy);color:var(--cream)}
+h2{font-size:28px;margin:22px 0 2px;font-weight:700}.sub{color:var(--m);margin:0 0 12px;font-size:13px}
+h3.sec{font-size:20px;margin:18px 0 8px;border-bottom:3px solid var(--navy);padding-bottom:3px;grid-column:1/-1}
+#markets{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:900px){#markets{grid-template-columns:1fr 1fr}#markets .feat{grid-row:span 2}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+.card{background:#fffdf7;border:2px solid var(--navy);padding:14px;box-shadow:4px 4px 0 #14213d22}
+.cat{font-size:12px;color:var(--green);font-weight:700}.q{font-weight:800;font-size:16px;margin:2px 0 6px}
+.ol{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px dashed #e2d6bd;font-size:14px;font-weight:600}.ol:first-of-type{border-top:0}
+.ol i{display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:2px}.ol b{font-family:Oswald,sans-serif;font-size:20px;margin-right:4px}.ol small{font-size:11px;color:var(--m);font-weight:700;margin-right:8px}.hi{color:var(--m)!important;font-weight:600!important}
+.up{color:var(--green)!important;font-weight:800}.dn{color:var(--red)!important;font-weight:800}
+.buy{background:var(--green);color:#fff;border:0;font:800 12px Inter;padding:7px 11px;border-radius:4px;cursor:pointer}
+.more{background:none;border:0;color:var(--green);font:800 13px Inter;cursor:pointer;padding:6px 0}
+.rule{font-size:11px;color:var(--m);background:#f3ead7;padding:7px 8px;margin:6px 0 0}
+.row{display:flex;gap:8px;margin-top:10px}.row.sm{margin-top:4px}.row.sm button{padding:7px}
+.yes,.no{flex:1;border:2px solid var(--navy);padding:10px 6px;font:800 14px Inter;cursor:pointer}.yes{background:var(--green);color:#fff;border-color:var(--green)}.no{background:#fff;color:var(--navy)}
+.lr{border-top:1px dashed #e2d6bd;padding:7px 0}.lrt{display:flex;justify-content:space-between;font-size:14px}.lrt span{font-family:Oswald;font-size:16px}
+.ch{width:100%;height:84px;display:block;margin-top:8px;background:#f8f2e4}.chl{display:flex;justify-content:space-between;font-size:10px;color:var(--m);margin-top:2px}
+.meta{font-size:11px;color:var(--m);display:flex;justify-content:space-between;margin-top:6px;align-items:center}
+.settle{border:0;background:none;color:var(--navy);font:800 11px Inter;cursor:pointer;padding:0;opacity:.7}
+.done{background:#e3f1e6;color:var(--gd);padding:8px 10px;font-size:13px;margin-top:8px;font-weight:700}.done.nb{background:#fff4d6;color:#7c4a03}
+.mine{font-size:12px;margin-top:4px;color:var(--navy);font-weight:600}
+.lbh,.lbr{display:grid;grid-template-columns:40px 1fr 48px 60px 52px;align-items:center;padding:8px 0;border-top:1px dashed #e2d6bd;text-align:center;font-size:15px}.lbh{border-top:0;font:700 11px Oswald;color:var(--m)}
+.lbr span:nth-child(2),.lbh span:nth-child(2){text-align:left}.lbr small{display:block;font-size:10px;color:var(--m);font-weight:700}.lbr span:nth-child(4){font-family:Oswald;font-size:19px}
+.und{color:var(--red)}.ovr{color:var(--navy)}
+.scw{overflow-x:auto}.sct{border-collapse:collapse;font-size:13px;min-width:760px;width:100%}.sct th,.sct td{border:1px solid #e2d6bd;padding:5px 3px;text-align:center}.sct .stk{position:sticky;left:0;background:#fffdf7;text-align:left;white-space:nowrap;padding-left:6px;z-index:1}
+.sct thead th{background:var(--navy);color:var(--cream)}.sct thead .stk{background:var(--navy)}.sct .pr td{background:#f3ead7;font-weight:700}.sct th.ed{cursor:pointer;text-decoration:underline}
+.bd{background:#d6efdc;color:var(--gd);font-weight:800}.eg{background:#f8d977;font-weight:800}.bg{color:var(--red)}
+.lb div,.ow div,.wire div{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed #e2d6bd;font-size:14px}.lb div:first-child,.ow div:first-child,.wire div:first-child{border-top:0}
+.wire div{display:block;font-size:13px}.wire time{color:var(--m);font-size:11px;margin-right:6px}.lb small{color:var(--m)}
+.disc{background:var(--navy);color:var(--cream);padding:14px;font-size:12px;margin:24px 0 8px}
+footer{text-align:center;font-size:11px;color:var(--m);padding:10px 0 40px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.s{display:flex}
+.sheet{background:#fffdf7;width:100%;max-width:520px;padding:20px;border-top:5px solid var(--green);max-height:90vh;overflow:auto}.sheet h3{margin:0 0 6px;font-size:22px}.sheet p{margin:0 0 12px;color:var(--m);font-size:14px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pick button{padding:12px;border:2px solid var(--navy);background:#fff;font:800 14px Inter;cursor:pointer}
+input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-size:18px}
+.quick{display:flex;gap:6px;margin:8px 0 12px}.quick button{flex:1;padding:8px;border:2px solid var(--navy);background:#fff;font:800 14px Inter;cursor:pointer}
+.btn{width:100%;background:var(--navy);color:var(--cream);border:0;padding:14px;font:800 16px Inter;cursor:pointer;margin-top:6px}.ghost{background:none;color:var(--navy)}
+.hrow{display:flex;align-items:center;gap:6px;margin:0 0 6px}.hrow b{flex:1;font-size:14px}.hrow input{width:62px;text-align:center;padding:8px;font-size:16px}.hrow button{width:40px;height:40px;border:2px solid var(--navy);background:#fff;font-size:20px;font-weight:800;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:var(--cream);padding:12px 16px;font-size:13px;opacity:0;transition:.3s;width:88%;max-width:420px;text-align:center;pointer-events:none;z-index:30}.toast.s{opacity:1}
+</style></head><body>
+<header><div class="wrap"><div class="logo">Thirsty Frog <span>× The Internet Invitational</span></div><button class="me" id="meBtn" onclick="openWho()">Join</button></div></header>
+<div class="tag">Unofficial concept demo by Thirsty Frog, not affiliated with Barstool Sports</div>
+<main class="wrap">
+<section class="hero"><small>SEASON 2 · BIG CEDAR LODGE, MO · OCT 26 – NOV 12, 2026</small><br><span class="live" id="live">PRE-ROUND</span>
+<h1><em>The</em>Internet Invitational<em>Prediction Board</em></h1>
+<p>Fifteen of the field, one 18-hole stroke-play round, and an exchange-style board priced off official GHIN Handicap Indexes. Buy shares, every winning share splits the pot. Odds reprice after every hole, and markets settle the second the scorecard decides them.</p>
+<span class="pill">Odds: GHIN index · Monte Carlo</span><span class="pill">Play money only</span><span class="pill">Settled by the scorecard</span>
+<div class="stat"><div><b id="sBal">—</b>Your balance</div><div><b id="sPlay">—</b>In open bets</div><div><b id="sPot">$0</b>Volume</div></div>
+</section>
+<h2>The roster</h2><p class="sub">GHIN Handicap Index (+ = plus handicap). Modeled 18-hole gross ≈ 72 + index.</p>
+<div class="roster" id="roster"></div>
+<p class="sync" id="sync">Connecting…</p>
+<div class="tabs"><button id="tbm" onclick="setTab('m')">Markets</button><button id="tbl" onclick="setTab('l')">Leaderboard</button><button id="tbs" onclick="setTab('s')">Scorecard</button></div>
+<div id="tabl" style="display:none"><div class="card" id="lbd"></div></div>
+<div id="tabs" style="display:none"><div class="card" id="scard"></div></div>
+<div id="tabm"><div class="done" id="closedB" style="display:none">🔒 Round final. Every market is settled from the scorecard.</div><div id="markets"></div></div>
+<div class="cols"><div><h2>Bettor leaderboard</h2><p class="sub">Everyone starts with $250 of play money.</p><div class="card lb" id="lb"></div></div>
+<div><h2>Who owes who</h2><p class="sub">Settled markets only. Winners are paid from losers' stakes; the House pays nothing.</p><div class="card ow" id="ow"></div></div></div>
+<h2>Market wire</h2><div class="card wire" id="wire"></div>
+<div class="disc"><b>Play money, real bragging rights.</b> Every dollar here is pretend and has no cash value. Thirsty Frog doesn't hold, collect or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
+</main><footer>Built by Thirsty Frog Prediction Markets · concept demo</footer>
+<div class="modal" id="whoM"><div class="sheet"><h3>Who's betting?</h3><p>Type your name to join, or tap yours. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" onclick="join()">Join with $250</button><div class="pick" id="pick" style="margin-top:10px"></div><button class="btn ghost" onclick="closeM('whoM')">Just looking</button></div></div>
+<div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="decimal" min="1" placeholder="Amount ($)">
+<div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
+<p id="bQuote" style="font-size:13px;color:var(--gd);font-weight:700"></p><button class="btn" id="bGo" onclick="placeBet()">Place bet</button><button class="btn ghost" onclick="closeM('betM')">Cancel</button></div></div>
+<div class="modal" id="setM"><div class="sheet"><h3 id="sQ"></h3><p>Admin override. Markets settle from the scorecard; use this only for a scoring dispute. Manual results beat the scorecard.</p><p id="setHint" style="color:var(--gd);font-weight:700"></p><div class="pick" id="setPick"></div><button class="btn ghost" onclick="closeM('setM')">Cancel</button></div></div>
+<div class="modal" id="holeM"><div class="sheet"><h3 id="hQ"></h3><p>Gross strokes. Leave blank if a player hasn't finished the hole.</p><div id="hrows"></div><button class="btn" id="hGo" onclick="saveHole()">Save hole</button><button class="btn ghost" onclick="closeM('holeM')">Cancel</button></div></div>
+<div class="toast" id="toast"></div>
+<script>
+// shared model, also embedded in page
+const PAR=[4,5,4,3,4,4,3,5,4,4,4,3,5,4,4,3,5,4]; // TODO: placeholder par-72 card; swap in the real Big Cedar course pars once the host course is confirmed
+const PARTOT=72;
+const PLY=[['Johnny Manziel',1.7],['Grant Horvat',-1.9],['Keith Yandle',3.8],['Ryan Whitney',2.1],['Short Game King',-1.5],['Sabrina Andolpho',0.4],['Tyler Toney',4.6],['Karol Priscilla',8.4],['Andrew Santino',2.0],['Cole Lantz',-2.3],['Brad Dalke',-7.2],['Jon Gruden',13.7],['Malosi Togisala',-0.7],['Ryan Ruffels',-6.8],['George Bryan',-6.4]];
+const NP=PLY.length,E=PLY.map(p=>PARTOT+p[1]),SDV=PLY.map(p=>3+0.15*Math.abs(p[1]));
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const EGP=E.map(e=>Math.min(0.12,0.008*Math.exp(-(e-72)/4)));
+const STORE='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/internetinvite.json';
+const PIN='1234'; // admin + scorer PIN
+const LIQ=600,START=250;
+const SHORT=['Manziel','Horvat','Yandle','Whitney','Short Game King','Andolpho','Toney','Priscilla','Santino','Lantz','Dalke','Gruden','Togisala','Ruffels','G. Bryan'];
+const fmtHI=x=>x<0?'+'+(-x).toFixed(1):x.toFixed(1);
+const LN={low:62.5,grd:85.5};
+const H2=[['h2a',0,11],['h2b',10,13],['h2c',1,4],['h2d',3,2],['h2e',8,6]];
+const BRK=[10,13,14,1,9,0]; // break-par markets: Dalke, Ruffels, G. Bryan, Horvat, Lantz, Manziel
+const K='abcdefghijklmnopq';
+// Market list: [id, category, question, group, ...option labels]; opening prices come from fair() on an empty card.
+const M=[['win','Outright winner','Who wins? Low gross over 18 holes','main',...PLY.map(p=>p[0])]];
+H2.forEach(([id,a,b])=>M.push([id,'Head to head · 18-hole gross',`${PLY[a][0]} vs ${PLY[b][0]}`,'h2',PLY[a][0],PLY[b][0],'Tie']));
+M.push(['low','Field',`Winning score: Over/Under ${LN.low}`,'main','Over','Under']);
+M.push(['grd','Player prop',`Jon Gruden 18-hole gross: Over/Under ${LN.grd}`,'main','Over','Under']);
+M.push(['eg','Field','Any eagle (or better) in the field?','main','Yes','No']);
+PLY.forEach((p,k)=>M.push(['t3_'+k,'Top 3 finish',`${p[0]} finishes top 3?`,'t3','Yes','No']));
+BRK.forEach(k=>M.push(['bp_'+k,'Breaks par',`${PLY[k][0]} breaks par (71 or better)?`,'bp','Yes','No']));
+const arr=x=>x?Object.values(x):[];
+const norm=d=>({bets:arr(d&&d.bets),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{},scores:(d&&d.scores)||{},anchors:arr(d&&d.anchors)});
+const sc=(d,k,h)=>{const s=d.scores['p'+k];const v=s&&s['h'+(h+1)];return v>0?v:null};
+function card(d,k){let g=0,n=0,b=0,rem=0,cb=[0,0,0,0];for(let h=0;h<18;h++){const v=sc(d,k,h);if(v){g+=v;n++;if(h>=9)b+=v}else rem++}return{g,n,b,rem,par:PAR.slice(0,18).filter((_,h)=>sc(d,k,h)).reduce((a,x)=>a+x,0),done:n===18}}
+const cbKey=(d,k)=>{const s=(a,b)=>{let t=0;for(let h=a;h<b;h++)t+=sc(d,k,h);return t};return[s(0,18),s(9,18),s(12,18),s(15,18),s(17,18)]};
+const cmp=(x,y)=>{for(let i=0;i<x.length;i++)if(x[i]!==y[i])return x[i]-y[i];return 0};
+const w3=(a,b)=>a<b?'a':a>b?'b':'c';
+// Decidability: lower bound of a card = strokes so far + 1 per unplayed hole (an ace is always possible).
+function decide(d){const C=PLY.map((_,k)=>card(d,k)),LB=C.map(c=>c.g+c.rem),all=C.every(c=>c.done),dec={};
+ if(all){const keys=PLY.map((_,k)=>cbKey(d,k));let best=[0];for(let k=1;k<NP;k++){const c=cmp(keys[k],keys[best[0]]);if(c<0)best=[k];else if(c===0)best.push(k)}dec.win=best.length===1?K[best[0]]:'v'}
+ H2.forEach(([id,a,b])=>{const A=C[a],B=C[b];if(A.done&&B.done)dec[id]=w3(A.g,B.g);else if(A.done&&LB[b]>A.g)dec[id]='a';else if(B.done&&LB[a]>B.g)dec[id]='b'});
+ if(Math.min(...LB)>LN.low)dec.low='a';else if(C.some(c=>c.done&&c.g<LN.low))dec.low='b';
+ if(C[11].g>LN.grd)dec.grd='a';else if(C[11].done)dec.grd='b';
+ let eagle=false;for(let k=0;k<NP;k++)for(let h=0;h<18;h++){const v=sc(d,k,h);if(v&&v<=PAR[h]-2)eagle=true}
+ if(eagle)dec.eg='a';else if(all)dec.eg='b';
+ PLY.forEach((_,k)=>{const better=C.filter((c,j)=>j!==k&&c.done&&c.g<LB[k]).length;
+  if(better>=3)dec['t3_'+k]='b';else if(C[k].done&&C.filter((c,j)=>j!==k&&LB[j]<C[k].g).length<=2)dec['t3_'+k]='a'});
+ BRK.forEach(k=>{if(LB[k]>=72)dec['bp_'+k]='b';else if(C[k].done)dec['bp_'+k]=C[k].g<72?'a':'b'});
+ return{dec,all,C}}
+// Monte Carlo over unplayed holes. Player model: 18-hole gross ~ Normal(72 + index, 3 + 0.15|index|), split evenly by hole.
+function fair(d,N=6000){const{dec,C}=decide(d);let seed=99;for(let k=0;k<NP;k++)seed=seed*31+C[k].g*7+C[k].n|0;const R=rng(seed);
+ const gs=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
+ const cnt={win:new Array(NP).fill(0),low:[0,0],grd:[0,0],eg:[0,0]};H2.forEach(([id])=>cnt[id]=[0,0,0]);PLY.forEach((_,k)=>cnt['t3_'+k]=[0,0]);BRK.forEach(k=>cnt['bp_'+k]=[0,0]);
+ const kn=PLY.map((_,k)=>{let fs=0,fr=0,fp=0,bs=0,br=0,bp=0,eg=false;for(let h=0;h<18;h++){const v=sc(d,k,h);if(h<9){if(v)fs+=v;else{fr++;fp+=PAR[h]}}else{if(v)bs+=v;else{br++;bp+=PAR[h]}}if(v&&v<=PAR[h]-2)eg=true}return{fs,fr,fp,bs,br,bp,eg}});
+ const t=new Array(NP),b=new Array(NP);
+ for(let i=0;i<N;i++){let e=false;
+  for(let k=0;k<NP;k++){const q=kn[k],o=(E[k]-72)/18,s=SDV[k]/Math.sqrt(18);
+   const f=q.fs+(q.fr?Math.round(q.fp+q.fr*o+s*Math.sqrt(q.fr)*gs()):0),bb=q.bs+(q.br?Math.round(q.bp+q.br*o+s*Math.sqrt(q.br)*gs()):0);t[k]=f+bb;b[k]=bb;
+   if(q.eg)e=true;else for(let h=0;h<18;h++)if(!sc(d,k,h)&&R()<(PAR[h]===5?EGP[k]:EGP[k]/10))e=true}
+  let mn=Infinity;for(let k=0;k<NP;k++)if(t[k]<mn)mn=t[k];let L=[];for(let k=0;k<NP;k++)if(t[k]===mn)L.push(k);
+  if(L.length>1){const mb=Math.min(...L.map(k=>b[k]));L=L.filter(k=>b[k]===mb)}cnt.win[L[Math.floor(R()*L.length)]]++;
+  cnt.low[mn>LN.low?0:1]++;cnt.grd[t[11]>LN.grd?0:1]++;cnt.eg[e?0:1]++;
+  H2.forEach(([id,a,c])=>cnt[id][t[a]<t[c]?0:t[a]>t[c]?1:2]++);
+  for(let k=0;k<NP;k++){let lo=0;for(let j=0;j<NP;j++)if(t[j]<t[k])lo++;cnt['t3_'+k][lo<3?0:1]++}
+  BRK.forEach(k=>cnt['bp_'+k][t[k]<72?0:1]++)}
+ const out={};for(const id in cnt){let p=cnt[id].map(v=>v/N);const fl=p.length>3?0.004:0.01;
+  if(dec[id]&&dec[id]!=='v'){const j=K.indexOf(dec[id]);p=p.map((x,i)=>i===j?1-fl*(p.length-1):fl)}else{p=p.map(x=>Math.max(fl,x));const s=p.reduce((a,c)=>a+c,0);p=p.map(x=>x/s)}
+  out[id]=p.map(x=>Math.round(x*10000)/10000)}
+ return{p:out,dec}}
+const OPEN={"win":[0.0039,0.0239,0.0039,0.0039,0.0185,0.0039,0.0039,0.0039,0.0039,0.0315,0.3347,0.0039,0.0093,0.2935,0.2573],"low":[0.4026,0.5974],"grd":[0.5186,0.4814],"eg":[0.6834,0.3166],"h2a":[0.9708,0.0192,0.01],"h2b":[0.4932,0.4388,0.068],"h2c":[0.4899,0.4267,0.0834],"h2d":[0.5932,0.332,0.0748],"h2e":[0.6664,0.2621,0.0715],"t3_0":[0.0381,0.9619],"t3_1":[0.2337,0.7663],"t3_2":[0.0154,0.9846],"t3_3":[0.0319,0.9681],"t3_4":[0.195,0.805],"t3_5":[0.0707,0.9294],"t3_6":[0.01,0.99],"t3_7":[0.0099,0.9901],"t3_8":[0.034,0.966],"t3_9":[0.2755,0.7245],"t3_10":[0.7846,0.2154],"t3_11":[0.0099,0.9901],"t3_12":[0.1294,0.8706],"t3_13":[0.7576,0.2424],"t3_14":[0.7268,0.2732],"bp_10":[0.9519,0.0481],"bp_13":[0.9404,0.0596],"bp_14":[0.9319,0.0681],"bp_1":[0.6606,0.3394],"bp_9":[0.7071,0.2929],"bp_0":[0.2499,0.7501]}; // opening prices: fair() on an empty card, 40,000 sims
+M.forEach(m=>m.splice(4,0,OPEN[m[0]]));// m = [id,cat,q,group,open,...labels]
+const opts=m=>m.slice(5),mk=id=>M.find(m=>m[0]===id),lab=(m,s)=>s==='v'?'Dead heat (no bet)':m[5+K.indexOf(s)];
+const COL=['#2f7d4a','#c8102e','#9aa0a6','#14213d','#d97706','#7c3aed','#0891b2','#be185d','#65a30d','#475569','#0f766e','#b45309','#4338ca','#e11d48','#15803d'];
+let S=norm(null),me=localStorage.getItem('tf_ii_me'),cur=null,tab='m',admin=sessionStorage.getItem('tf_ii_pin')===PIN,undoStack=[],curHole=null,fails=0,pollT=null,NAMES=[],showAll=false;
+const $=id=>document.getElementById(id),fmt=n=>(n<0?'-':'')+'$'+(Math.round(Math.abs(n)*100)/100).toLocaleString(undefined,{maximumFractionDigits:2}),ct=p=>Math.round(p*100)+'¢';
+const clean=n=>(n||'').replace(/[^A-Za-z0-9 .\-]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('s');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('s'),2800)}
+const tm=t=>new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+// Pari-mutuel: pot = every stake on the market, winners split it by shares, House pays nothing.
+// No bet (full refund): one-sided action, nobody holds the winner, or a dead heat.
+const sidesOf=(d,id)=>new Set(d.bets.filter(b=>b.m===id).map(b=>b.s)),oneSided=(d,id)=>sidesOf(d,id).size===1;
+function noWin(d,id,w){const bs=d.bets.filter(b=>b.m===id);if(!bs.length)return'';if(w==='v')return'dead heat after countback';if(sidesOf(d,id).size<2)return'one-sided action';if(!bs.some(b=>b.s===w))return'nobody held the winner';return''}
+function SP(d,id){const st=d.settled[id],bs=d.bets.filter(b=>b.m===id),pot=bs.reduce((s,b)=>s+b.a,0),pay={};if(!st)return{pay,pot};const why=noWin(d,id,st.w);
+ if(why){bs.forEach(b=>pay[b.id]=b.a);return{pay,pot,refund:true,why}}const W=bs.filter(b=>b.s===st.w).reduce((s,b)=>s+b.sh,0);bs.forEach(b=>pay[b.id]=b.s===st.w?pot*b.sh/W:0);return{pay,pot}}
+function estPay(d,id,s,sh,stake){const bs=d.bets.filter(b=>b.m===id),pot=bs.reduce((t,b)=>t+b.a,0)+stake,W=bs.filter(b=>b.s===s).reduce((t,b)=>t+b.sh,0)+sh;return W>0?pot*sh/W:0}
+const anc=d=>d.anchors.length?d.anchors[d.anchors.length-1]:null;
+function qv(m,d){const A=anc(d),base=A&&A.p&&A.p[m[0]]?A.p[m[0]]:m[4],q=base.map(p=>LIQ*Math.log(p));d.bets.slice(A?A.bc:0).forEach(b=>{if(b.m===m[0])q[K.indexOf(b.s)]+=b.sh});return q}
+function prices(q){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);return e.map(x=>x/s)}
+function buy(q,i,stake){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);return mx+LIQ*Math.log(s*Math.exp(stake/LIQ)-(s-e[i]))-q[i]}
+function compute(){const ns=new Set(Object.keys(S.players));S.bets.forEach(b=>ns.add(b.p));if(me)ns.add(me);NAMES=[...ns];
+ const bal={},play={},px={},pay={};NAMES.forEach(n=>{bal[n]=START;play[n]=0});M.forEach(m=>px[m[0]]=prices(qv(m,S)));
+ S.bets.forEach(b=>{if(!mk(b.m))return;bal[b.p]-=b.a;if(S.settled[b.m]){const g=SP(S,b.m).pay[b.id]||0;bal[b.p]+=g;pay[b.id]=g}else play[b.p]+=b.a});return{bal,play,px,pay}}
+function chart(m){const id=m[0],O=opts(m),pts=[{p:m[4]}];let ai=0;const A=S.anchors;
+ for(let i=0;i<=S.bets.length;i++){while(ai<A.length&&A[ai].bc===i){if(A[ai].p&&A[ai].p[id])pts.push({p:A[ai].p[id],a:1});ai++}const b=S.bets[i];if(b&&b.m===id&&b.px)pts.push({p:b.px})}
+ const W=320,H=90,P=4,n=pts.length,X=i=>P+(n>1?i*(W-2*P)/(n-1):W-2*P),Y=v=>P+(1-v)*(H-2*P);
+ let idx=O.map((_,k)=>k);if(O.length>3)idx=idx.sort((a,b)=>pts[n-1].p[b]-pts[n-1].p[a]).slice(0,4);
+ let g=`<line x1="0" x2="${W}" y1="${Y(.5)}" y2="${Y(.5)}" stroke="#d9cfb8" stroke-dasharray="3 3"/>`;
+ idx.forEach(k=>{const xs=n>1?pts.map((p,i)=>`${X(i).toFixed(1)},${Y(p.p[k]).toFixed(1)}`):[`${P},${Y(pts[0].p[k])}`,`${W-P},${Y(pts[0].p[k])}`];
+  g+=`<polyline fill="none" stroke="${COL[k]}" stroke-width="2.4" stroke-linejoin="round" points="${xs.join(' ')}"/>`;const l=xs[xs.length-1].split(',');g+=`<circle cx="${l[0]}" cy="${l[1]}" r="3.2" fill="${COL[k]}"/>`});
+ return `<svg class="ch" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="price history">${g}</svg><div class="chl"><span>Open</span><span>${pts.filter(p=>!p.a).length-1} trades · ${pts.filter(p=>p.a).length} reprices</span></div>`}
+const rel=x=>x===0?'E':(x>0?'+'+x:''+x);
+function board(){const{C}=decide(S),rows=PLY.map((p,k)=>({k,c:C[k]})).sort((a,b)=>(b.c.n?0:1)-(a.c.n?0:1)||(a.c.g-a.c.par)-(b.c.g-b.c.par)||b.c.n-a.c.n);
+ let pos=0,prev=null;return `<div class="lbh"><span>Pos</span><span>Player</span><span>Thru</span><span>To par</span><span>Gross</span></div>`+rows.map((r,i)=>{const tp=r.c.n?r.c.g-r.c.par:null;if(tp!==prev){pos=i+1;prev=tp}
+  return `<div class="lbr"><span>${r.c.n?pos:'–'}</span><span><b>${PLY[r.k][0]}</b><small>HI ${fmtHI(PLY[r.k][1])}</small></span><span>${r.c.done?'F':r.c.n||'–'}</span><span class="${tp<0?'und':tp>0?'ovr':''}">${tp===null?'–':rel(tp)}</span><span>${r.c.n?r.c.g:'–'}</span></div>`}).join('')}
+function scorecard(){let h=`<div class="scw"><table class="sct"><thead><tr><th class="stk">Hole</th>${PAR.map((_,i)=>`<th class="${admin?'ed':''}" ${admin?`onclick="openHole(${i})"`:''}>${i+1}</th>`).join('')}<th>Tot</th></tr><tr class="pr"><th class="stk">Par</th>${PAR.map(p=>`<td>${p}</td>`).join('')}<td>72</td></tr></thead><tbody>`;
+ PLY.forEach((p,k)=>{const c=card(S,k);h+=`<tr><th class="stk">${SHORT[k]}</th>${PAR.map((pa,i)=>{const v=sc(S,k,i);return`<td class="${v?(v<=pa-2?'eg':v<pa?'bd':v>pa?'bg':''):''}">${v||'·'}</td>`}).join('')}<td><b>${c.n?c.g:'–'}</b></td></tr>`});
+ h+=`</tbody></table></div><p class="sub" style="margin-top:8px">Green = birdie, gold = eagle, red = bogey or worse. Par values are placeholders until the host course is confirmed.</p>`;
+ h+=admin?`<div class="row"><button class="yes" onclick="nextHole()">Enter next hole</button><button class="no" onclick="undo()" ${undoStack.length?'':'disabled style="opacity:.45"'}>↶ Undo last</button></div><p class="sub">Scorer mode. Tap a hole number to enter or edit every player's score on it. Odds reprice and decided markets settle instantly.</p>`:`<button class="btn ghost" style="border:2px solid var(--navy)" onclick="login()">🔐 Scorer / admin login</button>`;return h}
+function badge(){const{C,all}=decide(S);if(all)return'FINAL';const n=C.filter(c=>c.n).length;return n?'LIVE · '+C.filter(c=>c.done).length+'/15 in the clubhouse':'PRE-ROUND'}
+function stBox(m,c){const id=m[0],st=S.settled[id];if(!st)return'';const sp=SP(S,id);return sp.refund?`<div class="done nb">↩️ No bet: ${sp.why}, stakes refunded. (Result: ${lab(m,st.w)}${st.auto?', auto from scorecard':', by '+st.by})</div>`:`<div class="done">✅ ${lab(m,st.w)} · ${st.auto?'settled from the scorecard':'set by '+st.by+' (override)'} · pot ${fmt(sp.pot)}</div>`}
+function mine(m,c){const id=m[0],bs=me?S.bets.filter(b=>b.m===id&&b.p===me):[];return bs.length?`<div class="mine">You: ${bs.map(b=>b.sh.toFixed(1)+' '+lab(m,b.s)+' @ '+ct(b.a/b.sh)+(S.settled[id]?' → '+fmt(c.pay[b.id]||0):'')).join(', ')}</div>`:''}
+function meta(m){const id=m[0],bs=S.bets.filter(b=>b.m===id),st=S.settled[id];return `<div class="meta"><span>Vol ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades${!st&&oneSided(S,id)?' · <b style="color:#b45309">one-sided so far</b>':''}</span><button class="settle" onclick="openSettle('${id}')">${st?'Override ⚑':'Admin ⚑'}</button></div>`}
+function bigCard(m,c){const id=m[0],O=opts(m),pr=c.px[id],st=S.settled[id];let order=O.map((_,k)=>k);if(O.length>3){order.sort((a,b)=>pr[b]-pr[a]);if(!showAll)order=order.slice(0,6)}
+ let h=`<div class="card${id==='win'?' feat':''}"><div class="cat">${m[1]}</div><div class="q">${m[2]}</div>`;
+ h+=order.map(k=>{const d=Math.round(pr[k]*100)-Math.round(m[4][k]*100);return `<div class="ol"><span><i style="background:${COL[k]}"></i>${O[k]}${id==='win'?` <small class="hi">HI ${fmtHI(PLY[k][1])}</small>`:''}</span><span><b>${ct(pr[k])}</b><small class="${d>0?'up':d<0?'dn':''}">${d>0?'▲'+d:d<0?'▼'+(-d):'–'}</small>${st||S.closed?'':`<button class="buy" onclick="openBet('${id}','${K[k]}')">Buy</button>`}</span></div>`}).join('');
+ if(O.length>3)h+=`<button class="more" onclick="showAll=!showAll;render()">${showAll?'Show top 6':'Show all 15 players'}</button>`;
+ if(id==='win')h+=`<p class="rule">Rule: lowest 18-hole gross wins. Ties go to card countback: back nine (10–18), then last 6, last 3, then 18th hole. Still tied = dead heat, every stake refunded.</p>`;
+ return h+chart(m)+stBox(m,c)+mine(m,c)+meta(m)+'</div>'}
+function listCard(g,title,sub,c){const ms=M.filter(m=>m[3]===g).sort((a,b)=>c.px[b[0]][0]-c.px[a[0]][0]);
+ return `<div class="card"><div class="cat">${title}</div><div class="q">${sub}</div>`+ms.map(m=>{const id=m[0],pr=c.px[id],st=S.settled[id],sp=st&&SP(S,id);
+  return `<div class="lr"><div class="lrt"><b>${m[2].replace(/ (finishes top 3|breaks par).*$/,'')}</b><span>${st?(sp.refund?'↩️ no bet':'✅ '+lab(m,st.w)):'Yes '+ct(pr[0])}</span></div>${st||S.closed?'':`<div class="row sm"><button class="yes" onclick="openBet('${id}','a')">Yes ${ct(pr[0])}</button><button class="no" onclick="openBet('${id}','b')">No ${ct(pr[1])}</button></div>`}${mine(m,c)}${meta(m)}</div>`}).join('')+'</div>'}
+function render(){const c=compute();$('live').textContent=badge();$('live').className='live'+(badge().startsWith('LIVE')?' on':'');
+ $('meBtn').textContent=me?me+' · '+fmt(c.bal[me]):'Join';$('sBal').textContent=me?fmt(c.bal[me]):'—';$('sPlay').textContent=me?fmt(c.play[me]):'—';$('sPot').textContent=fmt(S.bets.reduce((s,b)=>s+b.a,0));
+ $('lbd').innerHTML=board();$('scard').innerHTML=scorecard();
+ ['m','l','s'].forEach(t=>{$('tab'+t).style.display=tab===t?'block':'none';$('tb'+t).className=tab===t?'on':''});
+ let h=bigCard(mk('win'),c)+`<h3 class="sec">Marquee head-to-heads</h3>`+M.filter(m=>m[3]==='h2').map(m=>bigCard(m,c)).join('')+`<h3 class="sec">Field &amp; props</h3>`+['low','eg','grd'].map(id=>bigCard(mk(id),c)).join('')+`<h3 class="sec">Finishing position</h3>`+listCard('t3','Top 3 finish','Finishes top 3 (ties for 3rd count as Yes)',c)+listCard('bp','Breaks par','Shoots 71 or better on the par-72 card',c);
+ $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';
+ $('ow').innerHTML=owes(c);$('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.play[y])-(c.bal[x]+c.play[x])).map((n,i)=>`<div><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} <b>${n}</b></span><span>${fmt(c.bal[n])} <small>+ ${fmt(c.play[n])} open</small></span></div>`).join(''):'<div>No bettors yet. Be first.</div>';
+ const ev=S.bets.filter(b=>mk(b.m)).map(b=>({t:b.t,x:`<b>${b.p}</b> bought ${b.sh.toFixed(1)} <b>${lab(mk(b.m),b.s)}</b> @ ${ct(b.a/b.sh)} (${fmt(b.a)}) · ${mk(b.m)[2]}`}));
+ S.anchors.forEach(a=>a.t&&ev.push({t:a.t,x:`⛳ <b>${a.lab}</b>: odds repriced from the scorecard`}));
+ for(const id in S.settled){const s=S.settled[id],m=mk(id);if(m)ev.push({t:s.t,x:`⚑ ${s.auto?'Auto':'<b>'+s.by+'</b>'} settled “${m[2]}”: <b>${lab(m,s.w)}</b>${SP(S,id).refund?' · no bet, refunded':''}`})}
+ ev.sort((a,b)=>b.t-a.t);$('wire').innerHTML=ev.length?ev.slice(0,50).map(e=>`<div><time>${tm(e.t)}</time>${e.x}</div>`).join(''):'<div>No action yet. Somebody get it started.</div>'}
+function owes(c){if(!NAMES.length)return'<div>No bettors yet.</div>';const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-START)*100)/100);
+ let o=NAMES.map(n=>`<div><span>${n}</span><span class="${net[n]>0?'up':net[n]<0?'dn':''}">${net[n]>0?'+':''}${fmt(net[n])}</span></div>`).join('');
+ const cr=NAMES.filter(n=>net[n]>0.004).map(n=>[n,net[n]]).sort((a,b)=>b[1]-a[1]),db=NAMES.filter(n=>net[n]<-0.004).map(n=>[n,-net[n]]).sort((a,b)=>b[1]-a[1]),pays=[];let i=0,j=0;
+ while(i<db.length&&j<cr.length){const x=Math.min(db[i][1],cr[j][1]);pays.push(`${db[i][0]} pays ${cr[j][0]} ${fmt(x)}`);db[i][1]-=x;cr[j][1]-=x;if(db[i][1]<0.005)i++;if(cr[j][1]<0.005)j++}
+ return o+`<div style="display:block"><b>Settle-up:</b> ${pays.length?pays.join(' · '):'All square so far.'}</div>`}
+function setTab(t){tab=t;render()}
+async function getD(){const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
+async function load(){try{S=await getD();fails=0;localStorage.setItem('tf_ii_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(Date.now())}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying…'}render()}
+async function mutate(fn,check){for(let k=0;k<5;k++){try{const d=await getD();const err=fn(d);if(err){S=d;render();return err}
+ const w=await fetch(STORE,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!w.ok)throw w.status;await new Promise(r=>setTimeout(r,200+Math.random()*300));const v=await getD();if(check(v)){S=v;render();return null}}catch(e){}await new Promise(r=>setTimeout(r,500*(k+1)))}return'Save failed. Try again.'}
+function openWho(){compute();$('pick').innerHTML=NAMES.map(n=>`<button onclick="setMe('${n}')">${n}</button>`).join('');$('whoM').classList.add('s')}
+async function join(){const n=clean($('nm').value);if(!n)return toast('Type your name.');compute();const ex=NAMES.find(x=>x.toLowerCase()===n.toLowerCase());if(ex)return setMe(ex);
+ const err=await mutate(d=>{if(!d.players[n])d.players[n]=Date.now()},d=>d.players[n]);if(err)return toast(err);setMe(n)}
+function setMe(n){me=n;localStorage.setItem('tf_ii_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' in play money.')}
+function closeM(id){$(id).classList.remove('s')}
+function quote(){const a=parseFloat($('amt').value),m=mk(cur.id),q=qv(m,S),k=K.indexOf(cur.s),p=prices(q)[k];if(!(a>0)){$('bQuote').textContent='Price now '+ct(p)+'. Winners split the pot by shares.';return}
+ const sh=buy(q,k,a),q2=q.slice();q2[k]+=sh;$('bQuote').textContent=`${sh.toFixed(1)} shares @ avg ${ct(a/sh)} · est. payout ${fmt(estPay(S,cur.id,cur.s,sh,a))} if right · price ${ct(p)} → ${ct(prices(q2)[k])}`}
+function openBet(id,s){if(!me)return openWho();if(S.closed||S.settled[id])return toast('That market is closed.');const m=mk(id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Buying: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';quote();$('betM').classList.add('s')}
+function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]*100)/100:v;quote()}
+async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter an amount.');const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};$('bGo').disabled=true;
+ const err=await mutate(d=>{if(d.closed||d.settled[b.m])return'That market just closed.';let bal=START;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;if(d.settled[x.m])bal+=SP(d,x.m).pay[x.id]||0});if(a>bal+0.001)return'Not enough play money. Balance '+fmt(bal)+'.';
+  const m=mk(b.m),qq=qv(m,d),k=K.indexOf(b.s);b.sh=Math.round(buy(qq,k,a)*10000)/10000;qq[k]+=b.sh;b.px=prices(qq).map(x=>Math.round(x*10000)/10000);d.bets.push(b)},d=>d.bets.some(x=>x.id===b.id));
+ $('bGo').disabled=false;if(err)return toast(err);closeM('betM');toast('Locked in: '+b.sh.toFixed(1)+' shares @ '+ct(b.a/b.sh)+'.')}
+function login(){const p=prompt('Scorer / admin PIN');if(p===null)return false;if(p===PIN){admin=true;sessionStorage.setItem('tf_ii_pin',p);render();toast('Scorer & admin mode on.');return true}toast('Wrong PIN.');return false}
+function openSettle(id){if(!admin&&!login())return;const m=mk(id),dec=decide(S).dec[id];$('sQ').textContent=m[2];$('setHint').textContent=dec?'Scorecard says: '+lab(m,dec)+'.':'Not decided by the scorecard yet. Overrides are for scoring disputes only.';
+ $('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')">${o}</button>`).join('')+(S.settled[id]&&!S.settled[id].auto?`<button onclick="settle('${id}',null)">↺ Back to scorecard</button>`:'');$('setM').classList.add('s')}
+async function settle(id,w){const m=mk(id);if(!confirm(w?`Override "${m[2]}" to ${lab(m,w)}? Manual results beat the scorecard.`:'Remove the override and let the scorecard decide?'))return;closeM('setM');
+ const err=await mutate(d=>{if(w){const o={w,by:me||'Admin',t:Date.now()};d.settled[id]=o}else{delete d.settled[id];autoSettle(d,decide(d).dec)}},d=>w?d.settled[id]&&d.settled[id].w===w&&!d.settled[id].auto:!(d.settled[id]&&!d.settled[id].auto));toast(err||'Done.')}
+// Auto-settle: every market settles the moment the scorecard decides it (auto:true). Manual overrides are never touched.
+function autoSettle(d,dec){for(const id in d.settled){const s=d.settled[id];if(s&&s.auto&&dec[id]!==s.w)delete d.settled[id]}
+ for(const id in dec){if(!mk(id))continue;const s=d.settled[id];if(s)continue;d.settled[id]={w:dec[id],by:'Auto',t:Date.now(),auto:true}}}
+function applyHole(d,h,vals){vals.forEach((v,k)=>{const key='p'+k;d.scores[key]=d.scores[key]||{};if(v)d.scores[key]['h'+(h+1)]=v;else delete d.scores[key]['h'+(h+1)]});
+ const f=fair(d),{all,C}=decide(d);d.anchors.push({t:Date.now(),bc:d.bets.length,lab:all?'Final':'Hole '+(h+1)+' scores',p:f.p});autoSettle(d,f.dec);d.closed=all}
+function nextHole(){for(let h=0;h<18;h++)if(PLY.some((_,k)=>!sc(S,k,h)))return openHole(h);toast('Every card is complete. Tap a hole to edit.')}
+function openHole(h){if(!admin)return;curHole=h;$('hQ').textContent=`Hole ${h+1} · Par ${PAR[h]}`;$('hrows').innerHTML=PLY.map((p,k)=>`<div class="hrow"><b>${SHORT[k]}</b><button onclick="bump(${k},-1)">−</button><input id="hs${k}" type="number" inputmode="numeric" min="1" max="15" placeholder="–" value="${sc(S,k,h)||''}"><button onclick="bump(${k},1)">+</button></div>`).join('');$('holeM').classList.add('s')}
+function bump(k,dl){const e=$('hs'+k);e.value=Math.max(1,Math.min(15,(parseInt(e.value)||PAR[curHole])+dl))}
+async function saveHole(){const h=curHole,vals=PLY.map((_,k)=>parseInt($('hs'+k).value)||0),prev=PLY.map((_,k)=>sc(S,k,h)||0);$('hGo').disabled=true;
+ const err=await mutate(d=>{applyHole(d,h,vals)},d=>PLY.every((_,k)=>(sc(d,k,h)||0)===vals[k]));$('hGo').disabled=false;if(err)return toast(err);undoStack.push({h,vals:prev});closeM('holeM');
+ const n=Object.values(S.settled).filter(s=>s.auto).length;toast(S.closed?'All cards in. Round FINAL, every market settled.':`Hole ${h+1} saved. Odds repriced · ${n} markets settled so far.`)}
+async function undo(){const u=undoStack.pop();if(!u)return;const err=await mutate(d=>{applyHole(d,u.h,u.vals)},d=>PLY.every((_,k)=>(sc(d,k,u.h)||0)===u.vals[k]));if(err){undoStack.push(u);return toast(err)}toast('Undid hole '+(u.h+1)+'.')}
+try{const c=JSON.parse(localStorage.getItem('tf_ii_cache'));if(c&&c.bets)S=norm(c)}catch(e){}
+if(typeof document!=='undefined'){render();load();if(!me)setTimeout(openWho,400);
+ (function sched(){clearTimeout(pollT);pollT=setTimeout(async()=>{if(!document.hidden)await load();sched()},Math.min(120000,10000*Math.pow(2,Math.min(fails,4))))})();document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()})}
+document.getElementById('roster').innerHTML=PLY.map((p,k)=>'<div class="pc"><i>'+fmtHI(p[1])+'</i><b>'+p[0]+'</b><span>'+(p[0]==='Short Game King'?'Daniel Saloner · ':'')+'GHIN HI</span></div>').join('');
+</script></body></html>
