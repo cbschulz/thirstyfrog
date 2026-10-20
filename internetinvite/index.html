@@ -124,7 +124,7 @@ footer{color:#6b6660}
 <div class="disc"><b>Free to play, real bragging rights.</b> Torii tokens are free and have no cash value. This board doesn't take, hold or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
 </main><footer>Concept demo</footer>
 <div class="modal" id="whoM"></div>
-<div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="decimal" min="1" placeholder="Torii tokens">
+<div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="numeric" step="1" min="1" placeholder="Torii tokens">
 <div class="quick"><button onclick="q(10)">10 🪙</button><button onclick="q(25)">25 🪙</button><button onclick="q(50)">50 🪙</button><button onclick="q('max')">All in</button></div>
 <p id="bQuote" style="font-size:13px;color:var(--gd);font-weight:700"></p><button class="btn" id="bGo" onclick="placeBet()">Place bet</button><button class="btn ghost" onclick="closeM('betM')">Cancel</button></div></div>
 <div class="modal" id="setM"><div class="sheet"><h3 id="sQ"></h3><p>Admin override. Markets settle from the scorecard; use this only for a scoring dispute. Manual results beat the scorecard.</p><p id="setHint" style="color:var(--gd);font-weight:700"></p><div class="pick" id="setPick"></div><button class="btn ghost" onclick="closeM('setM')">Cancel</button></div></div>
@@ -283,7 +283,7 @@ function quote(){const a=parseFloat($('amt').value),m=mk(cur.id),q=qv(m,S),k=K.i
  const sh=buy(q,k,a),q2=q.slice();q2[k]+=sh;$('bQuote').textContent=`${sh.toFixed(1)} shares @ avg ${ct(a/sh)} · est. payout ${fmt(estPay(S,cur.id,cur.s,sh,a))} if right · price ${ct(p)} → ${ct(prices(q2)[k])}`}
 function openBet(id,s){if(isClosed())return toast('Markets closed · final standings.');if(!me)return openWho();if(S.closed||S.settled[id])return toast('That market is closed.');const m=mk(id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Buying: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';quote();$('betM').classList.add('s')}
 function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]):v;quote()}
-async function placeBet(){if(isClosed()){closeM('betM');return toast('Markets closed · final standings.')}const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter an amount of Torii tokens.');if(a>1000)return toast('Max bet is 1,000 Torii tokens.');if(a>compute().bal[me]+0.001)return toast('Not enough Torii tokens. Balance '+fmt(compute().bal[me])+'.');const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};$('bGo').disabled=true;
+async function placeBet(){if(isClosed()){closeM('betM');return toast('Markets closed · final standings.')}const a=Math.floor(parseFloat($('amt').value));if(!(a>0))return toast('Enter an amount of Torii tokens.');if(a>1000)return toast('Max bet is 1,000 Torii tokens.');if(a>compute().bal[me]+0.001)return toast('Not enough Torii tokens. Balance '+fmt(compute().bal[me])+'.');const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};$('bGo').disabled=true;
  const err=await mutate(d=>{if(d.closed||d.settled[b.m])return'That market just closed.';let bal=START+((typeof OFF!=='undefined'&&OFF[me])||0);d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;if(d.settled[x.m])bal+=SP(d,x.m).pay[x.id]||0});if(a>bal+0.001)return'Not enough Torii tokens. Balance '+fmt(bal)+'.';
   const m=mk(b.m),qq=qv(m,d),k=K.indexOf(b.s);b.sh=Math.round(buy(qq,k,a)*10000)/10000;qq[k]+=b.sh;b.px=prices(qq).map(x=>Math.round(x*10000)/10000);d.bets.push(b)},d=>d.bets.some(x=>x.id===b.id));
  $('bGo').disabled=false;if(err)return toast(err);closeM('betM');toast('Locked in: '+b.sh.toFixed(1)+' shares @ '+ct(b.a/b.sh)+'.')}
@@ -328,8 +328,11 @@ function boardTotals(d){const out={},P=(d&&d.players)||{},bets=d&&d.bets?Object.
  const by={};bets.forEach(b=>{(by[b.m]=by[b.m]||[]).push(b);if(!(b.p in out))out[b.p]=0});
  for(const m in by){const s=st[m];if(!s){by[m].forEach(b=>out[b.p]-=b.a);continue}const bs=by[m],pot=bs.reduce((t,b)=>t+b.a,0),sides=new Set(bs.map(b=>b.s)),W=bs.filter(b=>b.s===s.w).reduce((t,b)=>t+b.sh,0),ref=sides.size<2||!W;
   bs.forEach(b=>{out[b.p]+=-b.a+(ref?b.a:(b.s===s.w?pot*b.sh/W:0))})}return{out,P}}
-async function overall(){const tot={},names={};await Promise.all(BOARDS.map(async p=>{try{const{out,P}=boardTotals(await dbGet(p));for(const u in out){tot[u]=(tot[u]||0)+out[u];if(P[u]&&P[u].n)names[u]=P[u].n}}catch(e){}}));
- return Object.keys(tot).map(u=>({u,n:names[u]||'Player',t:1000+tot[u]})).sort((a,b)=>b.t-a.t||a.n.localeCompare(b.n))}
+// Stored wallets (server-validated by database rules): spendable = bal (debited per trade) + cr (admin-credited payouts). Public: short name + balance only.
+var WAL={};async function loadWal(){try{WAL=(await dbGet('wallets'))||{}}catch(e){}return WAL}
+const walBal=u=>WAL[u]?(WAL[u].bal||0)+(WAL[u].cr||0):1000;
+async function ensureWallet(uid,n){let w=null;try{w=await dbGet('wallets/'+uid)}catch(e){}if(!w){try{await dbPut('wallets/'+uid,{bal:1000,n:String(n).slice(0,40),c:Date.now()})}catch(e){console.warn('wallet',e)}}await loadWal()}
+async function overall(){await loadWal();return Object.keys(WAL).map(u=>({u,n:WAL[u].n||'Player',t:walBal(u)})).sort((a,b)=>b.t-a.t||a.n.localeCompare(b.n))}
 // ---- sign-up UI ----
 (function(){const st=document.createElement('style');st.textContent='#authM input{margin-top:8px}#authM .err{color:#c8102e;font-size:13px;font-weight:700;min-height:16px;margin:6px 0}#authM .ok{color:#2f7d4a;font-weight:700}#authM .btn:disabled{opacity:.6;cursor:wait}#aToast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);opacity:0;transition:.3s;z-index:9999;background:#111;color:#f6f0e4;border-left:4px solid #c8102e;border-radius:10px;padding:12px 40px 12px 14px;max-width:92vw;width:420px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}#aToast.s{transform:translate(-50%,0);opacity:1}#aToast .ta{margin-top:6px;font-size:13px}#aToast a{color:#d4a24c}#aToast .tx{position:absolute;top:6px;right:8px;background:none;border:0;color:#f6f0e4;font-size:20px;cursor:pointer}';document.head.appendChild(st);
  const m=document.createElement('div');m.className='modal';m.id='authM';m.innerHTML='<div class="sheet"><h3>Sign up free</h3><p id="aIntro">Enter your name and email. We\'ll email you a one-tap sign-in link. One account per email. 1,000 Torii tokens to start, one balance across every board.</p><div id="aForm"><input id="aF" maxlength="30" placeholder="First name" autocomplete="given-name"><input id="aL" maxlength="30" placeholder="Last name" autocomplete="family-name"><input id="aE" type="email" maxlength="100" placeholder="Email" autocomplete="email"><div class="err" id="aErr"></div><button class="btn" id="aGo" onclick="sendLink()">Email me a sign-in link</button></div><p class="sub" style="font-size:12px">Leaderboards show only your first name and last initial. Your email is never shown publicly.</p><button class="btn ghost" onclick="document.getElementById(\'authM\').classList.remove(\'s\')">Not now</button></div>';
@@ -363,12 +366,30 @@ async function completeLink(){if(!FA.isSignInWithEmailLink(location.href))return
  try{await FA.signInWithEmailLink(e.trim().toLowerCase(),location.href);history.replaceState(null,'',location.origin+location.pathname);localStorage.removeItem('bpm_email');return true}catch(x){alert('That sign-in link expired or was already used. Request a new one.');history.replaceState(null,'',location.origin+location.pathname);return false}}
 function signOutAll(){FA.signOut();location.reload()}
 var authReady=(async()=>{await FA.setPersistence(firebase.auth.Auth.Persistence.LOCAL);const fromLink=await completeLink();
- FA.onAuthStateChanged(async u=>{if(u){const p=await ensureProfile(u);AU=p?{uid:u.uid,n:shortName(p.first,p.last),p}:null}else AU=null;
+ FA.onAuthStateChanged(async u=>{if(u){const p=await ensureProfile(u);AU=p?{uid:u.uid,n:shortName(p.first,p.last),p}:null;if(AU){await ensureWallet(AU.uid,AU.n);try{AU.admin=(await dbGet('admins/'+AU.uid))===true}catch(e){AU.admin=false}}}else AU=null;
   const want=fromLink&&localStorage.getItem('bpm_join')===location.pathname;if(want)localStorage.removeItem('bpm_join');if(typeof onAuthChange==='function')onAuthChange(want)})})();
 // Board glue: auth-keyed players, diff-PATCH writes, overall rank. Loaded after the board engine + auth.js.
 var BP=STORE.replace(DBU,'').replace(/\.json$/,''),SLUG=BP.replace(/^hub_/,'');
-async function mutate(fn,check){for(let k=0;k<5;k++){try{const d=await getD(),b0=rawDoc(d);const err=fn(d);if(err){S=d;render();return err}
- const u=diffDoc(b0,rawDoc(d));if(Object.keys(u).length)await dbPatch(BP,u);await new Promise(r=>setTimeout(r,150));const v=await getD();if(check(v)){S=v;render();return null}}catch(e){console.warn('save',e)}await new Promise(r=>setTimeout(r,500*(k+1)))}return'Save failed. Try again.'}
+// Trades go out as ONE atomic multi-path write: wallet debit + bet + market pool + board standing. The database rules check every piece.
+async function mutate(fn,check){for(let k=0;k<5;k++){try{await loadWal();const d=await getD(),b0=rawDoc(d),uid=AU&&AU.uid;
+ if(uid)OFF[uid]=walBal(uid)-START-(boardTotals(b0).out[uid]||0);
+ const err=fn(d);if(err){S=d;render();return err}
+ const u=diffDoc(b0,rawDoc(d)),nb=Object.keys(u).filter(x=>/^bets\/[^/]+$/.test(x)&&u[x]&&!b0.bets[x.slice(5)]);
+ if(nb.length){if(!uid)return'Sign in first.';if(nb.length>1)return'One trade at a time.';const bet=u[nb[0]],w=WAL[uid];if(!w)return'Wallet not ready. Reload and try again.';if(bet.p!==uid)return'Not your trade.';
+  const R={};for(const x in u)R[BP+'/'+x]=u[x];const pool=(await dbGet(BP+'/pools/'+bet.m+'/'+bet.s))||0;
+  R[BP+'/pools/'+bet.m+'/'+bet.s]=pool+bet.a;R['wallets/'+uid+'/bal']=w.bal-bet.a;R['wallets/'+uid+'/lb']=BP;R['wallets/'+uid+'/lk']=bet.id;await dbPatch('',R)}
+ else if(Object.keys(u).length)await dbPatch(BP,u);
+ if(AU&&AU.admin)await reconcile();
+ await new Promise(r=>setTimeout(r,150));await loadWal();const v=await getD();if(check(v)){S=v;render();return null}}catch(e){console.warn('save',e)}await new Promise(r=>setTimeout(r,500*(k+1)))}return'Save failed. Try again.'}
+// Admin-only payout ledger: paid/<uid> = total this board has credited; the wallet's cr moves by the difference. Idempotent; handles settles, overrides and reopens.
+async function reconcile(){const d=await getD(),paid=(await dbGet(BP+'/paid'))||{},want={};
+ for(const id in d.settled){const{pay}=SP(d,id);d.bets.filter(b=>b.m===id).forEach(b=>{want[b.p]=(want[b.p]||0)+(pay[b.id]||0)})}
+ await loadWal();const up={};new Set([...Object.keys(want),...Object.keys(paid)]).forEach(u=>{const w=Math.round((want[u]||0)*100)/100,p=paid[u]||0;if(Math.abs(w-p)>1e-9&&WAL[u]){up[BP+'/paid/'+u]=w;up['wallets/'+u+'/cr']=Math.round(((WAL[u].cr||0)+w-p)*100)/100}});
+ if(Object.keys(up).length)await dbPatch('',up);return up}
+// Shares are re-derived by replaying every trade in order (t, id), so a client can't claim extra shares; payouts use these.
+function replayD(d){const bs=d.bets;bs.sort((x,y)=>(x.t-y.t)||(x.id<y.id?-1:x.id>y.id?1:0));for(let i=0;i<bs.length;i++){const b=bs[i],m=mk(b.m);if(!m||!(b.a>0))continue;
+ const dd=Object.assign({},d,{bets:bs.slice(0,i),anchors:(d.anchors||[]).filter(a=>(a.bc||0)<=i)});b.sh=Math.round(buy(qv(m,dd),K.indexOf(b.s),b.a)*10000)/10000}return d}
+const _gD0=getD;getD=async function(){return replayD(await _gD0())};
 // ONE sign-up overall: no per-board join. Signed in = can trade on every board; the per-board standing entry is created on first trade.
 function openWho(){if(!AU)return openAuth();toast('Signed in as '+AU.n+' · '+fmt(compute().bal[AU.uid])+' Torii tokens.')}
 function join(){return openWho()}
@@ -377,10 +398,10 @@ function onAuthChange(want){me=AU?AU.uid:null;loadOff().then(()=>render());rende
 function _ensureStanding(d){if(AU&&d&&d.players&&!d.players[AU.uid]){d.players[AU.uid]={n:AU.n,t:Date.now()};dbPatch('users/'+AU.uid+'/boards',{[SLUG]:Date.now()}).catch(()=>{})}}
 function _meLabel(){const b=document.getElementById('meBtn');if(!b)return;if(AU){me=AU.uid;let v='';try{v=fmt(compute().bal[AU.uid])}catch(e){}b.textContent=AU.n+(v?' · '+v+' Torii tokens':'')}else b.textContent='Sign up / Sign in'}
 const _r0=render;render=function(){if(AU)me=AU.uid;_r0();_meLabel()};
-// shared wallet: OFF[uid] = net from the OTHER boards; added to this board's compute() so balance = 1000 + every board's net
-var OFF={};async function loadOff(){const o={};await Promise.all(BOARDS.filter(p=>p!==BP).map(async p=>{try{const{out}=boardTotals(await dbGet(p));for(const u in out)o[u]=(o[u]||0)+out[u]}catch(e){}}));OFF=o}
-const _c0=compute;compute=function(){const c=_c0();for(const u in c.bal)c.bal[u]+=OFF[u]||0;return c};
-const _mu0=mutate;mutate=async function(fn,check){await loadOff();return _mu0(d=>{_ensureStanding(d);return fn(d)},check)};
+// shared wallet: balances come from the stored, rules-checked wallets. OFF[me] only feeds the engine's local "enough tokens?" pre-check.
+var OFF={};async function loadOff(){await loadWal()}
+const _c0=compute;compute=function(){const c=_c0();for(const u in c.bal)c.bal[u]=walBal(u);return c};
+const _mu0=mutate;mutate=async function(fn,check){return _mu0(d=>{_ensureStanding(d);return fn(d)},check)};
 loadOff().then(()=>render());
 const _load0=load;load=async function(){await loadOff();await _load0();if(AU){me=AU.uid;render()}};
 async function ovRank(){const e=document.getElementById('ovr');if(!e)return;const L=await overall(),i=AU?L.findIndex(x=>x.u===AU.uid):-1;
