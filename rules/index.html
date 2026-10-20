@@ -1,0 +1,85 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Official Rules · Torii Prediction Platform</title><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet"><style>
+:root{--navy:#14213d;--green:#2f7d4a;--gd:#1f5a34;--cream:#f3ead7;--cork:#c9a26b;--red:#c8102e;--t:#14213d;--m:#5b6170}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--t);background-image:radial-gradient(#e6d8ba 1px,transparent 1px);background-size:14px 14px}
+.c,h1,h2,h3,.cat,.tabs button,.live,.pct{font-family:Oswald,Impact,'Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.wrap{max-width:1100px;margin:auto;padding:0 14px}
+header{background:var(--navy);color:var(--cream);position:sticky;top:0;z-index:5;border-bottom:4px solid var(--green)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;padding:9px 14px}
+.logo{font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.04em}.logo span{color:#9fd3a9}
+.me{border:2px solid var(--cream);background:none;color:var(--cream);border-radius:6px;padding:5px 10px;font:700 13px Inter,sans-serif;cursor:pointer}
+.tag{background:var(--red);color:#fff;font-size:11px;font-weight:800;text-align:center;padding:5px 10px}
+.hero{background:var(--green);color:var(--cream);border:4px solid var(--navy);box-shadow:6px 6px 0 var(--navy);padding:22px 18px 18px;margin:18px 0;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;border:18px solid #ffffff14}
+.hero small{font-size:11px;font-weight:800;letter-spacing:.12em}
+.hero h1{font-size:clamp(38px,11vw,78px);line-height:.92;margin:8px 0 6px;font-weight:700;color:#fff;text-shadow:3px 3px 0 var(--navy)}
+.hero h1 em{font-style:normal;color:var(--cream);display:block;font-size:.5em;letter-spacing:.08em}
+.hero p{margin:0;max-width:640px;font-size:15px}
+.pill{display:inline-block;background:var(--navy);color:var(--cream);font-family:Oswald,sans-serif;text-transform:uppercase;padding:4px 10px;font-size:13px;margin:10px 6px 0 0;border-radius:3px}
+.live{background:var(--red);color:#fff;font-size:13px;padding:4px 10px;display:inline-block;border-radius:3px}.live.on{animation:bl 1.6s infinite}@keyframes bl{50%{opacity:.6}}
+.stat{display:flex;gap:10px;margin-top:16px}.stat div{flex:1;background:#00000026;padding:8px 10px;font-size:11px;border-radius:4px}.stat b{display:block;font-size:22px;font-family:Oswald,sans-serif}
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:6px 0 12px}
+.pc{background:#fffdf7;border:2px solid var(--navy);padding:9px 10px 8px;box-shadow:3px 3px 0 #0002;transform:rotate(-.6deg);position:relative}.pc:nth-child(2n){transform:rotate(.7deg)}
+.pc:before{content:"";position:absolute;top:-6px;left:50%;width:11px;height:11px;margin-left:-5px;border-radius:50%;background:var(--red);box-shadow:0 1px 2px #0006}
+.pc b{display:block;font-family:Oswald,sans-serif;text-transform:uppercase;font-size:16px;line-height:1.05}.pc span{font-size:11px;color:var(--m);font-weight:700}.pc i{font-style:normal;float:right;font-family:Oswald;color:var(--green);font-size:15px}
+.sync{font-size:11px;color:var(--m)}
+.tabs{display:flex;gap:6px;margin:10px 0}.tabs button{flex:1;padding:11px 4px;border:3px solid var(--navy);background:#fffdf7;color:var(--navy);font-size:16px;font-weight:700;cursor:pointer}.tabs button.on{background:var(--navy);color:var(--cream)}
+h2{font-size:28px;margin:22px 0 2px;font-weight:700}.sub{color:var(--m);margin:0 0 12px;font-size:13px}
+h3.sec{font-size:20px;margin:18px 0 8px;border-bottom:3px solid var(--navy);padding-bottom:3px;grid-column:1/-1}
+#markets{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:900px){#markets{grid-template-columns:1fr 1fr}#markets .feat{grid-row:span 2}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+.card{background:#fffdf7;border:2px solid var(--navy);padding:14px;box-shadow:4px 4px 0 #14213d22}
+.cat{font-size:12px;color:var(--green);font-weight:700}.q{font-weight:800;font-size:16px;margin:2px 0 6px}
+.ol{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px dashed #e2d6bd;font-size:14px;font-weight:600}.ol:first-of-type{border-top:0}
+.ol i{display:inline-block;width:10px;height:10px;margin-right:7px;border-radius:2px}.ol b{font-family:Oswald,sans-serif;font-size:20px;margin-right:4px}.ol small{font-size:11px;color:var(--m);font-weight:700;margin-right:8px}.hi{color:var(--m)!important;font-weight:600!important}
+.up{color:var(--green)!important;font-weight:800}.dn{color:var(--red)!important;font-weight:800}
+.buy{background:var(--green);color:#fff;border:0;font:800 12px Inter;padding:7px 11px;border-radius:4px;cursor:pointer}
+.more{background:none;border:0;color:var(--green);font:800 13px Inter;cursor:pointer;padding:6px 0}
+.rule{font-size:11px;color:var(--m);background:#f3ead7;padding:7px 8px;margin:6px 0 0}
+.row{display:flex;gap:8px;margin-top:10px}.row.sm{margin-top:4px}.row.sm button{padding:7px}
+.yes,.no{flex:1;border:2px solid var(--navy);padding:10px 6px;font:800 14px Inter;cursor:pointer}.yes{background:var(--green);color:#fff;border-color:var(--green)}.no{background:#fff;color:var(--navy)}
+.lr{border-top:1px dashed #e2d6bd;padding:7px 0}.lrt{display:flex;justify-content:space-between;font-size:14px}.lrt span{font-family:Oswald;font-size:16px}
+.ch{width:100%;height:84px;display:block;margin-top:8px;background:#f8f2e4}.chl{display:flex;justify-content:space-between;font-size:10px;color:var(--m);margin-top:2px}
+.meta{font-size:11px;color:var(--m);display:flex;justify-content:space-between;margin-top:6px;align-items:center}
+.settle{border:0;background:none;color:var(--navy);font:800 11px Inter;cursor:pointer;padding:0;opacity:.7}
+.done{background:#e3f1e6;color:var(--gd);padding:8px 10px;font-size:13px;margin-top:8px;font-weight:700}.done.nb{background:#fff4d6;color:#7c4a03}
+.mine{font-size:12px;margin-top:4px;color:var(--navy);font-weight:600}
+.lbh,.lbr{display:grid;grid-template-columns:40px 1fr 48px 60px 52px;align-items:center;padding:8px 0;border-top:1px dashed #e2d6bd;text-align:center;font-size:15px}.lbh{border-top:0;font:700 11px Oswald;color:var(--m)}
+.lbr span:nth-child(2),.lbh span:nth-child(2){text-align:left}.lbr small{display:block;font-size:10px;color:var(--m);font-weight:700}.lbr span:nth-child(4){font-family:Oswald;font-size:19px}
+.und{color:var(--red)}.ovr{color:var(--navy)}
+.scw{overflow-x:auto}.sct{border-collapse:collapse;font-size:13px;min-width:760px;width:100%}.sct th,.sct td{border:1px solid #e2d6bd;padding:5px 3px;text-align:center}.sct .stk{position:sticky;left:0;background:#fffdf7;text-align:left;white-space:nowrap;padding-left:6px;z-index:1}
+.sct thead th{background:var(--navy);color:var(--cream)}.sct thead .stk{background:var(--navy)}.sct .pr td{background:#f3ead7;font-weight:700}.sct th.ed{cursor:pointer;text-decoration:underline}
+.bd{background:#d6efdc;color:var(--gd);font-weight:800}.eg{background:#f8d977;font-weight:800}.bg{color:var(--red)}
+.lb div,.ow div,.wire div{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed #e2d6bd;font-size:14px}.lb div:first-child,.ow div:first-child,.wire div:first-child{border-top:0}
+.wire div{display:block;font-size:13px}.wire time{color:var(--m);font-size:11px;margin-right:6px}.lb small{color:var(--m)}.lb small.pw{background:#c8102e;color:#fff;padding:1px 6px;border-radius:8px;font-weight:800}.prize{font-weight:800;margin:6px 0;color:var(--navy)}.rules ul{margin:6px 0 0 18px;font-size:14px}#cmk input,#cmk textarea{font:inherit;padding:8px;border:1px solid #d9cfb8;border-radius:8px;box-sizing:border-box;width:100%}
+.disc{background:var(--navy);color:var(--cream);padding:14px;font-size:12px;margin:24px 0 8px}
+footer{text-align:center;font-size:11px;color:var(--m);padding:10px 0 40px}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.s{display:flex}
+.sheet{background:#fffdf7;width:100%;max-width:520px;padding:20px;border-top:5px solid var(--green);max-height:90vh;overflow:auto}.sheet h3{margin:0 0 6px;font-size:22px}.sheet p{margin:0 0 12px;color:var(--m);font-size:14px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pick button{padding:12px;border:2px solid var(--navy);background:#fff;font:800 14px Inter;cursor:pointer}
+input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-size:18px}
+.quick{display:flex;gap:6px;margin:8px 0 12px}.quick button{flex:1;padding:8px;border:2px solid var(--navy);background:#fff;font:800 14px Inter;cursor:pointer}
+.btn{width:100%;background:var(--navy);color:var(--cream);border:0;padding:14px;font:800 16px Inter;cursor:pointer;margin-top:6px}.ghost{background:none;color:var(--navy)}
+.hrow{display:flex;align-items:center;gap:6px;margin:0 0 6px}.hrow b{flex:1;font-size:14px}.hrow input{width:62px;text-align:center;padding:8px;font-size:16px}.hrow button{width:40px;height:40px;border:2px solid var(--navy);background:#fff;font-size:20px;font-weight:800;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:var(--cream);padding:12px 16px;font-size:13px;opacity:0;transition:.3s;width:88%;max-width:420px;text-align:center;pointer-events:none;z-index:30}.toast.s{opacity:1}
+
+.tc{display:block;text-decoration:none;color:inherit}.tc:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--navy)}.tc .go{font-family:Oswald;color:var(--red);font-size:14px;margin-top:6px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}.src{font-size:11px;color:var(--m);margin-top:6px}.src a{color:var(--green)}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 14px;border-radius:6px;opacity:0;transition:.3s;z-index:30;pointer-events:none}.toast.s{opacity:1}
+.actc{background:#14110f;color:#f5ecd7;border:1px solid #3a2f22}.actc .abr{padding:7px 0}.actc .abl{display:flex;justify-content:space-between;gap:10px;font-size:13px;line-height:1.25;margin-bottom:4px}.actc .abl span{flex:1;min-width:0}.actc .abl b{white-space:nowrap;color:#f2c94c}.actc .abl small{color:#b9ab8e;font-weight:600}.actc .abt{height:12px;background:#2a231b;border-radius:6px;overflow:hidden}.actc .abt i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#c8102e,#e8541e 55%,#f2c94c);transition:width .4s}@media(max-width:480px){.actc .abl{flex-direction:column;gap:2px}}
+
+.bcard{padding:0;overflow:hidden;border-top:5px solid var(--c2);display:flex;flex-direction:column}.bh{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;position:relative}.blogo{width:64px;height:64px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);flex:none;object-fit:cover;background:#fff}.bk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;font-weight:700}.bh h3{margin:2px 0 0;font-family:Oswald,sans-serif;font-size:21px;line-height:1.1;color:#fff}.btag{position:absolute;top:8px;right:10px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);border-radius:99px;font-size:10px;font-weight:700;padding:2px 8px;text-transform:uppercase}.bb{padding:12px 16px 14px;flex:1;display:flex;flex-direction:column}.bb .go{margin-top:auto;padding-top:8px;color:var(--c1)}.bm{border-top:1px solid #eee;padding-top:8px;margin-top:6px}@media(max-width:480px){.grid{grid-template-columns:1fr}.blogo{width:54px;height:54px}.bh h3{font-size:19px}}
+</style></head><body><header><div class="wrap"><a href="/hub/" style="color:inherit;font-weight:800;text-decoration:none">← Torii Prediction Platform</a></div></header>
+<main class="wrap" style="max-width:820px;padding:20px 16px 40px;line-height:1.55">
+<h1>Official Rules</h1>
+<p><b>NO PURCHASE NECESSARY TO ENTER OR WIN. A PURCHASE WILL NOT IMPROVE YOUR CHANCES OF WINNING. VOID WHERE PROHIBITED.</b></p>
+<h3>1. Sponsor</h3><p>Torii Prediction Platform ("Sponsor"), admin@toriipredict.com. Prize sponsors for a specific contest, if any, will be announced with that contest.</p>
+<h3>2. Eligibility</h3><p>Open to legal residents of the 50 United States and the District of Columbia who are 18 or older (or the age of majority in their state, if higher) when they enter. Employees of Sponsor and of any prize sponsor, and their immediate families and household members, are not eligible. Void where prohibited or restricted by law.</p>
+<h3>3. Contest period</h3><p>Each board's contest period is shown on that board. Unless stated otherwise, contests end at 11:59 p.m. ET on December 31, 2026. Sponsor's clock is the official timekeeper.</p>
+<h3>4. How to enter (free)</h3><p>Create a free account at toriipredict.com. Each account gets 1,000 Torii tokens to use on the prediction boards. Limit one account per person. Multiple, automated or fake accounts may be disqualified.</p>
+<h3>5. Torii tokens</h3><p>Torii tokens are free game points. They have no cash value, cannot be bought, sold, traded or transferred, and cannot be exchanged for money or prizes except as stated in these rules.</p>
+<h3>6. Prize and winner selection</h3><p>The prize for each contest is described on that board or announcement. At the end of the contest period, the prize goes to the entrant at the top of the applicable leaderboard, ranked by Torii token total after all markets are settled. Ties are broken by the earlier time the final total was reached. The odds of winning depend on the entrant's skill and the number of participants. Prizes are not transferable, and no cash or substitution is allowed except at Sponsor's discretion, in which case a prize of equal or greater value may be substituted.</p>
+<h3>7. Market settlement</h3><p>Markets settle on the publicly verifiable result named in each market. Sponsor's settlement decisions are final. Sponsor may void a market that cannot be fairly settled, in which case wagered tokens are returned. Each board keeps five prediction markets open at all times; when one settles, a new one opens. All markets resolve by 11:59 p.m. ET on December 31, 2026.</p>
+<h3>8. Verification and notification</h3><p>Potential winners are notified at their account email and may be required to confirm their eligibility, identity and age, and to sign an affidavit and release, within 7 days. If a potential winner doesn't respond, can't be verified or is ineligible, the prize may be forfeited and awarded to the next eligible finisher.</p>
+<h3>9. Taxes</h3><p>All taxes on a prize are the winner's sole responsibility. Winners of prizes worth $600 or more may need to provide a W-9 and will receive an IRS Form 1099.</p>
+<h3>10. General conditions</h3><p>Sponsor may disqualify anyone who tampers with the site, abuses the platform or breaks these rules. Sponsor may cancel, suspend or change a contest if fraud, technical failure or any other cause affects its fairness. By entering, entrants agree to these rules and to Sponsor's decisions, and release Sponsor from liability for participating or accepting a prize, as permitted by law.</p>
+<h3>11. No affiliation</h3><p>This platform is not affiliated with, sponsored by or endorsed by Barstool Sports, X Corp., or any show, personality, league, team or event mentioned on it. All trademarks belong to their owners.</p>
+<h3>12. Privacy and winners list</h3><p>Entrant information is used to run the contest. For a winners list, email admin@toriipredict.com within 60 days after a contest ends.</p>
+<p style="font-size:12px;opacity:.7">Last updated October 20, 2026.</p></main></body></html>
