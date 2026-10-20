@@ -53,7 +53,7 @@ h3.sec{font-size:20px;margin:18px 0 8px;border-bottom:3px solid var(--navy);padd
 .sct thead th{background:var(--navy);color:var(--cream)}.sct thead .stk{background:var(--navy)}.sct .pr td{background:#f3ead7;font-weight:700}.sct th.ed{cursor:pointer;text-decoration:underline}
 .bd{background:#d6efdc;color:var(--gd);font-weight:800}.eg{background:#f8d977;font-weight:800}.bg{color:var(--red)}
 .lb div,.ow div,.wire div{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed #e2d6bd;font-size:14px}.lb div:first-child,.ow div:first-child,.wire div:first-child{border-top:0}
-.wire div{display:block;font-size:13px}.wire time{color:var(--m);font-size:11px;margin-right:6px}.lb small{color:var(--m)}
+.wire div{display:block;font-size:13px}.wire time{color:var(--m);font-size:11px;margin-right:6px}.lb small{color:var(--m)}.lb small.pw{background:#c8102e;color:#fff;padding:1px 6px;border-radius:8px;font-weight:800}.prize{font-weight:800;margin:6px 0;color:var(--navy)}.rules ul{margin:6px 0 0 18px;font-size:14px}#cmk input,#cmk textarea{font:inherit;padding:8px;border:1px solid #d9cfb8;border-radius:8px;box-sizing:border-box;width:100%}
 .disc{background:var(--navy);color:var(--cream);padding:14px;font-size:12px;margin:24px 0 8px}
 footer{text-align:center;font-size:11px;color:var(--m);padding:10px 0 40px}
 .modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.s{display:flex}
@@ -71,8 +71,8 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 <section class="hero"><small>SEASON 2 · BIG CEDAR LODGE, MO · OCT 26 – NOV 12, 2026</small><br><span class="live" id="live">PRE-ROUND</span>
 <h1><em>The</em>Internet Invitational<em>Prediction Board</em></h1>
 <p>Fifteen of the field, one 18-hole stroke-play round, and an exchange-style board priced off official GHIN Handicap Indexes. Buy shares, every winning share splits the pot. Odds reprice after every hole, and markets settle the second the scorecard decides them.</p>
-<span class="pill">Odds: GHIN index · Monte Carlo</span><span class="pill">Play money only</span><span class="pill">Settled by the scorecard</span>
-<div class="stat"><div><b id="sBal">—</b>Your balance</div><div><b id="sPlay">—</b>In open bets</div><div><b id="sPot">$0</b>Volume</div></div>
+<span class="pill">Odds: GHIN index · Monte Carlo</span><span class="pill">Free fan tokens · no cash value</span><span class="pill">Settled by the scorecard</span>
+<div class="stat"><div><b id="sBal">—</b>Your balance</div><div><b id="sPlay">—</b>In open bets</div><div><b id="sPot">0 🪙</b>Tokens traded</div></div>
 </section>
 <h2>The roster</h2><p class="sub">GHIN Handicap Index (+ = plus handicap). Modeled 18-hole gross ≈ 72 + index.</p>
 <div class="roster" id="roster"></div>
@@ -81,14 +81,14 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 <div id="tabl" style="display:none"><div class="card" id="lbd"></div></div>
 <div id="tabs" style="display:none"><div class="card" id="scard"></div></div>
 <div id="tabm"><div class="done" id="closedB" style="display:none">🔒 Round final. Every market is settled from the scorecard.</div><div id="markets"></div></div>
-<div class="cols"><div><h2>Bettor leaderboard</h2><p class="sub">Everyone starts with $250 of play money.</p><div class="card lb" id="lb"></div></div>
-<div><h2>Who owes who</h2><p class="sub">Settled markets only. Winners are paid from losers' stakes; the House pays nothing.</p><div class="card ow" id="ow"></div></div></div>
+<h2>Token Leaderboard</h2><p class="sub">Everyone gets 500 free fan tokens on joining. Ranked by total tokens (free balance + tokens in open bets). Most tokens at the end of the event wins.</p><div class="prize" id="prz"></div><div class="card lb" id="lb"></div><div id="cmk"></div>
+<div class="card rules"><div class="cat">Free-to-play rules</div><ul><li>Free to join. No purchase necessary.</li><li>Every player gets 500 fan tokens once, when they join.</li><li>Fan tokens have no cash value. They can't be bought, sold, transferred or cashed out.</li><li>The prize goes to the leaderboard leader at the end of the event.</li></ul></div>
 <h2>Market wire</h2><div class="card wire" id="wire"></div>
-<div class="disc"><b>Play money, real bragging rights.</b> Every dollar here is pretend and has no cash value. This board doesn't hold, collect or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
+<div class="disc"><b>Free to play, real bragging rights.</b> Fan tokens are free and have no cash value. This board doesn't take, hold or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
 </main><footer>Concept demo</footer>
-<div class="modal" id="whoM"><div class="sheet"><h3>Who's betting?</h3><p>Type your name to join, or tap yours. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" onclick="join()">Join with $250</button><div class="pick" id="pick" style="margin-top:10px"></div><button class="btn ghost" onclick="closeM('whoM')">Just looking</button></div></div>
-<div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="decimal" min="1" placeholder="Amount ($)">
-<div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
+<div class="modal" id="whoM"><div class="sheet"><h3>Join free</h3><p>Type your name to join, or tap yours. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" onclick="join()">Join free · get 500 🪙</button><div class="pick" id="pick" style="margin-top:10px"></div><button class="btn ghost" onclick="closeM('whoM')">Just looking</button></div></div>
+<div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p><input id="amt" oninput="quote()" type="number" inputmode="decimal" min="1" placeholder="Tokens">
+<div class="quick"><button onclick="q(10)">10 🪙</button><button onclick="q(25)">25 🪙</button><button onclick="q(50)">50 🪙</button><button onclick="q('max')">All in</button></div>
 <p id="bQuote" style="font-size:13px;color:var(--gd);font-weight:700"></p><button class="btn" id="bGo" onclick="placeBet()">Place bet</button><button class="btn ghost" onclick="closeM('betM')">Cancel</button></div></div>
 <div class="modal" id="setM"><div class="sheet"><h3 id="sQ"></h3><p>Admin override. Markets settle from the scorecard; use this only for a scoring dispute. Manual results beat the scorecard.</p><p id="setHint" style="color:var(--gd);font-weight:700"></p><div class="pick" id="setPick"></div><button class="btn ghost" onclick="closeM('setM')">Cancel</button></div></div>
 <div class="modal" id="holeM"><div class="sheet"><h3 id="hQ"></h3><p>Gross strokes. Leave blank if a player hasn't finished the hole.</p><div id="hrows"></div><button class="btn" id="hGo" onclick="saveHole()">Save hole</button><button class="btn ghost" onclick="closeM('holeM')">Cancel</button></div></div>
@@ -103,7 +103,7 @@ function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(see
 const EGP=E.map(e=>Math.min(0.12,0.008*Math.exp(-(e-72)/4)));
 const STORE='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/internetinvite.json';
 const PIN='1234'; // admin + scorer PIN
-const LIQ=600,START=250;
+const LIQ=600,START=500; // free fan tokens granted once per name on join
 const SHORT=['Manziel','Horvat','Yandle','Whitney','Short Game King','Andolpho','Toney','Priscilla','Santino','Lantz','Dalke','Gruden','Togisala','Ruffels','G. Bryan'];
 const fmtHI=x=>x<0?'+'+(-x).toFixed(1):x.toFixed(1);
 const LN={low:62.5,grd:85.5};
@@ -119,7 +119,8 @@ M.push(['eg','Field','Any eagle (or better) in the field?','main','Yes','No']);
 PLY.forEach((p,k)=>M.push(['t3_'+k,'Top 3 finish',`${p[0]} finishes top 3?`,'t3','Yes','No']));
 BRK.forEach(k=>M.push(['bp_'+k,'Breaks par',`${PLY[k][0]} breaks par (71 or better)?`,'bp','Yes','No']));
 const arr=x=>x?Object.values(x):[];
-const norm=d=>({bets:arr(d&&d.bets),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{},scores:(d&&d.scores)||{},anchors:arr(d&&d.anchors)});
+const syncC=d=>{const c=(d&&d.custom)||{};for(const id in c){const x=c[id];if(!x||!x.q||!x.o||x.o.length<2||M.some(m=>m[0]===id))continue;M.push([id,'Custom market',x.q,'custom',x.o.map(()=>1/x.o.length),...x.o])}};
+const norm=d=>(syncC(d),{custom:(d&&d.custom)||{},prize:(d&&d.prize)||'',bets:arr(d&&d.bets),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{},scores:(d&&d.scores)||{},anchors:arr(d&&d.anchors)});
 const sc=(d,k,h)=>{const s=d.scores['p'+k];const v=s&&s['h'+(h+1)];return v>0?v:null};
 function card(d,k){let g=0,n=0,b=0,rem=0,cb=[0,0,0,0];for(let h=0;h<18;h++){const v=sc(d,k,h);if(v){g+=v;n++;if(h>=9)b+=v}else rem++}return{g,n,b,rem,par:PAR.slice(0,18).filter((_,h)=>sc(d,k,h)).reduce((a,x)=>a+x,0),done:n===18}}
 const cbKey=(d,k)=>{const s=(a,b)=>{let t=0;for(let h=a;h<b;h++)t+=sc(d,k,h);return t};return[s(0,18),s(9,18),s(12,18),s(15,18),s(17,18)]};
@@ -162,7 +163,7 @@ M.forEach(m=>m.splice(4,0,OPEN[m[0]]));// m = [id,cat,q,group,open,...labels]
 const opts=m=>m.slice(5),mk=id=>M.find(m=>m[0]===id),lab=(m,s)=>s==='v'?'Dead heat (no bet)':m[5+K.indexOf(s)];
 const COL=['#2f7d4a','#c8102e','#9aa0a6','#14213d','#d97706','#7c3aed','#0891b2','#be185d','#65a30d','#475569','#0f766e','#b45309','#4338ca','#e11d48','#15803d'];
 let S=norm(null),me=localStorage.getItem('tf_ii_me'),cur=null,tab='m',admin=sessionStorage.getItem('tf_ii_pin')===PIN,undoStack=[],curHole=null,fails=0,pollT=null,NAMES=[],showAll=false;
-const $=id=>document.getElementById(id),fmt=n=>(n<0?'-':'')+'$'+(Math.round(Math.abs(n)*100)/100).toLocaleString(undefined,{maximumFractionDigits:2}),ct=p=>Math.round(p*100)+'¢';
+const $=id=>document.getElementById(id),fmt=n=>(n<0?'-':'')+(Math.round(Math.abs(n)*10)/10).toLocaleString(undefined,{maximumFractionDigits:1})+' 🪙',ct=p=>Math.round(p*100)+'%';
 const clean=n=>(n||'').replace(/[^A-Za-z0-9 .\-]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('s');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('s'),2800)}
 const tm=t=>new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
@@ -174,7 +175,7 @@ function SP(d,id){const st=d.settled[id],bs=d.bets.filter(b=>b.m===id),pot=bs.re
  if(why){bs.forEach(b=>pay[b.id]=b.a);return{pay,pot,refund:true,why}}const W=bs.filter(b=>b.s===st.w).reduce((s,b)=>s+b.sh,0);bs.forEach(b=>pay[b.id]=b.s===st.w?pot*b.sh/W:0);return{pay,pot}}
 function estPay(d,id,s,sh,stake){const bs=d.bets.filter(b=>b.m===id),pot=bs.reduce((t,b)=>t+b.a,0)+stake,W=bs.filter(b=>b.s===s).reduce((t,b)=>t+b.sh,0)+sh;return W>0?pot*sh/W:0}
 const anc=d=>d.anchors.length?d.anchors[d.anchors.length-1]:null;
-function qv(m,d){const A=anc(d),base=A&&A.p&&A.p[m[0]]?A.p[m[0]]:m[4],q=base.map(p=>LIQ*Math.log(p));d.bets.slice(A?A.bc:0).forEach(b=>{if(b.m===m[0])q[K.indexOf(b.s)]+=b.sh});return q}
+function qv(m,d){const A0=anc(d),A=A0&&A0.p&&A0.p[m[0]]?A0:null,base=A?A.p[m[0]]:m[4],q=base.map(p=>LIQ*Math.log(p));d.bets.slice(A?A.bc:0).forEach(b=>{if(b.m===m[0])q[K.indexOf(b.s)]+=b.sh});return q}
 function prices(q){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);return e.map(x=>x/s)}
 function buy(q,i,stake){const mx=Math.max(...q),e=q.map(x=>Math.exp((x-mx)/LIQ)),s=e.reduce((a,b)=>a+b,0);return mx+LIQ*Math.log(s*Math.exp(stake/LIQ)-(s-e[i]))-q[i]}
 function compute(){const ns=new Set(Object.keys(S.players));S.bets.forEach(b=>ns.add(b.p));if(me)ns.add(me);NAMES=[...ns];
@@ -197,14 +198,14 @@ function scorecard(){let h=`<div class="scw"><table class="sct"><thead><tr><th c
  h+=`</tbody></table></div><p class="sub" style="margin-top:8px">Green = birdie, gold = eagle, red = bogey or worse. Par values are placeholders until the host course is confirmed.</p>`;
  h+=admin?`<div class="row"><button class="yes" onclick="nextHole()">Enter next hole</button><button class="no" onclick="undo()" ${undoStack.length?'':'disabled style="opacity:.45"'}>↶ Undo last</button></div><p class="sub">Scorer mode. Tap a hole number to enter or edit every player's score on it. Odds reprice and decided markets settle instantly.</p>`:`<button class="btn ghost" style="border:2px solid var(--navy)" onclick="login()">🔐 Scorer / admin login</button>`;return h}
 function badge(){const{C,all}=decide(S);if(all)return'FINAL';const n=C.filter(c=>c.n).length;return n?'LIVE · '+C.filter(c=>c.done).length+'/15 in the clubhouse':'PRE-ROUND'}
-function stBox(m,c){const id=m[0],st=S.settled[id];if(!st)return'';const sp=SP(S,id);return sp.refund?`<div class="done nb">↩️ No bet: ${sp.why}, stakes refunded. (Result: ${lab(m,st.w)}${st.auto?', auto from scorecard':', by '+st.by})</div>`:`<div class="done">✅ ${lab(m,st.w)} · ${st.auto?'settled from the scorecard':'set by '+st.by+' (override)'} · pot ${fmt(sp.pot)}</div>`}
+function stBox(m,c){const id=m[0],st=S.settled[id];if(!st)return'';const sp=SP(S,id);return sp.refund?`<div class="done nb">↩️ No bet: ${sp.why}, stakes refunded. (Result: ${lab(m,st.w)}${st.auto?', auto from scorecard':', by '+st.by})</div>`:`<div class="done">✅ ${lab(m,st.w)} · ${st.auto?'settled from the scorecard':mk(id)[3]==='custom'?'settled by '+st.by:'set by '+st.by+' (override)'} · pot ${fmt(sp.pot)}</div>`}
 function mine(m,c){const id=m[0],bs=me?S.bets.filter(b=>b.m===id&&b.p===me):[];return bs.length?`<div class="mine">You: ${bs.map(b=>b.sh.toFixed(1)+' '+lab(m,b.s)+' @ '+ct(b.a/b.sh)+(S.settled[id]?' → '+fmt(c.pay[b.id]||0):'')).join(', ')}</div>`:''}
-function meta(m){const id=m[0],bs=S.bets.filter(b=>b.m===id),st=S.settled[id];return `<div class="meta"><span>Vol ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades${!st&&oneSided(S,id)?' · <b style="color:#b45309">one-sided so far</b>':''}</span><button class="settle" onclick="openSettle('${id}')">${st?'Override ⚑':'Admin ⚑'}</button></div>`}
+function meta(m){const id=m[0],bs=S.bets.filter(b=>b.m===id),st=S.settled[id];return `<div class="meta"><span>Vol ${fmt(bs.reduce((s,b)=>s+b.a,0))} · ${bs.length} trades${!st&&oneSided(S,id)?' · <b style="color:#b45309">one-sided so far</b>':''}</span><button class="settle" onclick="openSettle('${id}')">${mk(id)[3]==='custom'?(st?'Change result ⚑':'Settle ⚑'):st?'Override ⚑':'Admin ⚑'}</button></div>`}
 function bigCard(m,c){const id=m[0],O=opts(m),pr=c.px[id],st=S.settled[id];let order=O.map((_,k)=>k);if(O.length>3){order.sort((a,b)=>pr[b]-pr[a]);if(!showAll)order=order.slice(0,6)}
  let h=`<div class="card${id==='win'?' feat':''}"><div class="cat">${m[1]}</div><div class="q">${m[2]}</div>`;
  h+=order.map(k=>{const d=Math.round(pr[k]*100)-Math.round(m[4][k]*100);return `<div class="ol"><span><i style="background:${COL[k]}"></i>${O[k]}${id==='win'?` <small class="hi">HI ${fmtHI(PLY[k][1])}</small>`:''}</span><span><b>${ct(pr[k])}</b><small class="${d>0?'up':d<0?'dn':''}">${d>0?'▲'+d:d<0?'▼'+(-d):'–'}</small>${st||S.closed?'':`<button class="buy" onclick="openBet('${id}','${K[k]}')">Buy</button>`}</span></div>`}).join('');
  if(O.length>3)h+=`<button class="more" onclick="showAll=!showAll;render()">${showAll?'Show top 6':'Show all 15 players'}</button>`;
- if(id==='win')h+=`<p class="rule">Rule: lowest 18-hole gross wins. Ties go to card countback: back nine (10–18), then last 6, last 3, then 18th hole. Still tied = dead heat, every stake refunded.</p>`;
+ if(m[3]==='custom')h+=`<p class="rule">Custom market. Settled by the admin, not the scorecard.</p>`;if(id==='win')h+=`<p class="rule">Rule: lowest 18-hole gross wins. Ties go to card countback: back nine (10–18), then last 6, last 3, then 18th hole. Still tied = dead heat, every stake refunded.</p>`;
  return h+chart(m)+stBox(m,c)+mine(m,c)+meta(m)+'</div>'}
 function listCard(g,title,sub,c){const ms=M.filter(m=>m[3]===g).sort((a,b)=>c.px[b[0]][0]-c.px[a[0]][0]);
  return `<div class="card"><div class="cat">${title}</div><div class="q">${sub}</div>`+ms.map(m=>{const id=m[0],pr=c.px[id],st=S.settled[id],sp=st&&SP(S,id);
@@ -213,18 +214,20 @@ function render(){const c=compute();$('live').textContent=badge();$('live').clas
  $('meBtn').textContent=me?me+' · '+fmt(c.bal[me]):'Join';$('sBal').textContent=me?fmt(c.bal[me]):'—';$('sPlay').textContent=me?fmt(c.play[me]):'—';$('sPot').textContent=fmt(S.bets.reduce((s,b)=>s+b.a,0));
  $('lbd').innerHTML=board();$('scard').innerHTML=scorecard();
  ['m','l','s'].forEach(t=>{$('tab'+t).style.display=tab===t?'block':'none';$('tb'+t).className=tab===t?'on':''});
- let h=bigCard(mk('win'),c)+`<h3 class="sec">Marquee head-to-heads</h3>`+M.filter(m=>m[3]==='h2').map(m=>bigCard(m,c)).join('')+`<h3 class="sec">Field &amp; props</h3>`+['low','eg','grd'].map(id=>bigCard(mk(id),c)).join('')+`<h3 class="sec">Finishing position</h3>`+listCard('t3','Top 3 finish','Finishes top 3 (ties for 3rd count as Yes)',c)+listCard('bp','Breaks par','Shoots 71 or better on the par-72 card',c);
+ let h=bigCard(mk('win'),c)+`<h3 class="sec">Marquee head-to-heads</h3>`+M.filter(m=>m[3]==='h2').map(m=>bigCard(m,c)).join('')+`<h3 class="sec">Field &amp; props</h3>`+['low','eg','grd'].map(id=>bigCard(mk(id),c)).join('')+`<h3 class="sec">Finishing position</h3>`+listCard('t3','Top 3 finish','Finishes top 3 (ties for 3rd count as Yes)',c)+listCard('bp','Breaks par','Shoots 71 or better on the par-72 card',c)+(M.some(m=>m[3]==='custom')?`<h3 class="sec">Custom markets</h3>`+M.filter(m=>m[3]==='custom').map(m=>bigCard(m,c)).join(''):'');
  $('markets').innerHTML=h;$('closedB').style.display=S.closed?'block':'none';
- $('ow').innerHTML=owes(c);$('lb').innerHTML=NAMES.length?NAMES.slice().sort((x,y)=>(c.bal[y]+c.play[y])-(c.bal[x]+c.play[x])).map((n,i)=>`<div><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} <b>${n}</b></span><span>${fmt(c.bal[n])} <small>+ ${fmt(c.play[n])} open</small></span></div>`).join(''):'<div>No bettors yet. Be first.</div>';
+ $('prz').innerHTML='🏆 '+esc(S.prize||'Prize: TBD by sponsor')+(admin?' <button class="settle" onclick="editPrize()">Edit</button>':'');$('lb').innerHTML=NAMES.length?rankT(c).map((n,i)=>`<div><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} <b>${n}</b>${i===0?' <small class="pw">PRIZE LEADER</small>':''}</span><span>${fmt(c.bal[n]+c.play[n])} <small>(${fmt(c.bal[n])} free + ${fmt(c.play[n])} in open bets)</small></span></div>`).join(''):'<div>No one has joined yet. Be first.</div>';$('cmk').innerHTML=customAdmin();
  const ev=S.bets.filter(b=>mk(b.m)).map(b=>({t:b.t,x:`<b>${b.p}</b> bought ${b.sh.toFixed(1)} <b>${lab(mk(b.m),b.s)}</b> @ ${ct(b.a/b.sh)} (${fmt(b.a)}) · ${mk(b.m)[2]}`}));
  S.anchors.forEach(a=>a.t&&ev.push({t:a.t,x:`⛳ <b>${a.lab}</b>: odds repriced from the scorecard`}));
  for(const id in S.settled){const s=S.settled[id],m=mk(id);if(m)ev.push({t:s.t,x:`⚑ ${s.auto?'Auto':'<b>'+s.by+'</b>'} settled “${m[2]}”: <b>${lab(m,s.w)}</b>${SP(S,id).refund?' · no bet, refunded':''}`})}
  ev.sort((a,b)=>b.t-a.t);$('wire').innerHTML=ev.length?ev.slice(0,50).map(e=>`<div><time>${tm(e.t)}</time>${e.x}</div>`).join(''):'<div>No action yet. Somebody get it started.</div>'}
-function owes(c){if(!NAMES.length)return'<div>No bettors yet.</div>';const net={};NAMES.forEach(n=>net[n]=Math.round((c.bal[n]+c.play[n]-START)*100)/100);
- let o=NAMES.map(n=>`<div><span>${n}</span><span class="${net[n]>0?'up':net[n]<0?'dn':''}">${net[n]>0?'+':''}${fmt(net[n])}</span></div>`).join('');
- const cr=NAMES.filter(n=>net[n]>0.004).map(n=>[n,net[n]]).sort((a,b)=>b[1]-a[1]),db=NAMES.filter(n=>net[n]<-0.004).map(n=>[n,-net[n]]).sort((a,b)=>b[1]-a[1]),pays=[];let i=0,j=0;
- while(i<db.length&&j<cr.length){const x=Math.min(db[i][1],cr[j][1]);pays.push(`${db[i][0]} pays ${cr[j][0]} ${fmt(x)}`);db[i][1]-=x;cr[j][1]-=x;if(db[i][1]<0.005)i++;if(cr[j][1]<0.005)j++}
- return o+`<div style="display:block"><b>Settle-up:</b> ${pays.length?pays.join(' · '):'All square so far.'}</div>`}
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function rankT(c){return NAMES.slice().sort((x,y)=>(c.bal[y]+c.play[y])-(c.bal[x]+c.play[x])||(S.players[x]||0)-(S.players[y]||0)||x.localeCompare(y))}
+function customAdmin(){if(!admin)return'';return `<div class="card"><div class="cat">Admin · Create a custom market</div><input id="cq" maxlength="120" placeholder="Question, e.g. Will Gruden lose a ball on 1?"><textarea id="co" rows="3" placeholder="Outcomes, one per line (at least 2)" style="width:100%;margin-top:6px"></textarea><button class="btn" onclick="createMarket()">Create market</button><p class="sub">Custom markets settle by admin (⚑ Settle on the market), not the scorecard.</p></div>`}
+async function createMarket(){if(!admin&&!login())return;const q=($('cq').value||'').replace(/[<>]/g,'').trim().slice(0,120),o=[...new Set(($('co').value||'').split('\n').map(x=>x.replace(/[<>'"`\\]/g,'').trim().slice(0,40)).filter(Boolean))].slice(0,15);
+ if(!q)return toast('Type a question.');if(o.length<2)return toast('Add at least 2 outcomes.');const id='c_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+ const err=await mutate(d=>{d.custom=d.custom||{};d.custom[id]={q,o,t:Date.now(),by:me||'Admin'}},d=>d.custom&&d.custom[id]);if(err)return toast(err);toast('Market created.')}
+async function editPrize(){if(!admin&&!login())return;const p=prompt('Prize line',S.prize||'Prize: TBD by sponsor');if(p===null)return;const v=p.replace(/[<>]/g,'').trim().slice(0,120);const err=await mutate(d=>{d.prize=v},d=>d.prize===v);toast(err||'Prize updated.')}
 function setTab(t){tab=t;render()}
 async function getD(){const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
 async function load(){try{S=await getD();fails=0;localStorage.setItem('tf_ii_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(Date.now())}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying…'}render()}
@@ -233,20 +236,20 @@ async function mutate(fn,check){for(let k=0;k<5;k++){try{const d=await getD();co
 function openWho(){compute();$('pick').innerHTML=NAMES.map(n=>`<button onclick="setMe('${n}')">${n}</button>`).join('');$('whoM').classList.add('s')}
 async function join(){const n=clean($('nm').value);if(!n)return toast('Type your name.');compute();const ex=NAMES.find(x=>x.toLowerCase()===n.toLowerCase());if(ex)return setMe(ex);
  const err=await mutate(d=>{if(!d.players[n])d.players[n]=Date.now()},d=>d.players[n]);if(err)return toast(err);setMe(n)}
-function setMe(n){me=n;localStorage.setItem('tf_ii_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' in play money.')}
+function setMe(n){me=n;localStorage.setItem('tf_ii_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' fan tokens.')}
 function closeM(id){$(id).classList.remove('s')}
 function quote(){const a=parseFloat($('amt').value),m=mk(cur.id),q=qv(m,S),k=K.indexOf(cur.s),p=prices(q)[k];if(!(a>0)){$('bQuote').textContent='Price now '+ct(p)+'. Winners split the pot by shares.';return}
  const sh=buy(q,k,a),q2=q.slice();q2[k]+=sh;$('bQuote').textContent=`${sh.toFixed(1)} shares @ avg ${ct(a/sh)} · est. payout ${fmt(estPay(S,cur.id,cur.s,sh,a))} if right · price ${ct(p)} → ${ct(prices(q2)[k])}`}
 function openBet(id,s){if(!me)return openWho();if(S.closed||S.settled[id])return toast('That market is closed.');const m=mk(id);cur={id,s};$('bQ').textContent=m[2];$('bSide').textContent='Buying: '+lab(m,s)+' · Balance '+fmt(compute().bal[me]);$('amt').value='';quote();$('betM').classList.add('s')}
-function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]*100)/100:v;quote()}
-async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter an amount.');const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};$('bGo').disabled=true;
- const err=await mutate(d=>{if(d.closed||d.settled[b.m])return'That market just closed.';let bal=START;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;if(d.settled[x.m])bal+=SP(d,x.m).pay[x.id]||0});if(a>bal+0.001)return'Not enough play money. Balance '+fmt(bal)+'.';
+function q(v){$('amt').value=v==='max'?Math.floor(compute().bal[me]):v;quote()}
+async function placeBet(){const a=Math.round(parseFloat($('amt').value)*100)/100;if(!(a>0))return toast('Enter a token amount.');const b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),m:cur.id,s:cur.s,p:me,a,t:Date.now()};$('bGo').disabled=true;
+ const err=await mutate(d=>{if(d.closed||d.settled[b.m])return'That market just closed.';let bal=START;d.bets.forEach(x=>{if(x.p!==me)return;bal-=x.a;if(d.settled[x.m])bal+=SP(d,x.m).pay[x.id]||0});if(a>bal+0.001)return'Not enough tokens. Balance '+fmt(bal)+'.';
   const m=mk(b.m),qq=qv(m,d),k=K.indexOf(b.s);b.sh=Math.round(buy(qq,k,a)*10000)/10000;qq[k]+=b.sh;b.px=prices(qq).map(x=>Math.round(x*10000)/10000);d.bets.push(b)},d=>d.bets.some(x=>x.id===b.id));
  $('bGo').disabled=false;if(err)return toast(err);closeM('betM');toast('Locked in: '+b.sh.toFixed(1)+' shares @ '+ct(b.a/b.sh)+'.')}
 function login(){const p=prompt('Scorer / admin PIN');if(p===null)return false;if(p===PIN){admin=true;sessionStorage.setItem('tf_ii_pin',p);render();toast('Scorer & admin mode on.');return true}toast('Wrong PIN.');return false}
-function openSettle(id){if(!admin&&!login())return;const m=mk(id),dec=decide(S).dec[id];$('sQ').textContent=m[2];$('setHint').textContent=dec?'Scorecard says: '+lab(m,dec)+'.':'Not decided by the scorecard yet. Overrides are for scoring disputes only.';
- $('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')">${o}</button>`).join('')+(S.settled[id]&&!S.settled[id].auto?`<button onclick="settle('${id}',null)">↺ Back to scorecard</button>`:'');$('setM').classList.add('s')}
-async function settle(id,w){const m=mk(id);if(!confirm(w?`Override "${m[2]}" to ${lab(m,w)}? Manual results beat the scorecard.`:'Remove the override and let the scorecard decide?'))return;closeM('setM');
+function openSettle(id){if(!admin&&!login())return;const m=mk(id),dec=decide(S).dec[id];$('sQ').textContent=m[2];$('setHint').textContent=m[3]==='custom'?'Custom market: pick the winning outcome.':dec?'Scorecard says: '+lab(m,dec)+'.':'Not decided by the scorecard yet. Overrides are for scoring disputes only.';
+ $('setPick').innerHTML=opts(m).map((o,i)=>`<button onclick="settle('${id}','${K[i]}')">${o}</button>`).join('')+(S.settled[id]&&!S.settled[id].auto&&m[3]!=='custom'?`<button onclick="settle('${id}',null)">↺ Back to scorecard</button>`:'');$('setM').classList.add('s')}
+async function settle(id,w){const m=mk(id);if(!confirm(w?(m[3]==='custom'?`Settle "${m[2]}" as ${lab(m,w)}?`:`Override "${m[2]}" to ${lab(m,w)}? Manual results beat the scorecard.`):'Remove the override and let the scorecard decide?'))return;closeM('setM');
  const err=await mutate(d=>{if(w){const o={w,by:me||'Admin',t:Date.now()};d.settled[id]=o}else{delete d.settled[id];autoSettle(d,decide(d).dec)}},d=>w?d.settled[id]&&d.settled[id].w===w&&!d.settled[id].auto:!(d.settled[id]&&!d.settled[id].auto));toast(err||'Done.')}
 // Auto-settle: every market settles the moment the scorecard decides it (auto:true). Manual overrides are never touched.
 function autoSettle(d,dec){for(const id in d.settled){const s=d.settled[id];if(s&&s.auto&&dec[id]!==s.w)delete d.settled[id]}
