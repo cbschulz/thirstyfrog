@@ -352,7 +352,7 @@ function e(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&l
 function ago(t){var s=(Date.now()-new Date(t))/1e3;if(!(s>=0))return'';if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
 var H=(C.handles||[]).map(function(h){return'@'+h}),el=document.getElementById('xf');if(!el)return;
 var hl=(C.handles||[]).map(function(h){return'<a href="https://x.com/'+e(h)+'" target="_blank" rel="noopener">@'+e(h)+'</a>'}).join(' · ');
-function draw(d){var p=d&&d.posts?Object.values(d.posts):[];p.sort(function(a,b){return String(b.created_at).localeCompare(String(a.created_at))});p=p.slice(0,15);
+function draw(d){var p=d&&d.posts?Object.values(d.posts):[];p.sort(function(a,b){return((+b.eng||0)-(+a.eng||0))||((+b.likes||0)-(+a.likes||0))||String(b.created_at).localeCompare(String(a.created_at))});p=p.slice(0,15);
 el.innerHTML='<div class="xf"><div class="xh">From X · mentions of '+hl+'</div>'+(p.length?p.map(function(x){var u=/^https:\/\/(x|twitter)\.com\//.test(x.url)?x.url:'https://x.com/i/status/'+encodeURIComponent(x.id);return'<div class="xi"><div class="xa"><b>'+e(x.author_name)+'</b><span>@'+e(x.author_username)+'</span></div><div class="xt">'+e(x.text)+'</div><div class="xm"><span>'+ago(x.created_at)+'</span><span>♥ '+(+x.likes||0)+'</span><a href="'+e(u)+'" target="_blank" rel="noopener">View on X</a></div></div>'}).join(''):'<div class="xe">Mention '+e(H.join(' or '))+' on X and your post shows up here.</div>')+'</div>'}
 function load(){fetch(DB+'xfeed_'+C.slug+'.json',{cache:'no-store'}).then(function(r){return r.json()}).then(draw).catch(function(){if(!el.innerHTML)draw(null)})}
 load();setInterval(load,60000);
