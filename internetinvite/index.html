@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><title>The Internet Invitational Board · concept demo</title>
+<meta name="robots" content="noindex,nofollow"><title>The Internet Invitational Board · Torii Prediction Platform</title><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2220%22%20fill%3D%22%230D0D0D%22%2F%3E%3Cg%20transform%3D%22translate(12%2016)%20scale(.76)%22%3E%3Cpath%20fill%3D%22%23E6392B%22%20d%3D%22M2%206%20Q50%2014%2098%206%20L96%2015%20Q50%2021%204%2015Z%22%2F%3E%3Crect%20fill%3D%22%23E6392B%22%20x%3D%2210%22%20y%3D%2219%22%20width%3D%2280%22%20height%3D%226%22%2F%3E%3Crect%20fill%3D%22%23E6392B%22%20x%3D%2246%22%20y%3D%2225%22%20width%3D%228%22%20height%3D%2211%22%2F%3E%3Crect%20fill%3D%22%23E6392B%22%20x%3D%2213%22%20y%3D%2231%22%20width%3D%2274%22%20height%3D%226%22%2F%3E%3Cpath%20fill%3D%22%23E6392B%22%20d%3D%22M22%2019h9l2%2061h-13z%22%2F%3E%3Cpath%20fill%3D%22%23E6392B%22%20d%3D%22M69%2019h9l2%2061h-13z%22%2F%3E%3Crect%20fill%3D%22%23E6392B%22%20x%3D%2217%22%20y%3D%2278%22%20width%3D%2219%22%20height%3D%226%22%2F%3E%3Crect%20fill%3D%22%23E6392B%22%20x%3D%2264%22%20y%3D%2278%22%20width%3D%2219%22%20height%3D%226%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"><meta name="theme-color" content="#0D0D0D"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#14213d;--green:#2f7d4a;--gd:#1f5a34;--cream:#f3ead7;--cork:#c9a26b;--red:#c8102e;--t:#14213d;--m:#5b6170}
@@ -64,8 +64,34 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 .btn{width:100%;background:var(--navy);color:var(--cream);border:0;padding:14px;font:800 16px Inter;cursor:pointer;margin-top:6px}.ghost{background:none;color:var(--navy)}
 .hrow{display:flex;align-items:center;gap:6px;margin:0 0 6px}.hrow b{flex:1;font-size:14px}.hrow input{width:62px;text-align:center;padding:8px;font-size:16px}.hrow button{width:40px;height:40px;border:2px solid var(--navy);background:#fff;font-size:20px;font-weight:800;cursor:pointer}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:var(--cream);padding:12px 16px;font-size:13px;opacity:0;transition:.3s;width:88%;max-width:420px;text-align:center;pointer-events:none;z-index:30}.toast.s{opacity:1}
+
+:root{--navy:#0D0D0D;--green:#E6392B;--gd:#B8281D;--cream:#F7F4EE;--cork:#C9A96E;--red:#E6392B;--t:#0D0D0D;--m:#6b6660;--gold:#C9A96E}
+body{background:#F7F4EE;background-image:none;color:#0D0D0D}
+.c,h1,h2,h3,.cat,.tabs button,.live,.pct,.logo,.stat b,.pc b,.pc i{font-family:'Cormorant Garamond',Georgia,serif!important}
+h2{font-weight:700;letter-spacing:.06em}
+header{background:#0D0D0D;border-bottom:2px solid #E6392B}
+header .wrap{padding:8px 14px}
+.brand{display:flex;align-items:center;gap:10px;color:#F7F4EE;text-decoration:none}.brand .gate{display:block}
+.bw{display:flex;flex-direction:column;line-height:1}.bw b{font:600 26px 'Cormorant Garamond',Georgia,serif;letter-spacing:.18em}.bw small{font:600 8.5px Inter,sans-serif;letter-spacing:.32em;color:#C9A96E;margin-top:3px}
+.crumb{background:#F7F4EE;border-bottom:1px solid #e4ddd0;font-size:13px;font-weight:600;padding:8px 0}.crumb a{color:#E6392B;text-decoration:none}.crumb span{color:#6b6660}
+.me{border:1px solid #C9A96E;color:#F7F4EE;border-radius:999px}
+.tag{background:#0D0D0D;color:#C9A96E;border-bottom:1px solid #222;font-weight:600;letter-spacing:.04em}
+.hero{background:#0D0D0D!important;color:#F7F4EE;border:0;border-top:3px solid #E6392B;box-shadow:0 10px 30px #0002;border-radius:14px}
+.hero:after{border-color:#E6392B22}
+.hero h1{color:#F7F4EE;text-shadow:none;font-weight:700;letter-spacing:.01em;text-transform:none}
+.hero h1 em{color:#E6392B;letter-spacing:.14em;text-transform:uppercase}
+.hero small{color:#C9A96E}
+.pill{font-family:Inter,sans-serif!important;font-size:12px;background:transparent;border:1px solid #C9A96E;color:#F7F4EE;border-radius:999px;text-transform:none}
+.stat div{background:#ffffff10}
+.card{border-color:#e4ddd0!important;box-shadow:0 2px 10px #0000000d!important;border-radius:12px}
+.cd{background:#0D0D0D!important;border:1px solid #C9A96E}
+.pw{background:#C9A96E!important;color:#0D0D0D!important}
+.prize{border-color:#C9A96E!important}
+.btn{background:#E6392B;border-color:#E6392B}.btn.ghost{background:transparent;color:#0D0D0D;border-color:#0D0D0D}
+.go{color:#E6392B}
+footer{color:#6b6660}
 </style></head><body>
-<header><div class="wrap"><div class="logo">The Internet Invitational <span>Board</span></div><button class="me" id="meBtn" onclick="openWho()">Join</button></div></header>
+<header><div class="wrap"><a class="brand" href="../hub/" aria-label="Torii Prediction Platform"><svg class="gate" width="34" height="29" viewBox="0 0 100 86" aria-hidden="true"><path fill="#E6392B" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="#E6392B" x="10" y="19" width="80" height="6"/><rect fill="#E6392B" x="46" y="25" width="8" height="11"/><rect fill="#E6392B" x="13" y="31" width="74" height="6"/><path fill="#E6392B" d="M22 19h9l2 61h-13z"/><path fill="#E6392B" d="M69 19h9l2 61h-13z"/><rect fill="#E6392B" x="17" y="78" width="19" height="6"/><rect fill="#E6392B" x="64" y="78" width="19" height="6"/></svg><span class="bw"><b>TORII</b><small>PREDICTION PLATFORM</small></span></a><button class="me" id="meBtn" onclick="openWho()">Join</button></div></header><div class="crumb"><div class="wrap"><a href="../hub/">← Barstool Prediction Markets</a> <span>· The Internet Invitational</span></div></div>
 <div class="tag">Unofficial concept demo, not affiliated with Barstool Sports</div>
 <main class="wrap">
 <section class="hero"><small>SEASON 2 · BIG CEDAR LODGE, MO · OCT 26 – NOV 12, 2026</small><br><span class="live" id="live">PRE-ROUND</span>
@@ -81,7 +107,7 @@ input{width:100%;padding:12px;border:2px solid var(--navy);font:inherit;font-siz
 <div id="tabl" style="display:none"><div class="card" id="lbd"></div></div>
 <div id="tabs" style="display:none"><div class="card" id="scard"></div></div>
 <div id="tabm"><div class="done" id="closedB" style="display:none">🔒 Round final. Every market is settled from the scorecard.</div><div id="markets"></div></div>
-<h2>Board standings</h2><p class="sub">Everyone gets 500 free fan tokens on joining this board. Ranked by total tokens on this board (free balance + open bets). Your tokens here count toward the overall leaderboard.</p><div class="card" id="ovr" style="font-size:14px;margin:8px 0">🏆 One prize across every board.</div><div class="cd" style="background:#14213d;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:800">⏳ <span class="cdT">Markets close & prize awarded soon</span><div class="cdS" style="font-weight:600;font-size:12px;opacity:.8">Dec 31, 2026 · 11:59:59 PM ET (midnight ET)</div></div><div class="card lb" id="lb"></div><div id="cmk"></div>
+<h2>Board standings</h2><p class="sub">Everyone gets 500 free fan tokens on joining this board. Ranked by total tokens on this board (free balance + open bets). Your tokens here count toward the overall leaderboard.</p><div class="card" id="ovr" style="font-size:14px;margin:8px 0">🏆 One prize across every board.</div><div class="cd" style="background:#0D0D0D;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:800">⏳ <span class="cdT">Markets close & prize awarded soon</span><div class="cdS" style="font-weight:600;font-size:12px;opacity:.8">Dec 31, 2026 · 11:59:59 PM ET (midnight ET)</div></div><div class="card lb" id="lb"></div><div id="cmk"></div>
 <div class="card rules"><div class="cat">Free-to-play rules</div><ul><li>Free to join. No purchase necessary.</li><li>Sign up with your name and email (one account per email). Every player gets 500 fan tokens once per board, when they join.</li><li>Fan tokens have no cash value. They can't be bought, sold, transferred or cashed out.</li><li>One prize: the player with the most total tokens across all boards at midnight ET, Dec 31, 2026 wins.</li></ul></div>
 <h2>From X</h2><div id="xf"></div><h2>Market wire</h2><div class="card wire" id="wire"></div>
 <div class="disc"><b>Free to play, real bragging rights.</b> Fan tokens are free and have no cash value. This board doesn't take, hold or pay out money. This is an unofficial concept demo and is not affiliated with, sponsored by or endorsed by Barstool Sports, Foreplay, the Internet Invitational or Dunkin'. Handicap indexes are from GHIN lookups and may be out of date.</div>
