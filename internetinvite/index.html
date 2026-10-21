@@ -106,7 +106,71 @@ header .wrap{display:flex;align-items:center;justify-content:space-between;gap:1
 .btn{background:#E6392B;border-color:#E6392B}.btn.ghost{background:transparent;color:#0D0D0D;border-color:#0D0D0D}
 .go{color:#E6392B}
 footer{color:#6b6660}
-.buy,.row.sm button[onclick^="openBet("],[onclick^="openBet("]{display:none!important}</style></head><body>
+.buy,.row.sm button[onclick^="openBet("],[onclick^="openBet("]{display:none!important}</style><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet"><style>/* LUX theme (scoped overrides) */
+:root{--lx-bg:#0c0c0e;--lx-card:#16161a;--lx-gold:#c9a86a;--lx-gold2:#e6cf9b;--lx-ivory:#f3ecdc;--lx-mut:#8d8a83;--lx-line:rgba(201,168,106,.22)}
+body{background:#0c0c0e!important;background-image:radial-gradient(ellipse at top,#1a1712 0,#0c0c0e 60%)!important;color:var(--lx-ivory)!important}
+header{background:#0a0a0c!important;border-bottom:1px solid var(--lx-line)!important}
+.hero{background:linear-gradient(160deg,#17151a,#0f0e11)!important;border:1px solid var(--lx-line)!important;border-top:1px solid var(--lx-gold)!important;border-radius:14px!important;box-shadow:0 18px 40px rgba(0,0,0,.5)!important}
+h1,h2,.hero h1{font-family:'Playfair Display','Cormorant Garamond',Georgia,serif!important;color:var(--lx-ivory)!important;letter-spacing:.01em}
+h2{color:var(--lx-gold)!important;font-weight:600!important}
+p,.sub{color:#c9c3b6}
+.card.rc{background:var(--lx-card)!important;border:1px solid var(--lx-line)!important;border-radius:14px!important;box-shadow:0 10px 28px rgba(0,0,0,.45)!important;padding:20px 18px!important;margin-bottom:18px!important;color:var(--lx-ivory)!important}
+.card.rc .cat{color:var(--lx-gold)!important;font-family:Inter,sans-serif;letter-spacing:.14em;font-size:10px}
+.card.rc .q{font-family:'Playfair Display',Georgia,serif!important;color:var(--lx-ivory)!important;font-size:18px!important;font-weight:600;line-height:1.3;margin:6px 0 12px}
+.card.rc .ol{padding:9px 0!important}
+.card.rc .ol>span:first-child{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:600;color:#e9e3d4}
+.card.rc .ol b{color:var(--lx-ivory)!important;font-family:Inter,sans-serif!important;font-weight:700!important;font-variant-numeric:tabular-nums}
+.card.rc .ol small{color:var(--lx-mut)!important}.card.rc .ol small.up{color:#7fbf95!important}.card.rc .ol small.dn{color:#d98a8a!important}
+.card.rc .rch{background:#101013!important;border:1px solid rgba(201,168,106,.12);border-radius:10px!important;margin-top:12px!important}
+.card.rc .rcm{color:var(--lx-mut)!important}
+.card.rc .row.tbuy{gap:10px!important;margin-top:14px!important}
+.card.rc .tbuy .yes{background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a)!important;color:#17130b!important;border:0!important;border-radius:12px!important;box-shadow:0 4px 14px rgba(201,168,106,.25)}
+.card.rc .tbuy .no{background:#1d1d22!important;color:#ece6d8!important;border:1px solid rgba(201,168,106,.45)!important;border-radius:12px!important}
+.card.rc .rule{background:#1c1b20!important;color:#bdb7aa!important;border:0!important;border-radius:10px}
+.card.rc .meta,.card.rc .meta span{color:var(--lx-mut)!important}.card.rc .settle{color:var(--lx-gold)!important;background:none!important;border-color:var(--lx-line)!important}
+.card.rc .mine{color:var(--lx-gold2)!important}.card.rc .done{background:#1c2a21!important;color:#bfe3cb!important}.card.rc .done.nb{background:#2a2418!important;color:#e8d3a6!important}
+.crumb{background:#0f0e11!important;border-bottom:1px solid var(--lx-line)!important;color:#bdb7aa!important}.crumb a{color:var(--lx-gold)!important}
+.hero h1 em{color:var(--lx-gold)!important}
+.ctab{background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a)!important;color:#17130b!important;border:0!important;box-shadow:0 6px 22px rgba(201,168,106,.28)!important}
+/* global extension v4 */
+.card,.bcard,.lr,.box,.panel,.tile{background:var(--lx-card)!important;border:1px solid var(--lx-line)!important;border-radius:14px!important;box-shadow:0 10px 28px rgba(0,0,0,.45)!important;color:var(--lx-ivory)!important}
+.card .q,.card h3,.bcard h3,.bh,.bh *{font-family:'Playfair Display',Georgia,serif!important;color:var(--lx-ivory)!important}
+.card .cat,.tag,.bk{color:var(--lx-gold)!important}
+.card .ol{border-top:1px solid rgba(201,168,106,.10)!important}.card .ol b{color:var(--lx-ivory)!important}
+.sub,.card p,.bb,.disc,small{color:#b9b3a6!important}
+.go,.btn,.ctab,#bGo{background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a)!important;color:#17130b!important;border:0!important;border-radius:12px!important}
+.pill,.lk{background:transparent!important;color:var(--lx-ivory)!important;border:1px solid rgba(201,168,106,.45)!important}
+.yes{background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a)!important;color:#17130b!important;border:0!important;border-radius:12px!important}
+.no{background:#1d1d22!important;color:#ece6d8!important;border:1px solid rgba(201,168,106,.45)!important;border-radius:12px!important}
+.settle{color:var(--lx-gold)!important;background:transparent!important;border:1px solid var(--lx-line)!important}
+.tabs button,.tabs a{background:#1d1d22!important;color:#ece6d8!important;border:1px solid var(--lx-line)!important}.tabs .on,.tabs button.on{background:var(--lx-gold)!important;color:#17130b!important}
+.lb div,.ow div,.wire div,.lbh,.lbr{border-top:1px solid rgba(201,168,106,.12)!important;color:var(--lx-ivory)!important}
+.lbh{color:var(--lx-gold)!important}
+table,th,td{color:var(--lx-ivory)!important;border-color:rgba(201,168,106,.15)!important;background:transparent!important}
+.modal{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(3px)}
+.sheet{background:#141417!important;color:var(--lx-ivory)!important;border-top:2px solid var(--lx-gold)!important;border-radius:16px 16px 0 0!important;box-shadow:0 -10px 40px rgba(0,0,0,.6)}
+.sheet h3{font-family:'Playfair Display',Georgia,serif!important;color:var(--lx-ivory)!important}
+.sheet p,.sheet label,.sheet small{color:#c9c3b6!important}
+.sheet b,.sheet strong{color:var(--lx-ivory)!important}
+input,select,textarea{background:#0f0f12!important;color:var(--lx-ivory)!important;border:1px solid rgba(201,168,106,.4)!important;border-radius:10px!important}
+input::placeholder{color:#7c786f!important}
+.err{color:#e59a9a!important}
+.mine{color:var(--lx-gold2)!important}.done{background:#1c2a21!important;color:#bfe3cb!important}.rule{background:#1c1b20!important;color:#bdb7aa!important}
+a{color:var(--lx-gold)}
+.quick button{background:#1d1d22!important;color:#ece6d8!important;border:1px solid rgba(201,168,106,.45)!important;border-radius:10px!important}
+.xf,.pc,.model,.disc{background:var(--lx-card)!important;color:var(--lx-ivory)!important;border:1px solid var(--lx-line)!important;border-radius:14px!important}
+.xf *,.pc *,.model *{color:inherit}.xf a,.xh a{color:var(--lx-gold)!important}.xt{color:#c9c3b6!important}
+.tch,svg.ch,.ch{background:#101013!important;border:1px solid rgba(201,168,106,.12)!important;border-radius:10px!important}
+.tch *{color:#c9c3b6}.tchh b{color:var(--lx-gold)!important}
+.me,#meBtn{background:#1d1d22!important;color:var(--lx-ivory)!important;border:1px solid rgba(201,168,106,.45)!important}
+.prize{background:#1d1a14!important;color:var(--lx-gold2)!important;border:1px solid var(--lx-line)!important;border-radius:12px!important}
+.logo,.logo *{color:var(--lx-ivory)!important}.logo span{color:var(--lx-gold)!important}
+.meta b[style*="b45309"],[style*="color:#b45309"]{color:#e0b066!important}
+#bQuote,#setHint,.sheet [style*="var(--gd)"]{color:#e6cf9b!important}
+.btn.ghost{background:transparent!important;color:var(--lx-ivory)!important;border:1px solid rgba(201,168,106,.5)!important}
+.pick button{background:#1d1d22!important;color:#ece6d8!important;border:1px solid rgba(201,168,106,.45)!important;border-radius:10px!important}
+.toast{background:#1d1a14!important;color:var(--lx-ivory)!important;border:1px solid var(--lx-line)!important}
+</style></head><body>
 <header><div class="wrap"><a class="brand" href="../hub/" aria-label="Torii Prediction Platform"><svg class="gate" width="34" height="29" viewBox="0 0 100 86" aria-hidden="true"><path fill="#E6392B" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="#E6392B" x="10" y="19" width="80" height="6"/><rect fill="#E6392B" x="46" y="25" width="8" height="11"/><rect fill="#E6392B" x="13" y="31" width="74" height="6"/><path fill="#E6392B" d="M22 19h9l2 61h-13z"/><path fill="#E6392B" d="M69 19h9l2 61h-13z"/><rect fill="#E6392B" x="17" y="78" width="19" height="6"/><rect fill="#E6392B" x="64" y="78" width="19" height="6"/></svg><span class="bw"><b>TORII</b><small>PREDICTION PLATFORM</small></span></a><span class="hr"><button class="me" id="meBtn" onclick="openWho()">Join free / Sign in</button><span class="coin" role="img" aria-label="Torii token"><span class="ci"><span class="cf cfr"><svg class="cg" width="100" height="86" viewBox="0 0 100 86" aria-hidden="true"><path fill="#E6392B" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="#E6392B" x="10" y="19" width="80" height="6"/><rect fill="#E6392B" x="46" y="25" width="8" height="11"/><rect fill="#E6392B" x="13" y="31" width="74" height="6"/><path fill="#E6392B" d="M22 19h9l2 61h-13z"/><path fill="#E6392B" d="M69 19h9l2 61h-13z"/><rect fill="#E6392B" x="17" y="78" width="19" height="6"/><rect fill="#E6392B" x="64" y="78" width="19" height="6"/></svg></span><span class="cf cbk"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="tr" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0"/></defs><g stroke="#9a7420" stroke-width="3" stroke-linecap="round" opacity=".75"><line x1="75.0" y1="50.0" x2="83.0" y2="50.0"/><line x1="73.1" y1="59.6" x2="80.5" y2="62.6"/><line x1="67.7" y1="67.7" x2="73.3" y2="73.3"/><line x1="59.6" y1="73.1" x2="62.6" y2="80.5"/><line x1="50.0" y1="75.0" x2="50.0" y2="83.0"/><line x1="40.4" y1="73.1" x2="37.4" y2="80.5"/><line x1="32.3" y1="67.7" x2="26.7" y2="73.3"/><line x1="26.9" y1="59.6" x2="19.5" y2="62.6"/><line x1="25.0" y1="50.0" x2="17.0" y2="50.0"/><line x1="26.9" y1="40.4" x2="19.5" y2="37.4"/><line x1="32.3" y1="32.3" x2="26.7" y2="26.7"/><line x1="40.4" y1="26.9" x2="37.4" y2="19.5"/><line x1="50.0" y1="25.0" x2="50.0" y2="17.0"/><line x1="59.6" y1="26.9" x2="62.6" y2="19.5"/><line x1="67.7" y1="32.3" x2="73.3" y2="26.7"/><line x1="73.1" y1="40.4" x2="80.5" y2="37.4"/></g><circle cx="50" cy="50" r="22" fill="#E6392B"/><path d="M47.5 36 L54.5 34.5 L54.5 62 L59.5 63 L59.5 65.5 L40.5 65.5 L40.5 63 L45.5 62 L45.5 41.5 L40.5 43.5 L40.5 41 Z" fill="#f3d27a" stroke="#9a7420" stroke-width="1" stroke-linejoin="round"/><text font-family="Inter,sans-serif" font-weight="700" font-size="9" letter-spacing="3" fill="#6e5214"><textPath href="#tr" startOffset="25%" text-anchor="middle">TORII</textPath></text></svg></span></span></span></span></div></header><div class="cta" id="cta"><button class="ctab" onclick="openAuth()">Join free — get 1,000 Torii tokens 🪙</button><small>No purchase necessary · one quick sign-up works on every board</small></div><script>(function(){function u(){const s=typeof AU!=='undefined'&&AU,c=document.getElementById('cta'),b=document.getElementById('meBtn');if(c)c.style.display=s?'none':'';if(b&&!s&&typeof setMeLabel==='function')setMeLabel(null)}setInterval(u,700);document.addEventListener('DOMContentLoaded',u)})();function toriiJoin(){if(typeof AU!=='undefined'&&AU){const e=document.getElementById('ovme');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})}else openAuth()}</script><div class="mys" id="mys" style="display:none"></div><script>(function(){let t=0;async function m(){const s=typeof AU!=='undefined'&&AU,e=document.getElementById('mys'),b=document.getElementById('meBtn');if(!e)return;if(!s){e.style.display='none';return}
 if(Date.now()-t>20000&&typeof loadWag==='function'){t=Date.now();try{await Promise.all([loadWal(),loadWag()])}catch(x){}}
 const f=n=>(Math.round(n*10)/10).toLocaleString()+' 🪙';e.innerHTML='<span><small>Available</small><b>'+f(walBal(AU.uid))+'</b></span><span><small>Wagered (all boards)</small><b>'+f(wagOf(AU.uid))+'</b></span>';e.style.display='';if(b&&b.dataset.hub)b.textContent=AU.n+' · '+(Math.round(walBal(AU.uid))).toLocaleString()+' available'}setInterval(m,1500)})();</script><script>(function(){const R=/\u{1FA99}/u;function sw(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>R.test(n.nodeValue)&&!(n.parentNode&&/^(SCRIPT|STYLE|TEXTAREA|INPUT|OPTION|TITLE)$/.test(n.parentNode.nodeName))?1:3});const L=[];while(w.nextNode())L.push(w.currentNode);L.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(/\u{1FA99}/u).forEach((t,i)=>{if(i){const e=document.createElement('span');e.className='tk';e.setAttribute('role','img');e.setAttribute('aria-label','Torii tokens');f.appendChild(e)}if(t)f.appendChild(document.createTextNode(t))});n.parentNode.replaceChild(f,n)})}function go(){sw(document.body);new MutationObserver(m=>m.forEach(r=>{r.addedNodes.forEach(n=>{if(n.nodeType===3){if(R.test(n.nodeValue)&&n.parentNode)sw(n.parentNode)}else if(n.nodeType===1)sw(n)});if(r.type==='characterData'&&R.test(r.target.nodeValue)&&r.target.parentNode)sw(r.target.parentNode)})).observe(document.body,{childList:true,subtree:true,characterData:true})}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()})();</script><div class="crumb"><div class="wrap"><a href="../hub/">← Barstool Prediction Markets</a> <span>· The Internet Invitational</span></div></div>
