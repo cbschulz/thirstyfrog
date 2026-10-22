@@ -1,71 +1,165 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Torii Prediction Platform · Account</title><meta name="robots" content="noindex">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Torii Prediction Platform · Account</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230D0D0D'/%3E%3Cpath fill='%23c9a86a' d='M18 28h64v8H18zm8 14h48v6H26zm6 10h8v36h-8zm28 0h8v36h-8z'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f6f3ec;color:#1b1b1b}
-header{background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px}
-header a{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.5px}header a span{color:#C9A96E}
-.coin{width:44px;height:44px;perspective:500px;filter:drop-shadow(0 0 5px #f3d27acc) drop-shadow(0 0 14px #d4a53799)}
-.ci{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:spin 4s linear infinite}
-.f{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;
-background:radial-gradient(circle at 32% 28%,#fff7d1 0,#f7d774 22%,#d9a930 55%,#a87a17 85%,#7a560c 100%);box-shadow:inset 0 0 0 3px #b8861b,inset 0 0 8px #fff3}
-.b{transform:rotateY(180deg)}@keyframes spin{to{transform:rotateY(360deg)}}
-main{max-width:440px;margin:36px auto;padding:0 16px}
-.card{background:#fff;border-radius:14px;box-shadow:0 4px 18px #0001;padding:26px}
-h1{font-size:22px;margin:0 0 10px}p{line-height:1.45}.muted{color:#666;font-size:14px}
-label{display:block;font-size:14px;margin:14px 0 4px;font-weight:600}
-input{width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button,.btn{display:inline-block;margin-top:18px;width:100%;padding:12px;border:0;border-radius:10px;background:#C8102E;color:#fff;font-size:16px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none}
-button:disabled{opacity:.6}.err{color:#b00020;font-size:14px;margin-top:10px;min-height:1em}.ok{color:#1b7f3b}
-footer{text-align:center;color:#888;font-size:13px;margin:24px 0}
-</style></head><body>
-<header><a href="/hub/">⛩ TORII <span>PREDICTION PLATFORM</span></a>
-<div class="coin" aria-hidden="true"><div class="ci">
-<div class="f"><svg viewBox="0 0 40 40" width="26" height="26"><g fill="#C8102E"><rect x="5" y="9" width="30" height="4" rx="1"/><rect x="8" y="16" width="24" height="3"/><rect x="11" y="13" width="3.5" height="20"/><rect x="25.5" y="13" width="3.5" height="20"/></g></svg></div>
-<div class="f b"><svg viewBox="0 0 40 40" width="30" height="30"><circle cx="20" cy="20" r="11" fill="#C8102E"/><text x="20" y="20" dominant-baseline="central" text-anchor="middle" font-size="14" font-weight="800" fill="#ffe9a8" font-family="Arial">1</text></svg></div>
-</div></div></header>
-<main><div class="card" id="box"><h1>One moment…</h1><p class="muted">Checking your link.</p></div></main>
-<footer>Torii Prediction Platform · free to play with Torii tokens</footer>
+:root{--bg:#0c0c0e;--card:#16161a;--gold:#c9a86a;--gold2:#e6cf9b;--ivory:#f3ecdc;--mut:#8d8a83;--line:rgba(201,168,106,.28);--err:#e7b4b4;--ok:#cfe3c8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;background:#0c0c0e;background-image:radial-gradient(ellipse at top,#1a1712 0,#0c0c0e 62%);color:var(--ivory)}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:#0a0a0c;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ivory);text-decoration:none}
+.bw{display:flex;flex-direction:column;line-height:1}
+.bw b{font:600 22px 'Cormorant Garamond',Georgia,serif;letter-spacing:.18em}
+.bw small{font:600 8px Inter,sans-serif;letter-spacing:.32em;color:var(--gold);margin-top:4px}
+main{max-width:460px;margin:48px auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-top:1px solid var(--gold);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.5);padding:32px 28px}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:30px;letter-spacing:.01em;margin:0 0 12px;color:var(--ivory)}
+p{line-height:1.5;color:#c9c3b6;margin:0 0 12px}
+.muted{color:var(--mut);font-size:14px}
+label{display:block;margin:16px 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#0e0e11;color:var(--ivory);font:16px Inter,sans-serif}
+input:focus{outline:none;border-color:var(--gold)}
+button,.btn{display:block;width:100%;margin-top:18px;padding:13px 16px;border-radius:10px;border:1px solid var(--gold);background:linear-gradient(180deg,#e6cf9b,#c9a86a 45%,#a8884a);color:#1a140c;font:600 15px Inter,sans-serif;letter-spacing:.04em;text-align:center;text-decoration:none;cursor:pointer}
+button:disabled{opacity:.55;cursor:default}
+.ghost{background:transparent;color:var(--gold2);border-color:var(--line)}
+.err{color:var(--err);font-size:14px;margin-top:12px;min-height:1.2em}
+.ok{color:var(--ok)}
+footer{text-align:center;color:var(--mut);font-size:12px;letter-spacing:.08em;margin:28px 0 40px}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="/hub/" aria-label="Torii Prediction Platform">
+    <svg width="34" height="29" viewBox="0 0 100 86" aria-hidden="true"><path fill="#c9a86a" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="#c9a86a" x="10" y="19" width="80" height="6"/><rect fill="#c9a86a" x="46" y="25" width="8" height="11"/><rect fill="#c9a86a" x="13" y="31" width="74" height="6"/><path fill="#c9a86a" d="M22 19h9l2 61h-13z"/><path fill="#c9a86a" d="M69 19h9l2 61h-13z"/></svg>
+    <span class="bw"><b>TORII</b><small>PREDICTION PLATFORM</small></span>
+  </a>
+</header>
+<main>
+  <div class="card" id="box">
+    <h1>One moment</h1>
+    <p class="muted">Checking your link.</p>
+  </div>
+</main>
+<footer>Torii Prediction Platform</footer>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
-firebase.initializeApp({apiKey:'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA',authDomain:'thirstyfrog-e2aed.firebaseapp.com',databaseURL:'https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/',projectId:'thirstyfrog-e2aed',storageBucket:'thirstyfrog-e2aed.firebasestorage.app',messagingSenderId:'656084503103',appId:'1:656084503103:web:aca5e6473fd2b920ec868a'});
-const FA=firebase.auth(),Q=new URLSearchParams(location.search),mode=Q.get('mode'),code=Q.get('oobCode'),box=document.getElementById('box');
-function safeNext(){const c=Q.get('continueUrl');try{if(c){const u=new URL(c,location.origin);if(u.origin===location.origin||/(^|\.)toriipredict\.com$/.test(u.hostname)||u.hostname==='cbschulz.github.io')return u.href}}catch(e){}return '/hub/'}
+const HUB_KEY='AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA';
+firebase.initializeApp({
+  apiKey:HUB_KEY,
+  authDomain:'thirstyfrog-e2aed.firebaseapp.com',
+  databaseURL:'https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/',
+  projectId:'thirstyfrog-e2aed',
+  storageBucket:'thirstyfrog-e2aed.firebasestorage.app',
+  messagingSenderId:'656084503103',
+  appId:'1:656084503103:web:aca5e6473fd2b920ec868a'
+});
+const FA=firebase.auth();
+const Q=new URLSearchParams(location.search);
+const mode=Q.get('mode');
+const code=Q.get('oobCode');
+const apiKey=Q.get('apiKey');
+const box=document.getElementById('box');
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function safeNext(){
+  const c=Q.get('continueUrl');
+  try{
+    if(c){
+      const u=new URL(c,location.origin);
+      if(u.origin===location.origin||/(^|\.)toriipredict\.com$/.test(u.hostname)||u.hostname==='cbschulz.github.io') return u.href;
+    }
+  }catch(e){}
+  return '/hub/';
+}
 const NEXT=safeNext();
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function show(t,html){box.innerHTML='<h1>'+t+'</h1>'+html}
-function done(t,msg){show(t,'<p>'+msg+'</p><a class="btn" href="'+esc(NEXT)+'">Go to the boards</a>')}
-function fail(x){const c=x&&x.code||'';let m='Something went wrong with this link. Please request a new one from the site.';
- if(c==='auth/expired-action-code')m='This link has expired. Go back to the site and request a new one.';
- else if(c==='auth/invalid-action-code')m='This link was already used or is no longer valid. Request a new one from the site.';
- else if(c==='auth/user-disabled')m='This account has been disabled. Contact admin@toriipredict.com.';
- else if(c==='auth/user-not-found')m='We couldn’t find that account. Join free from the site.';
- else if(c==='auth/invalid-email')m='That email doesn’t match this link. Use the same email you requested it with.';
- else if(c==='auth/weak-password')m='Pick a stronger password (at least 8 characters).';
- else if(c==='auth/network-request-failed')m='Network problem. Check your connection and try again.';
- show('Link problem','<p class="err">'+m+'</p><a class="btn" href="/hub/">Back to Torii</a>')}
-async function resetPassword(){const email=await FA.verifyPasswordResetCode(code);
- show('Set your password','<p class="muted">For <b>'+esc(email)+'</b></p><label for="p1">New password</label><input id="p1" type="password" autocomplete="new-password" minlength="8"><label for="p2">Confirm password</label><input id="p2" type="password" autocomplete="new-password" minlength="8"><div class="err" id="e"></div><button id="go">Save password &amp; sign in</button>');
- const go=document.getElementById('go'),e=document.getElementById('e');
- go.onclick=async()=>{const a=p1.value,b=p2.value;e.textContent='';
-  if(a.length<8)return e.textContent='Use at least 8 characters.';if(a!==b)return e.textContent='The two passwords don’t match.';
-  go.disabled=true;go.textContent='Saving…';
-  try{await FA.confirmPasswordReset(code,a);try{await FA.signInWithEmailAndPassword(email,a)}catch(_){}
-   show('Password saved','<p>You’re signed in. Your Torii tokens are right where you left them.</p>');setTimeout(()=>location.replace(NEXT),1500)}
-  catch(x){go.disabled=false;go.textContent='Save password & sign in';if(x.code==='auth/weak-password')e.textContent='Pick a stronger password (at least 8 characters).';else fail(x)}}}
-async function verifyEmail(){await FA.applyActionCode(code);done('Email verified','Thanks! Your email is confirmed.')}
-async function recoverEmail(){const info=await FA.checkActionCode(code),old=info.data.email;await FA.applyActionCode(code);
- show('Email restored','<p>Your account email is back to <b>'+esc(old)+'</b>.</p><p class="muted">If you didn’t request the change, reset your password now.</p><button id="r">Send password reset</button><div class="err" id="e"></div><a class="btn" style="background:#333" href="/hub/">Back to Torii</a>');
- r.onclick=async()=>{try{await FA.sendPasswordResetEmail(old);e.className='err ok';e.textContent='Reset email sent.'}catch(x){e.textContent='Couldn’t send it. Try again from the site.'}}}
-async function finishSignIn(email){await FA.signInWithEmailLink(email.trim().toLowerCase(),location.href);localStorage.removeItem('bpm_email');
- show('You’re in','<p>Signed in. Taking you to the boards…</p>');setTimeout(()=>location.replace(NEXT),800)}
-async function signIn(){if(!FA.isSignInWithEmailLink(location.href))throw{code:'auth/invalid-action-code'};
- const saved=localStorage.getItem('bpm_email');if(saved)return finishSignIn(saved);
- show('Confirm your email','<p class="muted">You opened this link on a different device or browser. Enter the email you used to request it.</p><label for="em">Email</label><input id="em" type="email" autocomplete="email"><div class="err" id="e"></div><button id="go">Sign in</button>');
- go.onclick=async()=>{if(!em.value.includes('@'))return e.textContent='Enter your email.';go.disabled=true;try{await finishSignIn(em.value)}catch(x){go.disabled=false;if(x.code==='auth/invalid-email')e.textContent='That email doesn’t match this link.';else fail(x)}}}
-(async()=>{try{
- if(!mode||(!code&&mode!=='signIn'))return show('Nothing to do here','<p>This page handles links from Torii emails.</p><a class="btn" href="/hub/">Go to Torii</a>');
- if(mode==='resetPassword')await resetPassword();else if(mode==='verifyEmail')await verifyEmail();
- else if(mode==='signIn')await signIn();else if(mode==='recoverEmail')await recoverEmail();
- else show('Unknown link','<p>We don’t recognize this link.</p><a class="btn" href="/hub/">Go to Torii</a>')}catch(x){fail(x)}})();
-</script></body></html>
+function show(title,html){box.innerHTML='<h1>'+title+'</h1>'+html}
+function hubLink(label){return '<a class="btn" href="'+esc(NEXT)+'">'+esc(label||'Back to the boards')+'</a>'}
+function missing(){
+  show('Invalid or missing link','<p>This page opens from a Torii account email. The link is invalid or missing the details we need.</p><p class="muted">Request a new verification or password reset from the boards.</p>'+hubLink('Back to /hub/'));
+}
+function fail(x){
+  const c=x&&x.code||'';
+  let m='Something went wrong with this link. Request a new one from the boards.';
+  if(c==='auth/expired-action-code') m='This link has expired. Request a new one from the boards.';
+  else if(c==='auth/invalid-action-code') m='This link was already used or is no longer valid.';
+  else if(c==='auth/user-disabled') m='This account has been disabled.';
+  else if(c==='auth/user-not-found') m='We couldn’t find that account.';
+  else if(c==='auth/weak-password') m='Choose a stronger password (at least 8 characters).';
+  else if(c==='auth/network-request-failed') m='Network problem. Check your connection and try again.';
+  show('Link problem','<p class="err">'+esc(m)+'</p>'+hubLink());
+}
+
+async function resetPassword(){
+  const email=await FA.verifyPasswordResetCode(code);
+  show('Choose a new password',
+    '<p class="muted">For <b>'+esc(email)+'</b></p>'+
+    '<label for="p1">New password</label><input id="p1" type="password" autocomplete="new-password" minlength="8">'+
+    '<label for="p2">Confirm password</label><input id="p2" type="password" autocomplete="new-password" minlength="8">'+
+    '<div class="err" id="e"></div><button id="go" type="button">Save password</button>');
+  const go=document.getElementById('go'), e=document.getElementById('e'), p1=document.getElementById('p1'), p2=document.getElementById('p2');
+  go.onclick=async()=>{
+    const a=p1.value, b=p2.value;
+    e.textContent='';
+    if(a.length<8){e.textContent='Use at least 8 characters.';return}
+    if(a!==b){e.textContent='The two passwords don’t match.';return}
+    go.disabled=true; go.textContent='Saving…';
+    try{
+      await FA.confirmPasswordReset(code,a);
+      show('Password saved','<p class="ok">Your password is updated. You can sign in on the boards.</p>'+hubLink('Back to /hub/'));
+    }catch(x){
+      go.disabled=false; go.textContent='Save password';
+      if(x&&x.code==='auth/weak-password') e.textContent='Choose a stronger password (at least 8 characters).';
+      else fail(x);
+    }
+  };
+}
+
+async function verifyEmail(){
+  await FA.applyActionCode(code);
+  show('Email verified','<p class="ok">Your email is confirmed.</p>'+hubLink('Back to /hub/'));
+}
+
+async function recoverEmail(){
+  const info=await FA.checkActionCode(code);
+  const old=info&&info.data&&info.data.email||'';
+  await FA.applyActionCode(code);
+  show('Email restored',
+    '<p>Your account email is back to <b>'+esc(old)+'</b>.</p>'+
+    '<p class="muted">If you didn’t request that change, reset your password now.</p>'+
+    '<button id="r" type="button">Send password reset</button><div class="err" id="e"></div>'+
+    hubLink('Back to /hub/'));
+  const e=document.getElementById('e');
+  document.getElementById('r').onclick=async()=>{
+    try{
+      await FA.sendPasswordResetEmail(old);
+      e.className='err ok';
+      e.textContent='Reset email sent.';
+    }catch(x){
+      e.className='err';
+      e.textContent='Couldn’t send the reset. Try again from the boards.';
+    }
+  };
+}
+
+(async()=>{
+  try{
+    if(!mode||!code){missing();return}
+    if(apiKey&&apiKey!==HUB_KEY){
+      show('Invalid or missing link','<p>This link is not for Torii Prediction Platform.</p>'+hubLink('Back to /hub/'));
+      return;
+    }
+    if(mode==='resetPassword') await resetPassword();
+    else if(mode==='verifyEmail') await verifyEmail();
+    else if(mode==='recoverEmail') await recoverEmail();
+    else show('Unknown link','<p>We don’t recognize this kind of account link.</p>'+hubLink('Back to /hub/'));
+  }catch(x){fail(x)}
+})();
+</script>
+</body>
+</html>
