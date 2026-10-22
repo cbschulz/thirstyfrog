@@ -136,13 +136,23 @@ async function recoverEmail(){
     hubLink('Back to /hub/'));
   const e=document.getElementById('e');
   document.getElementById('r').onclick=async()=>{
+    const btn=document.getElementById('r');
+    btn.disabled=true;
+    const ok='If an account exists, we sent a link to '+old+'. Check spam too.';
     try{
-      await FA.sendPasswordResetEmail(old);
+      let r=null, net=false;
+      try{
+        r=await fetch('https://torii-mailer.toriipredict.workers.dev/send-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:old})});
+      }catch(err){net=true}
+      if(net||(r&&r.status>=500)) await FA.sendPasswordResetEmail(old);
+      else if(r.status===429){e.className='err';e.textContent='Too many requests, try again later';btn.disabled=false;return}
+      else if(r.status===400){e.className='err';e.textContent='Enter a valid email address.';btn.disabled=false;return}
       e.className='err ok';
-      e.textContent='Reset email sent.';
+      e.textContent=ok;
     }catch(x){
       e.className='err';
       e.textContent='Couldn’t send the reset. Try again from the boards.';
+      btn.disabled=false;
     }
   };
 }

@@ -233,20 +233,66 @@ function authMsg(x){const c=(x&&x.code)||'';return({
  'auth/user-disabled':'This account has been disabled.',
  'auth/operation-not-allowed':'Password sign-in isn\'t switched on yet. Try "Email me a sign-in link instead".',
  'auth/quota-exceeded':'We\'ve hit today\'s email limit. Use a password to join or sign in instead.'}[c])||('Something went wrong ('+(c||x)+'). Try again.')}
+const MAILER='https://torii-mailer.toriipredict.workers.dev';
+function escMail(s){return String(s||'').replace(/[<>&"]/g,'')}
+function ensureMailerUi(){if(document.getElementById('mailerCss'))return;const st=document.createElement('style');st.id='mailerCss';st.textContent='#vToast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);opacity:0;transition:.3s;z-index:9999;background:#111;color:#f6f0e4;border-left:4px solid #c9a86a;border-radius:10px;padding:12px 40px 12px 14px;max-width:92vw;width:420px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3)}#vToast.s{transform:translate(-50%,0);opacity:1}#vToast .ta{margin-top:6px;font-size:13px}#vToast a{color:#d4a24c}#vToast .tx{position:absolute;top:6px;right:8px;background:none;border:0;color:#f6f0e4;font-size:20px;cursor:pointer}#vBar{background:#1d1a14;color:#f3ecdc;border-bottom:1px solid rgba(201,168,106,.35);padding:8px 14px;font-size:13px;text-align:center}#vBar button{background:none;border:0;color:#c9a86a;font-weight:800;cursor:pointer;text-decoration:underline;font:inherit}';document.head.appendChild(st)}
+async function sendVerificationMail(){const u=FA.currentUser;if(!u)return {status:401,body:{ok:false}};const tok=await u.getIdToken();let r=null,net=false;
+ try{r=await fetch(MAILER+'/send-verification',{method:'POST',headers:{Authorization:'Bearer '+tok}})}catch(e){net=true}
+ if(net||(r&&r.status>=500)){await u.sendEmailVerification();return {ok:true,fallback:true}}
+ let body={};try{body=await r.json()}catch(e){}return {status:r.status,body}}
+async function sendResetMail(email){let r=null,net=false;
+ try{r=await fetch(MAILER+'/send-reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})})}catch(e){net=true}
+ if(net||(r&&r.status>=500)){await FA.sendPasswordResetEmail(email,{url:location.origin+location.pathname});return {ok:true,fallback:true}}
+ let body={};try{body=await r.json()}catch(e){}return {status:r.status,body}}
+function verifyNote(email,res){
+ if(res.fallback)return {kind:'sent',text:'We sent a verification link to '+email+'. Check spam too.'};
+ const b=res.body||{};
+ if(res.status===200&&b.ok&&b.alreadyVerified)return {kind:'verified',text:'Your email is already verified.'};
+ if(res.status===200&&b.ok)return {kind:'sent',text:(typeof b.message==='string'&&b.message)||('We sent a verification link to '+email+'. Check spam too.')};
+ if(res.status===429)return {kind:'err',text:'Too many requests, try again later'};
+ if(res.status===401)return {kind:'err',text:'Sign in again, then resend the verification email.'};
+ if(res.status===400)return {kind:'err',text:'Could not send the verification email. Try again.'};
+ return {kind:'err',text:'Could not send the verification email. Try again.'}}
+let _vt;
+function verifyToast(email,note){ensureMailerUi();let t=document.getElementById('vToast');if(!t){t=document.createElement('div');t.id='vToast';t.setAttribute('role','status');document.body.appendChild(t)}
+ const resend=note.kind==='sent'||note.kind==='err';
+ t.innerHTML='<b>'+(note.kind==='err'?'Verification email':'Check your email')+'</b> — '+escMail(note.text)+(resend?'<div class="ta"><a href="#" id="vRe">Resend verification</a></div>':'')+'<button class="tx" aria-label="Dismiss">×</button>';
+ t.classList.add('s');const hide=()=>t.classList.remove('s');clearTimeout(_vt);_vt=setTimeout(hide,8000);t.querySelector('.tx').onclick=hide;
+ const a=t.querySelector('#vRe');if(a)a.onclick=ev=>{ev.preventDefault();resendVerification()}}
+async function afterSignupVerify(email){verifyToast(email,{kind:'wait',text:'Sending your verification email…'});
+ try{verifyToast(email,verifyNote(email,await sendVerificationMail()))}catch(x){verifyToast(email,{kind:'err',text:authMsg(x)})}}
+async function resendVerification(){const u=FA.currentUser;if(!u){openAuth('in');return}const email=u.email||'';
+ verifyToast(email,{kind:'wait',text:'Sending your verification email…'});
+ try{verifyToast(email,verifyNote(email,await sendVerificationMail()))}catch(x){verifyToast(email,{kind:'err',text:authMsg(x)})}}
+function syncVerifyBar(){ensureMailerUi();const u=FA.currentUser,bar=document.getElementById('vBar');
+ if(!u||u.emailVerified){if(bar)bar.remove();return}if(bar)return;
+ const b=document.createElement('div');b.id='vBar';b.innerHTML='Confirm your email so we can reach you. <button type="button" id="vResend">Resend verification</button>';
+ const h=document.querySelector('header');if(h&&h.parentNode)h.parentNode.insertBefore(b,h.nextSibling);else document.body.prepend(b);
+ b.querySelector('#vResend').onclick=()=>resendVerification()}
+FA.onAuthStateChanged(()=>syncVerifyBar());setInterval(syncVerifyBar,2500);
 async function pwGo(){const g=id=>document.getElementById(id),j=AMODE==='join',f=g('aF').value.trim(),l=g('aL').value.trim(),e=g('aE').value.trim().toLowerCase(),p=g('aP').value,er=g('aErr'),bt=g('aGo');er.className='err';
  if(j){if(!_okN.test(f))return er.textContent='Enter your first name.';if(!_okN.test(l))return er.textContent='Enter your last name.'}
  if(!_okE(e))return er.textContent='Enter a valid email.';
  if(j){if(p.length<8)return er.textContent='Password must be at least 8 characters.';if(p!==g('aC').value)return er.textContent='Passwords don\'t match.'}else if(!p)return er.textContent='Enter your password.';
  if(bt.disabled)return;bt.disabled=true;const lbl=bt.textContent;bt.textContent=j?'Creating account…':'Signing in…';er.textContent='';
- try{if(j){localStorage.setItem('bpm_names',JSON.stringify({first:f,last:l}));await FA.createUserWithEmailAndPassword(e,p)}else await FA.signInWithEmailAndPassword(e,p);
+ let joined=false;
+ try{if(j){localStorage.setItem('bpm_names',JSON.stringify({first:f,last:l}));await FA.createUserWithEmailAndPassword(e,p);joined=true}else await FA.signInWithEmailAndPassword(e,p);
   g('aP').value='';g('aC').value='';g('authM').classList.remove('s')}
  catch(x){if(j)localStorage.removeItem('bpm_names');er.textContent=authMsg(x);if(x&&x.code==='auth/email-already-in-use'){authTab('in');g('aErr').textContent=authMsg(x)}}
- bt.disabled=false;bt.textContent=lbl}
+ bt.disabled=false;bt.textContent=lbl;if(joined)afterSignupVerify(e)}
 // Works for everyone, including accounts first made with an email link: the reset email lets them set a password on the SAME account (same uid, same wallet).
 async function forgotPw(){const g=id=>document.getElementById(id),e=g('aE').value.trim().toLowerCase(),er=g('aErr');er.className='err';
  if(!_okE(e)){er.textContent='Enter your email above first, then tap "Forgot password?" again.';g('aE').focus();return}
- try{await FA.sendPasswordResetEmail(e,{url:location.origin+location.pathname});er.className='err ok';er.textContent='If that email has an account, a link to set a new password is on its way. Check spam too, then come back and sign in.'}
- catch(x){er.textContent=authMsg(x)}}
+ if(forgotPw._busy)return;forgotPw._busy=true;const ok='If an account exists, we sent a link to '+e+'. Check spam too.';
+ try{const res=await sendResetMail(e);
+  if(res.status===429){er.textContent='Too many requests, try again later';return}
+  if(res.status===400){er.textContent='Enter a valid email address.';return}
+  er.className='err ok';er.textContent=ok}
+ catch(x){if(x&&x.code==='auth/too-many-requests'){er.textContent='Too many requests, try again later';return}
+  if(x&&x.code==='auth/invalid-email'){er.textContent='Enter a valid email address.';return}
+  if(x&&(x.code==='auth/network-request-failed'||x.code==='auth/internal-error')){er.textContent=authMsg(x);return}
+  er.className='err ok';er.textContent=ok}
+ finally{forgotPw._busy=false}}
 async function sendLink(){const g=id=>document.getElementById(id),j=AMODE==='join',f=j?g('aF').value.trim():'',l=j?g('aL').value.trim():'',e=g('aE').value.trim().toLowerCase(),er=g('aErr'),bt=g('aLk');er.className='err';
  if(!_okE(e))return er.textContent='Enter your email above first.';if(j&&f&&!_okN.test(f))return er.textContent='Enter your first name.';if(j&&l&&!_okN.test(l))return er.textContent='Enter your last name.';if(bt.disabled)return;bt.disabled=true;er.textContent='';
  try{await FA.sendSignInLinkToEmail(e,{url:location.origin+location.pathname+(f&&l?'?bf='+encodeURIComponent(f)+'&bl='+encodeURIComponent(l):''),handleCodeInApp:true});localStorage.setItem('bpm_email',e);if(f&&l)localStorage.setItem('bpm_names',JSON.stringify({first:f,last:l}));localStorage.setItem('bpm_join',location.pathname);
