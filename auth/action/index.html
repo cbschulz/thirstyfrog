@@ -80,6 +80,33 @@ function safeNext(){
 const NEXT=safeNext();
 function show(title,html){box.innerHTML='<h1>'+title+'</h1>'+html}
 function hubLink(label){return '<a class="btn" href="'+esc(NEXT)+'">'+esc(label||'Back to the boards')+'</a>'}
+function emailFromContinue(){
+  try{
+    const c=Q.get('continueUrl');
+    if(!c) return '';
+    return (new URL(c,location.origin).searchParams.get('email')||'').trim();
+  }catch(e){return ''}
+}
+function signInHref(email){
+  const q=new URLSearchParams();
+  q.set('signin','1');
+  const e=String(email||'').trim();
+  if(e) q.set('email',e);
+  return '/hub/?'+q.toString();
+}
+function signInPrompt(title,line,email){
+  show(title,'<p>'+esc(line)+'</p><a class="btn" href="'+esc(signInHref(email))+'">Sign in to Torii</a>');
+}
+async function signedInAfterReload(){
+  const u=await new Promise(resolve=>{
+    const stop=FA.onAuthStateChanged(user=>{stop();resolve(user||null)});
+  });
+  if(!u) return false;
+  try{await u.reload()}catch(e){return false}
+  if(!FA.currentUser) return false;
+  location.replace('/hub/');
+  return true;
+}
 function missing(){
   show('Invalid or missing link','<p>This page opens from a Torii account email. The link is invalid or missing the details we need.</p><p class="muted">Request a new verification or password reset from the boards.</p>'+hubLink('Back to /hub/'));
 }
@@ -111,7 +138,8 @@ async function resetPassword(){
     go.disabled=true; go.textContent='Saving…';
     try{
       await FA.confirmPasswordReset(code,a);
-      show('Password saved','<p class="ok">Your password is updated. You can sign in on the boards.</p>'+hubLink('Back to /hub/'));
+      if(await signedInAfterReload()) return;
+      signInPrompt('Password updated','Sign in with your new password.',email);
     }catch(x){
       go.disabled=false; go.textContent='Save password';
       if(x&&x.code==='auth/weak-password') e.textContent='Choose a stronger password (at least 8 characters).';
@@ -121,8 +149,13 @@ async function resetPassword(){
 }
 
 async function verifyEmail(){
+  const info=await FA.checkActionCode(code);
+  const email=(info&&info.data&&info.data.email)||emailFromContinue();
   await FA.applyActionCode(code);
-  show('Email verified','<p class="ok">Your email is confirmed.</p>'+hubLink('Back to /hub/'));
+  try{sessionStorage.setItem('torii_confirmed','1')}catch(e){}
+  if(await signedInAfterReload()) return;
+  try{sessionStorage.removeItem('torii_confirmed')}catch(e){}
+  signInPrompt('You\'re confirmed','Sign in to start predicting.',email);
 }
 
 async function recoverEmail(){
