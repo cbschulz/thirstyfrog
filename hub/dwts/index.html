@@ -185,7 +185,7 @@ setInterval(cdTick,1000);document.addEventListener('DOMContentLoaded',cdTick);se
 const OVURL='../';
 // Shared email+password (and email-link fallback) sign-in + REST helpers + overall leaderboard. Requires firebase-app-compat + firebase-auth-compat.
 // ONE wallet per person: 1000 tokens to start, shared across all boards. t on the overall list = current balance (free tokens; open stakes are deducted until settled).
-var DBU='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/',BOARDS=['internetinvite','hub_onebite','hub_pmt','hub_chiclets','hub_pickem','hub_elpres','hub_dwts','hub_couples'],AU=null;
+var DBU='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/',BOARDS=['internetinvite','hub_onebite','hub_pmt','hub_chiclets','hub_pickem','hub_elpres','hub_dwts'],AU=null;
 firebase.initializeApp({apiKey:'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA',authDomain:'thirstyfrog-e2aed.firebaseapp.com',databaseURL:DBU,projectId:'thirstyfrog-e2aed',storageBucket:'thirstyfrog-e2aed.firebasestorage.app',messagingSenderId:'656084503103',appId:'1:656084503103:web:aca5e6473fd2b920ec868a'});
 var FA=firebase.auth();
 async function aq(){return FA.currentUser?'?auth='+await FA.currentUser.getIdToken():''}
