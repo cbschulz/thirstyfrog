@@ -1,0 +1,968 @@
+{
+ "_doc": "Torii market spec. One entry per market. rule.type = auto rule evaluated by markets.js (nhl_*, cfb_*) or 'manual' (the routine researches the named source and passes --set). close = UTC time trading stops (rules-enforced via <board>/closes). event = when the result becomes known. Board must keep exactly 5 open (unsettled) markets; 'queue' entries are used first, then generators.",
+ "boards": {
+  "onebite": {
+   "markets": [
+    {
+     "id": "ob1",
+     "cat": "Next score",
+     "q": "Portnoy's first One Bite score posted on or after Oct 20, 2026: Over/Under 7.9",
+     "src": "Score on the first review dated Oct 20, 2026 or later at onebite.app/reviews/dave (stoolpresidente). Exactly 7.9 voids. Void if no review dated Oct 20+ by Nov 15, 2026.",
+     "o": [
+      "Over 7.9",
+      "Under 7.9"
+     ],
+     "event": "first review on/after 2026-10-20",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "First review dated >= Oct 20 2026 on onebite.app/reviews/dave; a = score > 7.9, b = score < 7.9 (7.9 exactly -> void). Void if none by 2026-11-15."
+     }
+    },
+    {
+     "id": "ob2",
+     "cat": "Big number watch",
+     "q": "Any Portnoy One Bite score of 9.0 or higher posted Oct 20–31, 2026?",
+     "src": "Dave's reviews list on onebite.app/reviews/dave, reviews dated Oct 20 to Oct 31, 2026. Void if onebite.app/reviews/dave can't be checked by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-01T04:00:00Z",
+     "close": "2026-11-01T03:59:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if any review dated Oct 20-31 has score >= 9.0, else b. Void if the list is unreachable by 2026-11-15"
+     }
+    },
+    {
+     "id": "ob3",
+     "cat": "Pending score",
+     "q": "Italian Delite (Trappe, PA) One Bite score, if posted by Nov 30, 2026: Over/Under 7.4",
+     "src": "Score posted for Italian Delite on onebite.app/reviews/dave (review filmed, score pending per Montco.Today Oct 6). Exactly 7.4 voids.",
+     "o": [
+      "Over 7.4",
+      "Under 7.4",
+      "No score posted by Nov 30"
+     ],
+     "event": "2026-12-01T05:00:00Z",
+     "close": "2026-12-01T04:59:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a >7.4, b <7.4 (7.4 exactly -> void), c if no score by Nov 30 11:59 PM ET"
+     }
+    },
+    {
+     "id": "ob4",
+     "cat": "Road trip",
+     "q": "Which state is Portnoy's first One Bite review posted on or after Oct 20, 2026 in?",
+     "src": "Location on the first review dated Oct 20, 2026 or later at onebite.app/reviews/dave. State as shown on the review (map/address). Void if no review dated Oct 20+ by Nov 15, 2026.",
+     "o": [
+      "New York",
+      "New Jersey",
+      "Pennsylvania",
+      "Massachusetts",
+      "Anywhere else"
+     ],
+     "event": "first review on/after 2026-10-20",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "State of first review dated >= Oct 20 2026. Void if none by 2026-11-15. State taken from onebite.app review address; DC/out-of-US -> e"
+     }
+    },
+    {
+     "id": "ob5",
+     "cat": "Basement",
+     "q": "Any Portnoy One Bite score under 6.0 posted Oct 20–31, 2026?",
+     "src": "Dave's reviews list on onebite.app/reviews/dave, reviews dated Oct 20 to Oct 31, 2026. Void if onebite.app/reviews/dave can't be checked by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-01T04:00:00Z",
+     "close": "2026-11-01T03:59:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if any review dated Oct 20-31 has score < 6.0, else b. Void if the list is unreachable by 2026-11-15"
+     }
+    },
+    {
+     "id": "ob6",
+     "cat": "Next score",
+     "q": "Portnoy's first One Bite score posted on or after Oct 21, 2026: Over/Under 7.8",
+     "src": "Score on the first review dated Oct 21, 2026 or later (after the Oct 20 Verona Pizza review) at onebite.app/reviews/dave (stoolpresidente). Exactly 7.8 voids. Void if no review dated Oct 21+ by Nov 15, 2026.",
+     "o": [
+      "Over 7.8",
+      "Under 7.8"
+     ],
+     "event": "first review on/after 2026-10-21",
+     "close": "2026-10-21T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "First review dated >= Oct 21 2026 on onebite.app/reviews/dave; a = score > 7.8, b = score < 7.8 (7.8 exactly -> void). Void if none by 2026-11-15."
+     }
+    },
+    {
+     "id": "ob7",
+     "cat": "Review count",
+     "q": "How many One Bite reviews does Portnoy post dated Oct 21–31, 2026? Over/Under 4.5",
+     "src": "Count of reviews by stoolpresidente on onebite.app/reviews/dave dated Oct 21 to Oct 31, 2026 (he posted 4 reviews dated Oct 13–20). Void if the list can't be checked by Nov 15, 2026.",
+     "o": [
+      "Over 4.5 (5+)",
+      "Under 4.5 (0-4)"
+     ],
+     "event": "2026-11-01T04:00:00Z",
+     "close": "2026-10-21T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "Count reviews dated Oct 21-31 2026 on onebite.app/reviews/dave: >=5 -> a, <=4 -> b. Settle after Oct 31 ends (check Nov 1+). Void if unreachable by 2026-11-15."
+     }
+    },
+    {
+     "id": "ob8",
+     "cat": "Road trip",
+     "q": "Which state is Portnoy's first One Bite review posted on or after Oct 21, 2026 in?",
+     "src": "Location on the first review dated Oct 21, 2026 or later at onebite.app/reviews/dave. State as shown on the review (map/address). Void if no review dated Oct 21+ by Nov 15, 2026.",
+     "o": [
+      "New York",
+      "New Jersey",
+      "Pennsylvania",
+      "Massachusetts",
+      "Anywhere else"
+     ],
+     "event": "first review on/after 2026-10-21",
+     "close": "2026-10-21T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "State of first review dated >= Oct 21 2026. Void if none by 2026-11-15. State taken from onebite.app review address; DC/out-of-US -> e"
+     }
+    },
+    {
+     "id": "ob9",
+     "cat": "Next score",
+     "q": "Portnoy's first One Bite score posted on or after Oct 22, 2026: Over/Under 7.8",
+     "src": "Score on the first review dated Oct 22, 2026 or later (after the Oct 21 Mama Russo's review) at onebite.app/reviews/dave (stoolpresidente). Exactly 7.8 voids. Void if no review dated Oct 22+ by Nov 15, 2026.",
+     "o": [
+      "Over 7.8",
+      "Under 7.8"
+     ],
+     "event": "first review on/after 2026-10-22",
+     "close": "2026-10-22T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "First review dated >= Oct 22 2026 on onebite.app/reviews/dave; a = score > 7.8, b = score < 7.8 (7.8 exactly -> void). Void if none by 2026-11-15."
+     }
+    },
+    {
+     "id": "ob10",
+     "cat": "Top score",
+     "q": "Highest Portnoy One Bite score posted Oct 22–31, 2026: Over/Under 8.4",
+     "src": "Highest score among reviews by stoolpresidente on onebite.app/reviews/dave dated Oct 22 to Oct 31, 2026 (his top score Oct 1–21 was 8.4). Exactly 8.4 voids. Void if no review is dated Oct 22–31 or the list can't be checked by Nov 15, 2026.",
+     "o": [
+      "Over 8.4",
+      "Under 8.4"
+     ],
+     "event": "2026-11-01T04:00:00Z",
+     "close": "2026-10-22T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "Max score of reviews dated Oct 22-31 2026 on onebite.app/reviews/dave: > 8.4 -> a, < 8.4 -> b, exactly 8.4 -> void. Settle after Oct 31 ends unless a score > 8.4 posts earlier (then a). Void if no reviews in window or unreachable by 2026-11-15."
+     }
+    },
+    {
+     "id": "ob11",
+     "cat": "Next score",
+     "q": "Portnoy's first One Bite score posted on or after Oct 23, 2026: Over/Under 8.0",
+     "src": "Score on the first review dated Oct 23, 2026 or later (after the Oct 22 Joseph's Pizza Parlor review) at onebite.app/reviews/dave (stoolpresidente). Exactly 8.0 voids. Void if no review dated Oct 23+ by Nov 15, 2026.",
+     "o": [
+      "Over 8.0",
+      "Under 8.0"
+     ],
+     "event": "first review on/after 2026-10-23",
+     "close": "2026-10-23T20:00:00Z",
+     "opp": "",
+     "rule": {
+      "type": "manual",
+      "how": "First review dated >= Oct 23 2026 on onebite.app/reviews/dave; a = score > 8.0, b = score < 8.0 (8.0 exactly -> void). Void if none by 2026-11-15."
+     }
+    }
+   ],
+   "queue": []
+  },
+  "pmt": {
+   "markets": [
+    {
+     "id": "pm1",
+     "cat": "Rock Bottom",
+     "q": "Does PMT's Mon Oct 26, 2026 episode (NFL Week 7 recap) title name a team at \"Rock Bottom\"?",
+     "src": "Title of the Pardon My Take episode posted Mon Oct 26, 2026 on barstoolsports.com/shows/11/pardon-my-take. Backup source: the same episode on Apple Podcasts (Pardon My Take). Void if no Monday Oct 26 episode is posted by Oct 28, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-26T12:00:00Z",
+     "close": "2026-10-26T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if the Oct 26 Monday episode title contains 'Rock Bottom'. Backup: Apple Podcasts listing. Void if no Oct 26 episode by 2026-10-28"
+     }
+    },
+    {
+     "id": "pm2",
+     "cat": "Runtime",
+     "q": "PMT's Mon Oct 26, 2026 episode (NFL Week 7 recap) runtime: Over/Under 2 hr 55 min",
+     "src": "Runtime listed on barstoolsports.com/shows/11/pardon-my-take (Week 6 Monday, Oct 19, ran 2 hr 58 min). Backup source: Apple Podcasts runtime. Exactly 2:55:00 voids. Void if no Monday Oct 26 episode is posted by Oct 28, 2026.",
+     "o": [
+      "Over",
+      "Under"
+     ],
+     "event": "2026-10-26T12:00:00Z",
+     "close": "2026-10-26T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "runtime > 2:55:00 -> a, < -> b. Exactly 2:55:00 -> void. Backup: Apple Podcasts runtime. Void if no Oct 26 episode by 2026-10-28"
+     }
+    },
+    {
+     "id": "pm3",
+     "cat": "In studio",
+     "q": "Does any PMT episode posted Oct 20–26, 2026 have \"In Studio\" in the title?",
+     "src": "Episode titles on barstoolsports.com/shows/11/pardon-my-take, posted Oct 20 to Oct 26, 2026. Backup source: Apple Podcasts episode list. Void if neither list can be checked by Oct 31, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-27T04:00:00Z",
+     "close": "2026-10-21T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a as soon as any qualifying title contains 'In Studio'; b after Oct 26 ends. Backup: Apple Podcasts. Void if unverifiable by 2026-10-31"
+     }
+    },
+    {
+     "id": "pm4",
+     "cat": "Fyre Fest",
+     "q": "Does PMT's NFL Week 7 picks episode (posted Thu Oct 22 or Fri Oct 23, 2026) title include \"Fyre Fest\"?",
+     "src": "Title of the Week 7 picks episode on barstoolsports.com/shows/11/pardon-my-take. Backup source: the same episode on Apple Podcasts (Pardon My Take). Void if no Week 7 picks episode is posted Oct 22–23, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-24T04:00:00Z",
+     "close": "2026-10-22T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if title contains 'Fyre Fest'. Backup: Apple Podcasts. Void if no picks episode Oct 22-23"
+     }
+    },
+    {
+     "id": "pm5",
+     "cat": "Who's Back",
+     "q": "Does PMT's Mon Oct 26, 2026 episode (NFL Week 7 recap) title include \"Who's Back Of The Week\"?",
+     "src": "Title of the Pardon My Take episode posted Mon Oct 26, 2026 on barstoolsports.com/shows/11/pardon-my-take. Backup source: the same episode on Apple Podcasts (Pardon My Take). Void if no Monday Oct 26 episode is posted by Oct 28, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-26T12:00:00Z",
+     "close": "2026-10-26T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if title contains \"Who's Back Of The Week\". Backup: Apple Podcasts listing. Void if no Oct 26 episode by 2026-10-28"
+     }
+    },
+    {
+     "id": "pm6",
+     "cat": "Runtime",
+     "q": "PMT's NFL Week 8 picks episode (posted Thu Oct 29 or Fri Oct 30, 2026) runtime: Over/Under 3 hr 10 min",
+     "src": "Runtime of the Week 8 picks episode on barstoolsports.com/shows/11/pardon-my-take (Week 7 picks ran 3 hr 11 min, Week 6 3 hr 26 min, Week 5 3 hr 8 min). Backup source: Apple Podcasts runtime. Exactly 3:10:00 voids. Void if no Week 8 picks episode is posted Oct 29–30, 2026.",
+     "o": [
+      "Over",
+      "Under"
+     ],
+     "event": "2026-10-30T06:00:00Z",
+     "close": "2026-10-29T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "Week 8 picks ep (posted Oct 29-30 ET) runtime > 3:10:00 -> a, < -> b, exactly 3:10:00 -> void. Backup: Apple Podcasts runtime. Void if no Week 8 picks episode Oct 29-30"
+     }
+    },
+    {
+     "id": "pm7",
+     "cat": "Fyre Fest",
+     "q": "Does PMT's NFL Week 8 picks episode (posted Thu Oct 29 or Fri Oct 30, 2026) title include \"Fyre Fest\"?",
+     "src": "Title of the Week 8 picks episode on barstoolsports.com/shows/11/pardon-my-take (the Week 6 and Week 7 picks episodes both had \"Fyre Fest\" in the title). Backup source: the same episode on Apple Podcasts (Pardon My Take). Void if no Week 8 picks episode is posted Oct 29–30, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-30T06:00:00Z",
+     "close": "2026-10-29T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if the Week 8 picks ep (posted Oct 29-30 ET) title contains \"Fyre Fest\", else b. Backup: Apple Podcasts listing. Void if no Week 8 picks episode Oct 29-30"
+     }
+    },
+    {
+     "id": "pm8",
+     "cat": "Runtime",
+     "q": "PMT's Mon Nov 2, 2026 episode (NFL Week 8 recap) runtime: Over/Under 2 hr 45 min",
+     "src": "Runtime listed on barstoolsports.com/shows/11/pardon-my-take (Week 7 Monday, Oct 26, ran 2 hr 37 min; Week 6 Monday, Oct 19, ran 2 hr 58 min). Backup source: Apple Podcasts runtime. Exactly 2:45:00 voids. Void if no Monday Nov 2 episode is posted by Nov 4, 2026.",
+     "o": [
+      "Over",
+      "Under"
+     ],
+     "event": "2026-11-02T12:00:00Z",
+     "close": "2026-11-02T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "runtime > 2:45:00 -> a, < -> b. Exactly 2:45:00 -> void. Backup: Apple Podcasts runtime. Void if no Nov 2 episode by 2026-11-04"
+     }
+    },
+    {
+     "id": "pm9",
+     "cat": "Who's Back",
+     "q": "Does PMT's Mon Nov 2, 2026 episode (NFL Week 8 recap) title include \"Who's Back Of The Week\"?",
+     "src": "Title of the Pardon My Take episode posted Mon Nov 2, 2026 on barstoolsports.com/shows/11/pardon-my-take (the Oct 19 recap had it, the Oct 26 recap didn't). Backup source: the same episode on Apple Podcasts (Pardon My Take). Void if no Monday Nov 2 episode is posted by Nov 4, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-02T12:00:00Z",
+     "close": "2026-11-02T04:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if title contains \"Who's Back Of The Week\", else b. Backup: Apple Podcasts listing. Void if no Nov 2 episode by 2026-11-04"
+     }
+    }
+   ],
+   "queue": []
+  },
+  "chiclets": {
+   "markets": [
+    {
+     "id": "ch1",
+     "cat": "Michkov watch",
+     "q": "Matvei Michkov points, Flyers at Sabres, Wed Oct 21, 2026",
+     "src": "Official NHL.com box score, PHI @ BUF Oct 21, 2026 (game 2026020152). Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "0",
+      "1",
+      "2 or more"
+     ],
+     "event": "2026-10-22T03:00:00Z",
+     "close": "2026-10-21T23:30:00Z",
+     "opp": "Buffalo Sabres",
+     "rule": {
+      "type": "nhl_player_points",
+      "game": 2026020152,
+      "player": 8484387,
+      "buckets": [
+       [
+        0,
+        0
+       ],
+       [
+        1,
+        1
+       ],
+       [
+        2,
+        99
+       ]
+      ],
+      "dnp": "void",
+      "note": "Manual --set void if postponed and not played by 2026-11-15"
+     }
+    },
+    {
+     "id": "ch2",
+     "cat": "Flyers streak",
+     "q": "Do the Flyers beat the Sabres in Buffalo on Wed Oct 21, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, PHI @ BUF Oct 21, 2026 (game 2026020152). Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-22T03:00:00Z",
+     "close": "2026-10-21T23:30:00Z",
+     "opp": "Buffalo Sabres",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020152,
+      "team": "PHI",
+      "note": "Manual --set void if postponed and not played by 2026-11-15"
+     }
+    },
+    {
+     "id": "ch3",
+     "cat": "Ep. 677 runtime",
+     "q": "Spittin' Chiclets Episode 677 runtime: Over/Under 2 hr 30 min",
+     "src": "Runtime listed on barstoolsports.com/shows/18/spittin-chiclets",
+     "o": [
+      "Over",
+      "Under"
+     ],
+     "event": "2026-10-20",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "done: 2 hr 39 min -> a"
+     }
+    },
+    {
+     "id": "ch4",
+     "cat": "Ep. 677 guest",
+     "q": "Is the featured guest on Episode 677 a current or former NHL player?",
+     "src": "Episode 677 title/description on barstoolsports.com and the guest's NHL.com/Hockey-Reference record",
+     "o": [
+      "Yes",
+      "No",
+      "No featured guest"
+     ],
+     "event": "2026-10-20",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "done: Kirk Muller -> a"
+     }
+    },
+    {
+     "id": "ch5",
+     "cat": "Whitney eats it",
+     "q": "Does Michkov score a goal vs Buffalo (Oct 21) or Anaheim (Oct 24, 2026)?",
+     "src": "NHL.com box scores: PHI @ BUF Oct 21 (2026020152) and ANA @ PHI Oct 24, 2026 (2026020168). Void if Michkov plays in neither game, or if games aren't played by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-24T21:00:00Z",
+     "close": "2026-10-21T23:30:00Z",
+     "rule": {
+      "type": "nhl_player_goal_any",
+      "games": [
+       2026020152,
+       2026020168
+      ],
+      "player": 8484387,
+      "note": "Manual --set void if unplayed by 2026-11-15"
+     }
+    },
+    {
+     "id": "ch6",
+     "cat": "Ducks in Philly",
+     "q": "Do the Flyers beat the Ducks at home on Sat Oct 24, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, ANA @ PHI Oct 24, 2026 (game 2026020168). Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-24T21:00:00Z",
+     "close": "2026-10-24T17:00:00Z",
+     "opp": "Anaheim Ducks",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020168,
+      "team": "PHI",
+      "note": "Manual --set void if postponed and not played by 2026-11-15"
+     }
+    },
+    {
+     "id": "ch7",
+     "cat": "Goal total",
+     "q": "Blue Jackets at Flyers, Tue Oct 27, 2026: total goals Over/Under 6.5 (OT counts, shootout winner doesn't)",
+     "src": "Official NHL.com final, CBJ @ PHI Oct 27, 2026 (game 2026020188). Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "Over 6.5",
+      "Under 6.5"
+     ],
+     "event": "2026-10-28T02:30:00Z",
+     "close": "2026-10-27T23:00:00Z",
+     "opp": "Columbus Blue Jackets",
+     "rule": {
+      "type": "nhl_total_goals",
+      "game": 2026020188,
+      "line": 6.5,
+      "note": "Manual --set void if postponed and not played by 2026-11-15"
+     }
+    },
+    {
+     "id": "ch0199w",
+     "cat": "Flyers game",
+     "q": "Do the Flyers beat Washington Capitals on the road on Wed, Oct 28, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, PHI @ WSH Wed, Oct 28, 2026 (game 2026020199)",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-29T03:30:00.000Z",
+     "close": "2026-10-28T23:30:00Z",
+     "opp": "Washington Capitals",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020199,
+      "team": "PHI"
+     }
+    },
+    {
+     "id": "ch0229w",
+     "cat": "Flyers game",
+     "q": "Do the Flyers beat Utah Mammoth at home on Sun, Nov 1, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, UTA @ PHI Sun, Nov 1, 2026 (game 2026020229)",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-02T01:00:00.000Z",
+     "close": "2026-11-01T21:00:00Z",
+     "opp": "Utah Mammoth",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020229,
+      "team": "PHI"
+     }
+    },
+    {
+     "id": "ch0241w",
+     "cat": "Flyers game",
+     "q": "Do the Flyers beat Minnesota Wild at home on Tue, Nov 3, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, MIN @ PHI Tue, Nov 3, 2026 (game 2026020241)",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-04T04:00:00.000Z",
+     "close": "2026-11-04T00:00:00Z",
+     "opp": "Minnesota Wild",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020241,
+      "team": "PHI"
+     }
+    },
+    {
+     "id": "ch0256w",
+     "cat": "Flyers game",
+     "q": "Do the Flyers beat New York Rangers on the road on Thu, Nov 5, 2026 (OT/shootout counts)?",
+     "src": "Official NHL.com final, PHI @ NYR Thu, Nov 5, 2026 (game 2026020256)",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-06T04:00:00.000Z",
+     "close": "2026-11-06T00:00:00Z",
+     "opp": "New York Rangers",
+     "rule": {
+      "type": "nhl_team_win",
+      "game": 2026020256,
+      "team": "PHI"
+     }
+    }
+   ],
+   "queue": []
+  },
+  "pickem": {
+   "markets": [
+    {
+     "id": "pk1",
+     "cat": "Chaos meter",
+     "q": "How many of the Oct 18 AP top 10 lose a game played Oct 20–25, 2026?",
+     "src": "Oct 18 AP top 10 (Miami, BYU, Ohio State, Notre Dame, Georgia, Indiana, Ole Miss, Texas Tech, UCLA, Utah) vs final scores on ESPN/NCAA.com; teams on a bye count as no loss. Postponed/canceled games count as no loss. Void if ESPN results can't be checked by Nov 1, 2026.",
+     "o": [
+      "0 or 1",
+      "2 or 3",
+      "4 or more"
+     ],
+     "event": "2026-10-25T08:00:00Z",
+     "close": "2026-10-22T16:00:00Z",
+     "rule": {
+      "type": "cfb_losses_count",
+      "from": "20261020",
+      "to": "20261025",
+      "teams": [
+       "MIA",
+       "BYU",
+       "OSU",
+       "ND",
+       "UGA",
+       "IU",
+       "MISS",
+       "TTU",
+       "UCLA",
+       "UTAH"
+      ],
+      "buckets": [
+       [
+        0,
+        1
+       ],
+       [
+        2,
+        3
+       ],
+       [
+        4,
+        99
+       ]
+      ],
+      "note": "Postponed/canceled = no loss; force-settle by 2026-11-01"
+     }
+    },
+    {
+     "id": "pk2",
+     "cat": "Picks challenge",
+     "q": "Rico Bosco vs Ed Brown picks challenge: who wins?",
+     "src": "Result as announced on Barstool Pick Em (barstoolsports.com)",
+     "o": [
+      "Rico Bosco",
+      "Ed Brown",
+      "Push"
+     ],
+     "event": "void",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "VOIDED Oct 20 2026: the challenge is a season-long college-basketball contest starting Nov 1 that ends after the Dec 31 prize date and has no announced scoring."
+     }
+    },
+    {
+     "id": "pk3",
+     "cat": "Big Noon return",
+     "q": "Does Portnoy appear on Fox's Big Noon Kickoff again before the regular season ends?",
+     "src": "Big Noon Kickoff broadcasts through Sat Dec 6, 2026, confirmed by a post from x.com/BigNoonKickoff, x.com/stoolpresidente or x.com/FOXSports, or Fox Sports/AP reporting, showing Portnoy on the BNK set (in person or live remote). Pre-taped clips and archive footage don't count.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-12-07T05:00:00Z",
+     "close": "2026-12-05T17:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a on first verified on-air BNK appearance; b after Dec 6. Check X: from:BigNoonKickoff OR from:stoolpresidente Portnoy BNK; b if none by Dec 6 11:59 PM ET"
+     }
+    },
+    {
+     "id": "pk4",
+     "cat": "Michigan Man",
+     "q": "Does Michigan beat No. 6 Indiana at Michigan Stadium on Sat Oct 24, 2026?",
+     "src": "Official final score on ESPN/NCAA.com, Indiana at Michigan, Oct 24, 2026 (noon ET, FOX). Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-24T20:00:00Z",
+     "close": "2026-10-24T16:00:00Z",
+     "opp": "Indiana",
+     "rule": {
+      "type": "cfb_team_win",
+      "date": "20261024",
+      "team": "MICH",
+      "note": "Manual --set void if unplayed by 2026-11-15"
+     }
+    },
+    {
+     "id": "pk5",
+     "cat": "Pick Em record",
+     "q": "Is Portnoy over .500 on his Week 8 Barstool Pick Em card (games of Oct 24, 2026)?",
+     "src": "Portnoy's Week 8 Barstool Pick Em card (picks against the spread, as shown on the Week 8 episode or posted on x.com/stoolpresidente / x.com/barstoolsports), graded against final scores on ESPN. Pushes don't count. Void if his Week 8 card isn't published by Oct 24 kickoff or can't be graded by Nov 7, 2026.",
+     "o": [
+      "Yes",
+      "No",
+      "Exactly .500"
+     ],
+     "event": "2026-10-29T00:00:00Z",
+     "close": "2026-10-24T16:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "Grade Portnoy's Week 8 ATS card vs ESPN finals (pushes excluded): a >.500, b <.500, c exactly .500. Week 9 recap may confirm. Void if card not findable or ungradeable by 2026-11-07"
+     }
+    },
+    {
+     "id": "pk6",
+     "cat": "Big House points",
+     "q": "Indiana at Michigan, Sat Oct 24, 2026: combined points Over/Under 45.5",
+     "src": "Official final score on ESPN/NCAA.com, Indiana at Michigan, Oct 24, 2026. Void if the game is postponed and not played by Nov 15, 2026.",
+     "o": [
+      "Over 45.5",
+      "Under 45.5"
+     ],
+     "event": "2026-10-24T20:00:00Z",
+     "close": "2026-10-24T16:00:00Z",
+     "opp": "Indiana",
+     "rule": {
+      "type": "cfb_total_points",
+      "date": "20261024",
+      "team": "MICH",
+      "line": 45.5,
+      "note": "Manual --set void if unplayed by 2026-11-15"
+     }
+    },
+    {
+     "id": "pk1031",
+     "cat": "Michigan Man",
+     "q": "Does Michigan beat Rutgers Scarlet Knights on the road on Sat, Oct 31, 2026?",
+     "src": "Official final score on ESPN/NCAA.com, Rutgers Scarlet Knights vs Michigan, Sat, Oct 31, 2026",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-31T21:30:00.000Z",
+     "close": "2026-10-31T16:30Z",
+     "opp": "Rutgers Scarlet Knights",
+     "rule": {
+      "type": "cfb_team_win",
+      "date": "20261031",
+      "team": "MICH"
+     }
+    },
+    {
+     "id": "pk1107",
+     "cat": "Michigan Man",
+     "q": "Does Michigan beat Michigan State Spartans at Michigan Stadium on Sat, Nov 7, 2026?",
+     "src": "Official final score on ESPN/NCAA.com, Michigan State Spartans vs Michigan, Sat, Nov 7, 2026",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-07T10:00:00.000Z",
+     "close": "2026-11-07T05:00Z",
+     "opp": "Michigan State Spartans",
+     "rule": {
+      "type": "cfb_team_win",
+      "date": "20261107",
+      "team": "MICH"
+     }
+    },
+    {
+     "id": "pk1114",
+     "cat": "Michigan Man",
+     "q": "Does Michigan beat Oregon Ducks on the road on Sat, Nov 14, 2026?",
+     "src": "Official final score on ESPN/NCAA.com, Oregon Ducks vs Michigan, Sat, Nov 14, 2026",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-11-14T10:00:00.000Z",
+     "close": "2026-11-14T05:00Z",
+     "opp": "Oregon Ducks",
+     "rule": {
+      "type": "cfb_team_win",
+      "date": "20261114",
+      "team": "MICH"
+     }
+    }
+   ],
+   "queue": []
+  },
+  "elpres": {
+   "markets": [
+    {
+     "id": "ep1",
+     "cat": "Top dog",
+     "q": "Who is #1 on Portnoy's next Super Bowl contender rankings post (Oct 20 – Nov 15, 2026)?",
+     "src": "First \"SUPERBOWL CONTENDER RANKINGS\" post on x.com/stoolpresidente after the Oct 19 list, posted by Nov 15, 2026. Settled from X search of x.com/stoolpresidente; a deleted post still counts if captured.",
+     "o": [
+      "49ers",
+      "Chiefs",
+      "Seahawks",
+      "Patriots",
+      "Bills",
+      "Anyone else",
+      "No new list by Nov 15"
+     ],
+     "event": "by 2026-11-16",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "search_posts_all from:stoolpresidente \"CONTENDER RANKINGS\" after 2026-10-20T01:53Z; g if none by Nov 15 11:59 PM ET. If the post has no clear numbered order -> void"
+     }
+    },
+    {
+     "id": "ep2",
+     "cat": "List length",
+     "q": "How many teams make Portnoy's next Super Bowl contender list (Oct 20 – Nov 15, 2026)?",
+     "src": "Same next rankings post on x.com/stoolpresidente (the Oct 19 list had 9). Settled from X search of x.com/stoolpresidente; a deleted post still counts if captured.",
+     "o": [
+      "8 or fewer",
+      "Exactly 9",
+      "10 or more",
+      "No new list by Nov 15"
+     ],
+     "event": "by 2026-11-16",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "count numbered teams. If the post has no clear numbered order -> void"
+     }
+    },
+    {
+     "id": "ep3",
+     "cat": "Eagles snub",
+     "q": "Do the Eagles make Portnoy's next Super Bowl contender list (Oct 20 – Nov 15, 2026)?",
+     "src": "Same next rankings post on x.com/stoolpresidente. Settled from X search of x.com/stoolpresidente; a deleted post still counts if captured.",
+     "o": [
+      "Yes",
+      "No",
+      "No new list by Nov 15"
+     ],
+     "event": "by 2026-11-16",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "Eagles listed?. If the post has no clear numbered order -> void"
+     }
+    },
+    {
+     "id": "ep4",
+     "cat": "Rams hang on",
+     "q": "Are the Rams on Portnoy's next Super Bowl contender list (Oct 20 – Nov 15, 2026)?",
+     "src": "Same next rankings post on x.com/stoolpresidente. Settled from X search of x.com/stoolpresidente; a deleted post still counts if captured.",
+     "o": [
+      "Yes",
+      "No",
+      "No new list by Nov 15"
+     ],
+     "event": "by 2026-11-16",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "Rams listed?. If the post has no clear numbered order -> void"
+     }
+    },
+    {
+     "id": "ep5",
+     "cat": "AFC East order",
+     "q": "On Portnoy's next Super Bowl contender list (Oct 20 – Nov 15, 2026), are the Patriots ranked above the Bills?",
+     "src": "Same next rankings post on x.com/stoolpresidente (Oct 19: Patriots 4, Bills 5). Settled from X search of x.com/stoolpresidente; a deleted post still counts if captured.",
+     "o": [
+      "Yes",
+      "No (Bills higher, or Patriots off the list)",
+      "No new list by Nov 15"
+     ],
+     "event": "by 2026-11-16",
+     "close": null,
+     "rule": {
+      "type": "manual",
+      "how": "a if Patriots rank number < Bills (or Bills absent and Patriots listed). If the post has no clear numbered order -> void"
+     }
+    }
+   ],
+   "queue": []
+  },
+  "dwts": {
+   "markets": [
+    {
+     "id": "dw1",
+     "cat": "Tonight's elimination",
+     "q": "Who gets eliminated on DWTS Dedication Night (Tue Oct 20, 2026)?",
+     "src": "Official results as aired on ABC and posted by ABC (abc.com/shows/dancing-with-the-stars, @DancingABC on X); backup: same-night recaps from People, TVLine or USA Today. Jenna Dewan dances with Alan Bersten this week (Val suspended); it's the same couple. No elimination tonight = void and refund. Double elimination: the first couple announced eliminated wins; if two are announced together, void. Withdrawal instead of a vote-off = void.",
+     "o": [
+      "Ezra Frech & Daniella Karagach",
+      "Amber Glenn & Pasha Pashkov",
+      "Maura Higgins & Mark Ballas",
+      "Harry Shum Jr. & Jenna Johnson",
+      "Jenna Dewan & Val Chmerkovskiy",
+      "Tyler Cameron & Sharna Burgess",
+      "Julia Stiles & Ezra Sosa",
+      "Tatyana Ali & Jan Ravnik",
+      "Connor Wood & Rylee Arnold",
+      "Jackson Olson & Emma Slater"
+     ],
+     "event": "2026-10-21T02:00:00Z",
+     "close": "2026-10-21T00:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "Couple eliminated on the Oct 20 episode per ABC/@DancingABC or People/TVLine/USA Today recap. a=Ezra Frech, b=Amber Glenn, c=Maura Higgins, d=Harry Shum Jr., e=Jenna Dewan, f=Tyler Cameron, g=Julia Stiles, h=Tatyana Ali, i=Connor Wood, j=Jackson Olson. No elimination -> void. Double elimination -> first announced; announced together -> void. Withdrawal -> void."
+     }
+    },
+    {
+     "id": "dw2",
+     "cat": "Top score",
+     "q": "Highest judges' score for a single dance on Dedication Night (Oct 20): Over/Under 36.5 (out of 40)?",
+     "src": "Judges' scores for the Oct 20, 2026 episode as aired on ABC and listed in People/TVLine/USA Today score recaps or the DWTS Wikipedia Season 35 scoring table. Only the regular routine scores out of 40 count (4 judges incl. guest judge Kym Johnson). Void if the episode doesn't air by Oct 23, 2026 or scores aren't out of 40.",
+     "o": [
+      "Over 36.5",
+      "Under 36.5"
+     ],
+     "event": "2026-10-21T02:00:00Z",
+     "close": "2026-10-21T00:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "max single-dance judges' total on Oct 20 (out of 40): >36.5 -> a, else b. Not out of 40 / not aired by 2026-10-23 -> void."
+     }
+    },
+    {
+     "id": "dw3",
+     "cat": "Perfect night",
+     "q": "Does any couple earn a perfect score (all 10s) on Dedication Night (Oct 20)?",
+     "src": "Judges' scores for the Oct 20, 2026 episode as aired on ABC and in People/TVLine/USA Today score recaps or the DWTS Wikipedia Season 35 scoring table. Void if the episode doesn't air by Oct 23, 2026.",
+     "o": [
+      "Yes",
+      "No"
+     ],
+     "event": "2026-10-21T02:00:00Z",
+     "close": "2026-10-21T00:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "a if any routine on Oct 20 gets 10 from every judge, else b. Not aired by 2026-10-23 -> void."
+     }
+    },
+    {
+     "id": "dw4",
+     "cat": "Horror Movie Night",
+     "q": "Who gets eliminated on DWTS Horror Movie Night (Tue Oct 27, 2026)?",
+     "src": "Official results as aired on ABC and posted by ABC (abc.com/shows/dancing-with-the-stars, @DancingABC on X); backup: same-night recaps from People, TVLine or USA Today. A couple already eliminated Oct 20 can't win (bets on it lose). No elimination Oct 27 = void and refund. Double elimination: the first couple announced eliminated wins; if two are announced together, void. Withdrawal = void. Void if the episode doesn't air by Nov 3, 2026.",
+     "o": [
+      "Ezra Frech & Daniella Karagach",
+      "Amber Glenn & Pasha Pashkov",
+      "Maura Higgins & Mark Ballas",
+      "Harry Shum Jr. & Jenna Johnson",
+      "Jenna Dewan & Val Chmerkovskiy",
+      "Tyler Cameron & Sharna Burgess",
+      "Julia Stiles & Ezra Sosa",
+      "Tatyana Ali & Jan Ravnik",
+      "Connor Wood & Rylee Arnold",
+      "Jackson Olson & Emma Slater"
+     ],
+     "event": "2026-10-28T02:00:00Z",
+     "close": "2026-10-28T00:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "Couple eliminated on the Oct 27 episode. a=Ezra Frech, b=Amber Glenn, c=Maura Higgins, d=Harry Shum Jr., e=Jenna Dewan, f=Tyler Cameron, g=Julia Stiles, h=Tatyana Ali, i=Connor Wood, j=Jackson Olson. No elimination -> void. Double -> first announced; together -> void. Withdrawal -> void. Not aired by 2026-11-03 -> void."
+     }
+    },
+    {
+     "id": "dw5",
+     "cat": "Mirrorball",
+     "q": "Who wins Dancing with the Stars Season 35 (finale Tue Nov 24, 2026)?",
+     "src": "Mirrorball Trophy winner announced on the Season 35 finale as aired on ABC and posted by ABC/@DancingABC; backup: People/TVLine/USA Today finale recaps. Void if no winner is crowned by Dec 31, 2026 11:59 PM ET.",
+     "o": [
+      "Ezra Frech & Daniella Karagach",
+      "Amber Glenn & Pasha Pashkov",
+      "Maura Higgins & Mark Ballas",
+      "Harry Shum Jr. & Jenna Johnson",
+      "Jenna Dewan & Val Chmerkovskiy",
+      "Tyler Cameron & Sharna Burgess",
+      "Julia Stiles & Ezra Sosa",
+      "Tatyana Ali & Jan Ravnik",
+      "Connor Wood & Rylee Arnold",
+      "Jackson Olson & Emma Slater"
+     ],
+     "event": "2026-11-25T03:00:00Z",
+     "close": "2026-11-25T01:00:00Z",
+     "rule": {
+      "type": "manual",
+      "how": "Season 35 Mirrorball winner. a=Ezra Frech, b=Amber Glenn, c=Maura Higgins, d=Harry Shum Jr., e=Jenna Dewan, f=Tyler Cameron, g=Julia Stiles, h=Tatyana Ali, i=Connor Wood, j=Jackson Olson. No winner by 2026-12-31 23:59 ET -> void."
+     }
+    }
+   ],
+   "queue": []
+  }
+ }
+}
