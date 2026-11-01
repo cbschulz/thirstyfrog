@@ -35,7 +35,7 @@ function nextChicagoMorning(){const now=chicagoFields(new Date()),base=new Date(
 function fmtLeft(ms){let s=Math.max(0,Math.floor(ms/1000));const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);s%=60;const p=n=>String(n).padStart(2,'0');return d+'d '+p(h)+'h '+p(m)+'m '+p(s)+'s'}
 function phaseNow(settled,teeMs){if(settled)return {kind:'final',text:'Final'};if(!Number.isFinite(teeMs))return {kind:'tbd',text:'Tee time TBD'};if(Date.now()<teeMs)return {kind:'count',text:'Tee off in '+fmtLeft(teeMs-Date.now())};return {kind:'oncourse',text:'On course'}}
 function shownStatus(stored,teeMs){const s=String(stored||'open').toLowerCase();if(s==='settled')return 'settled';if(s==='closed'||(Number.isFinite(teeMs)&&Date.now()>=teeMs))return 'closed';return 'open'}
-function statusWord(s){return s==='settled'?'Settled':s==='closed'?'Closed':'Open'}
+function statusWord(s){return s==='settled'?'Final':s==='closed'?'Locked':'Open'}
 function fmtIndex(v){if(v==null||v==='')return '—';const n=Number(v);return Number.isFinite(n)?(Math.round(n*10)/10).toFixed(1):String(v)}
 function fmtOdds(o){if(o==null||o==='')return '—';if(typeof o==='number')return (o>0?'+':'')+o;return String(o)}
 function resultText(line){const r=line.result;if(r==null||r==='')return '';if(typeof r==='string')return r;if(typeof r==='object')return r.label||r.name||r.side||r.outcome||'';return String(r)}

@@ -68,8 +68,10 @@
     };
     return { bid: bid, updates: updates };
   }
-  function sparkline(points) {
+  function sparkline(points, tone) {
     const w = 320, h = 78, pad = 6;
+    const toneName = tone === 'no' || tone === 'gold' || tone === 'teal' ? tone : 'yes';
+    const color = toneName === 'no' ? '#8d3b45' : toneName === 'gold' ? '#a68545' : toneName === 'teal' ? '#1d5c62' : '#1f6b45';
     const pts = (points || []).filter(function (p) { return p && Number.isFinite(+p.c); });
     if (!pts.length) return '';
     if (pts.length === 1) pts.push({ t: pts[0].t + 1, c: pts[0].c });
@@ -86,7 +88,8 @@
       area += cmd;
     });
     area += 'L' + x(pts[pts.length - 1].t).toFixed(1) + ' ' + (h - pad) + 'L' + x(pts[0].t).toFixed(1) + ' ' + (h - pad) + 'Z';
-    return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Price history"><path class="area" d="' + area + '"/><path d="' + d + '"/></svg>';
+    const gid = 'sg' + Math.random().toString(36).slice(2, 8);
+    return '<svg class="spark spark-' + toneName + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Price history"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + color + '" stop-opacity="0.38"/><stop offset="100%" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs><path class="area" fill="url(#' + gid + ')" d="' + area + '"/><path class="line" stroke="' + color + '" d="' + d + '"/></svg>';
   }
   G.centsFromAmerican = centsFromAmerican;
   G.marketSides = marketSides;
