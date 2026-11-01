@@ -1,0 +1,14 @@
+{
+  "database": {
+    "rules": "rules.golf.betting.json"
+  },
+  "emulators": {
+    "database": {
+      "port": 9000
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": false
+  }
+}
