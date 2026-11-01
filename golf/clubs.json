@@ -1,0 +1,60 @@
+{
+ "_doc": "Add a club: append an object. status 'live' links to /golf/<slug>/ (copy colonial/ and set CLUB). logo: null shows the styled name tile; set a path like 'logos/colonial.png' to swap in a real logo. plate: true puts the logo on a white card (for dark logos).",
+ "clubs": [
+  {
+   "slug": "colonial",
+   "name": "Colonial",
+   "full": "Colonial Country Club",
+   "city": "Fort Worth, TX",
+   "status": "live",
+   "logo": "logos/colonial.png",
+   "c1": "#0b2a4a",
+   "c2": "#c8102e",
+   "plate": false
+  },
+  {
+   "slug": "royaloaks",
+   "name": "Royal Oaks",
+   "full": "Royal Oaks Country Club",
+   "city": "Dallas, TX",
+   "status": "soon",
+   "logo": "logos/royaloaks.svg",
+   "c1": "#123524",
+   "c2": "#b8962e",
+   "plate": true
+  },
+  {
+   "slug": "trinityforest",
+   "name": "Trinity Forest",
+   "full": "Trinity Forest Golf Club",
+   "city": "Dallas, TX",
+   "status": "soon",
+   "logo": "logos/trinityforest.png",
+   "c1": "#3b2f1e",
+   "c2": "#8a9a5b",
+   "plate": true
+  },
+  {
+   "slug": "shadowridge",
+   "name": "Shadow Ridge",
+   "full": "Shadow Ridge Country Club",
+   "city": "Omaha, NE",
+   "status": "soon",
+   "logo": "logos/shadowridge.png",
+   "c1": "#1f2937",
+   "c2": "#4b6b8a",
+   "plate": false
+  },
+  {
+   "slug": "coffeetree",
+   "name": "Coffeetree",
+   "full": "Coffeetree Country Club",
+   "city": "Elkhorn (Omaha), NE",
+   "status": "soon",
+   "logo": "logos/coffeetree.png",
+   "c1": "#2b1d14",
+   "c2": "#6b8f4e",
+   "plate": false
+  }
+ ]
+}
