@@ -1,0 +1,255 @@
+/* Group market page. Scoped to body.mk so the tee sheet and club panels stay as they are. */
+.mk{
+  background:#fff;
+  background-image:none;
+  color:#111;
+}
+.mk::before{display:none}
+.mk .mast{
+  background:#fff;
+  color:#111;
+  border-bottom:1px solid #eee;
+  overflow:visible;
+}
+.mk .mast::after{display:none}
+.mk .mast-in{padding:10px 0}
+.mk .brand{gap:8px}
+.mk .gate{width:28px;height:auto;color:#111}
+.mk .wm strong{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.mk .toplink{
+  color:#444;
+  border:0;
+  padding:0;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:0;
+  text-transform:none;
+}
+.mk .toplink:hover{color:#111}
+.mk .wrap{max-width:720px;padding:0 20px}
+.mk .page{padding:18px 0 72px}
+.mk .card{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  border-radius:0;
+  padding:8px 0 0;
+}
+.mk :focus-visible{outline-color:#0d9f6e}
+
+.keye{
+  margin:6px 0 12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#9a9a9a;
+}
+.mk h1{
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:700;
+  font-size:34px;
+  line-height:1.05;
+  letter-spacing:-.035em;
+  color:#111;
+  margin:0 0 12px;
+}
+.kstatus{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 8px;
+  color:#e10600;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.kstatus i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#e10600;
+  display:block;
+  flex:none;
+}
+#livephase{font-variant-numeric:tabular-nums}
+
+.mtabs{
+  display:flex;
+  gap:18px;
+  overflow-x:auto;
+  margin:14px 0 0;
+  -webkit-overflow-scrolling:touch;
+}
+.mtabs button{
+  background:none;
+  border:0;
+  border-bottom:2px solid transparent;
+  padding:8px 0 10px;
+  color:#9a9a9a;
+  font:600 14px/1.2 Inter,system-ui,sans-serif;
+  letter-spacing:0;
+  text-transform:none;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.mtabs button.on{color:#111;border-bottom-color:#111}
+
+.kchart{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 136px;
+  height:300px;
+  margin:12px 0 4px;
+}
+.kplot{position:relative;height:100%}
+.kgrid{position:absolute;inset:0}
+.kgrid i{
+  position:absolute;
+  left:0;
+  right:0;
+  height:0;
+  border-top:1px dotted #e3e3e3;
+}
+.kplot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.kends{position:relative}
+.kend{
+  position:absolute;
+  left:8px;
+  right:0;
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  transform:translateY(-50%);
+  line-height:1;
+  white-space:nowrap;
+}
+.kend span{font-size:12px;font-weight:600}
+.kend b{font-size:20px;font-weight:700;letter-spacing:-.03em}
+
+.kmeta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:6px 0 28px;
+}
+.vol{color:#9a9a9a;font-size:13px;font-weight:600}
+.ranges{display:flex;gap:2px}
+.ranges button{
+  background:transparent;
+  border:0;
+  color:#c8c8c8;
+  font:700 12px/1 Inter,system-ui,sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:8px 8px;
+  cursor:pointer;
+}
+.ranges button.on{color:#222}
+
+.olist{margin-top:4px}
+.orow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:10px 12px;
+  align-items:center;
+  padding:18px 0;
+  border-bottom:1px solid #f2f2f2;
+}
+.who{min-width:0}
+.who b{
+  display:block;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:-.015em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.who span{display:block;margin-top:3px;color:#8d8d8d;font-size:13px}
+.opct{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+}
+.yesbtn{
+  appearance:none;
+  border:0;
+  background:#e7f6ee;
+  color:#0c8f4e;
+  font:700 15px/1 Inter,system-ui,sans-serif;
+  letter-spacing:0;
+  text-transform:none;
+  border-radius:8px;
+  min-height:44px;
+  min-width:88px;
+  padding:0 12px;
+  cursor:pointer;
+}
+.yesbtn.sel{background:#0d9f6e;color:#fff}
+.yesbtn:active{transform:translateY(1px)}
+
+.mk .slip{
+  background:#f6f6f6;
+  border:0;
+  box-shadow:none;
+  border-radius:12px;
+  margin:0 0 8px;
+  padding:14px 14px 12px;
+}
+.mk .slip .kicker{color:#8a8a8a}
+.mk .slip-price{color:#111;font-size:16px}
+.mk .pay{font-family:Inter,system-ui,sans-serif;font-size:18px;font-weight:700;color:#111}
+.mk .place{background:#0d9f6e;border-radius:10px;letter-spacing:.06em}
+.mk .place:hover{background:#0a875c}
+.mk .slip .cancel{border-color:#ddd;border-radius:10px}
+.mk .chips button{border-color:#e5e5e5;background:#fff}
+.mk .chips button.on,.mk .chips button.on:hover{background:#0d9f6e;border-color:#0d9f6e;color:#fff}
+.mk .oknote{color:#0d9f6e}
+
+.mk .tracker{margin-top:36px}
+.mk .balnote{margin:0;color:#9a9a9a;font-size:13px}
+.mk .balnote a{color:#111;text-decoration:none}
+.mk .tracker h2{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#9a9a9a;
+  margin:26px 0 4px;
+}
+.mk .rowline{
+  border-top:0;
+  border-bottom:1px solid #f2f2f2;
+  padding:12px 0;
+  font-size:15px;
+  color:#222;
+}
+.mk .tracker .muted{font-size:13px;color:#9a9a9a}
+
+@media (min-width:800px){
+  .mk h1{font-size:44px}
+  .kchart{height:320px;grid-template-columns:minmax(0,1fr) 168px}
+  .kend b{font-size:26px}
+  .kend span{font-size:13px}
+  .who b{font-size:17px}
+  .opct{font-size:26px}
+}
+@media (max-width:720px){
+  .mk .wrap{padding:0 18px}
+  .mk .mast-in{padding:10px 0;align-items:center}
+  .mk .gate{width:26px}
+  .mk .wm strong{font-size:16px}
+  .mk .page{padding:14px 0 56px}
+  .mk h1{font-size:32px}
+  .slip-actions{flex-direction:column;align-items:stretch}
+  .mk .slip .place,.mk .slip .cancel{width:100%}
+}
