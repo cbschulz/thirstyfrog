@@ -9,23 +9,37 @@
     return '<p class="kicker">Members</p><h2>Sign in with email</h2><p class="muted">For an existing Torii account.</p><label>Email<input id="em" type="email" placeholder="Email" autocomplete="email"></label><label>Password<input id="pw" type="password" placeholder="Password" autocomplete="current-password"></label><button type="button" id="emgo">Sign in</button><p class="muted"><a href="#" id="namego">Use your name instead</a></p><p id="m" class="err"></p>';
   }
   function fail(text) { var m = document.getElementById('m'); if (m) m.textContent = text; }
-  function showName(gate, auth) {
+  function splitName(name) {
+    var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    var first = (parts[0] || 'Member').slice(0, 30);
+    var rest = parts.slice(1).join(' ').slice(0, 30);
+    return { first: first, last: rest || ' ' };
+  }
+  function showName(gate, auth, db) {
     gate.style.display = '';
     gate.innerHTML = nameHTML();
-    var go = function () { enterName(auth); };
+    var go = function () { enterName(auth, db); };
     document.getElementById('nmgo').onclick = go;
     document.getElementById('nm').onkeydown = function (ev) { if (ev.key === 'Enter') go(); };
-    document.getElementById('emailgo').onclick = function (ev) { ev.preventDefault(); showEmail(gate, auth); };
+    document.getElementById('emailgo').onclick = function (ev) { ev.preventDefault(); showEmail(gate, auth, db); };
   }
-  function showEmail(gate, auth) {
+  function showEmail(gate, auth, db) {
     gate.style.display = '';
     gate.innerHTML = emailHTML();
     var go = function () { enterEmail(auth); };
     document.getElementById('emgo').onclick = go;
     document.getElementById('pw').onkeydown = function (ev) { if (ev.key === 'Enter') go(); };
-    document.getElementById('namego').onclick = function (ev) { ev.preventDefault(); showName(gate, auth); };
+    document.getElementById('namego').onclick = function (ev) { ev.preventDefault(); showName(gate, auth, db); };
   }
-  async function enterName(auth) {
+  async function writeProfile(db, uid, name) {
+    if (!db) return;
+    var ref = db.ref('users/' + uid);
+    var cur = await ref.once('value');
+    if (cur.exists() && cur.val() && cur.val().first) return;
+    var p = splitName(name);
+    await ref.set({ first: p.first, last: p.last, email: '', createdAt: Date.now() });
+  }
+  async function enterName(auth, db) {
     var raw = (document.getElementById('nm').value || '').trim().replace(/\s+/g, ' ');
     if (!raw) { fail('Enter your name.'); return; }
     var name = raw.slice(0, 40);
@@ -35,6 +49,7 @@
       await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       var cred = await auth.signInAnonymously();
       await cred.user.updateProfile({ displayName: name });
+      await writeProfile(db, cred.user.uid, name);
       try {
         localStorage.setItem('torii_golf_name', name);
         localStorage.setItem('torii_golf_uid', cred.user.uid);
@@ -42,7 +57,7 @@
     } catch (x) {
       var code = x && x.code || '';
       if (code === 'auth/operation-not-allowed' || code === 'auth/admin-restricted-operation') {
-        fail('Anonymous sign-in is off. In the Firebase console open Authentication, then Sign-in method, and enable Anonymous. Database rules are unchanged.');
+        fail('Anonymous sign-in is off. In the Firebase console open Authentication, then Sign-in method, and enable Anonymous.');
       } else {
         fail('Could not start a session on this device. Try again, or sign in with email.');
       }

@@ -156,6 +156,10 @@ for (const key of Object.keys(original)) {
     process.exit(1);
   }
 }
+const emailRule = rules.users && rules.users.$uid && rules.users.$uid.email;
+if (emailRule && !String(emailRule['.validate']).includes("sign_in_provider === 'anonymous'")) {
+  emailRule['.validate'] = '(' + emailRule['.validate'] + ") || (auth.token.firebase.sign_in_provider === 'anonymous' && auth.token.email == null && newData.isString() && newData.val() === '')";
+}
 for (const added of ['golf_accounts', 'golf_bets', 'golf_mybets', 'golf_activity', 'golf_prices']) {
   if (!rules[added]) {
     console.error('missing', added);

@@ -23,7 +23,7 @@ firebase.initializeApp({apiKey:'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA',authDom
 const A=firebase.auth(),D=firebase.database(),G=document.getElementById('gate'),B=document.getElementById('board');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function clubForm(){G.style.display='';G.innerHTML='<p class="kicker">Members</p><h2>Colonial members password</h2><p class="muted">Enter the club password once. It unlocks this board for your account.</p><label>Club password<input id="cp" type="password" placeholder="Club password" autocomplete="off"></label><div class="actions"><button type="button" id="unlock">Unlock</button><a href="#" id="so">Sign out</a></div><p id="m" class="err"></p>';document.getElementById('unlock').onclick=unlock;document.getElementById('so').onclick=e=>{e.preventDefault();A.signOut()};}
-async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);load()}catch(x){document.getElementById('m').textContent='Wrong club password. Anonymous accounts also need a users profile before the club password can be saved, and that profile requires an email under the current rules.'}}
+async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);load()}catch(x){document.getElementById('m').textContent='Wrong club password.'}}
 function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'This day';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric'}).format(new Date(t)):day}
 function paint(sum, day){
   const when=fmtDay(day);
@@ -66,7 +66,7 @@ async function load(){
   paint(ToriiSettle.summarize({groups,bets,activity}), DATE);
 }
 let PREVIEW=false;
-A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;if(!u){B.innerHTML='';return ToriiEnter.showName(G,A)}load()});
+A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;if(!u){B.innerHTML='';return ToriiEnter.showName(G,A,D)}load()});
 ToriiAccountBar.mount({auth:A,db:D});
 window.renderSettlePreview=function(raw){PREVIEW=true;G.style.display='none';paint(ToriiSettle.summarize(raw), raw.date||'2026-11-01')};
 </script></body></html>
