@@ -108,6 +108,25 @@ body.tf .kstatus{
   border-radius:20px;
 }
 body.tf .kstatus i{width:6px;height:6px;background:#fff}
+body.tf .hero .model{
+  display:inline-block;
+  margin-top:12px;
+  background:#16161a;
+  color:#f3ecdc;
+  border:1px solid rgba(201,168,106,.22);
+  font-size:12px;
+  font-weight:800;
+  padding:5px 10px;
+  border-radius:14px;
+  letter-spacing:.02em;
+}
+body.tf .hero .hcpchips{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+body.tf .hero .hcpchips.bettors{margin-top:8px}
+body.tf .hero .hcpchips span{background:#ffffff26;padding:6px 10px;border-radius:20px;font-size:13px;color:#f3ecdc}
+body.tf .hero .hcpchips b{font-weight:800;color:#f3ecdc}
+body.tf .hero .stat{display:flex;gap:10px;margin-top:14px}
+body.tf .hero .stat div{flex:1;background:#ffffff1f;border-radius:12px;padding:8px 10px;font-size:11px;color:#f3ecdc;line-height:1.25}
+body.tf .hero .stat b{display:block;font-size:20px;font-weight:800;color:#f3ecdc;font-family:Inter,system-ui,sans-serif;letter-spacing:0}
 body.tf .sync{font-size:11px;color:#8d8a83;margin:0 0 12px}
 body.tf .crumb{background:transparent;border:0;color:#bdb7aa;margin:0 0 8px;padding:0}
 body.tf .crumb a{color:#c9a86a;border:0}
