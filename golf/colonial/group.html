@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="../group.css">
 </head><body class="mk">
 <header class="mast"><div class="wrap mast-in"><a class="brand" href="/"><svg class="gate" viewBox="0 0 100 86" role="img" aria-label="Torii gate"><path fill="currentColor" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="currentColor" x="10" y="19" width="80" height="6"/><rect fill="currentColor" x="46" y="25" width="8" height="11"/><rect fill="currentColor" x="13" y="31" width="74" height="6"/><path fill="currentColor" d="M22 19h9l2 61h-13z"/><path fill="currentColor" d="M69 19h9l2 61h-13z"/><rect fill="currentColor" x="17" y="78" width="19" height="6"/><rect fill="currentColor" x="64" y="78" width="19" height="6"/></svg><span class="wm"><strong>Torii</strong></span></a><a class="toplink" href="./">Tee sheet</a></div></header>
+<div id="acctbar" class="acctbar out" role="status"><a href="#gate">Sign in to get 100 free tokens</a></div>
 <main class="page"><div class="wrap">
 <div class="card" id="gate">Loading…</div>
 <div id="board"></div>
@@ -12,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../accountbar.js"></script>
 <script>
 const CLUB='colonial';
 const qs=new URLSearchParams(location.search);
@@ -64,4 +66,5 @@ let PREVIEW=false;
 A.onAuthStateChanged(async u=>{if(PREVIEW)return;USER=u;MEMBER=false;GROUP=null;ACCT=null;PRICES={};ACTIVITY={};MY={};if(!u){B.innerHTML='';return signInForm()}G.innerHTML='<p class="ok">Signed in as '+esc(u.email)+'</p>';loadGroup()});
 setInterval(()=>{const el=document.getElementById('livephase');if(!el||!GROUP)return;const next=statusText();if(el.textContent!==next)el.textContent=next},1000);
 window.renderGroupPreview=function(group){PREVIEW=true;GROUP=group;ACCT={bal:100,granted:true,n:'Member'};USER={uid:'preview',email:'member@example.com'};MEMBER=true;G.style.display='none';draw()};
+ToriiAccountBar.mount({auth:A,db:D});
 </script></body></html>
