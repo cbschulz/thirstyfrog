@@ -192,14 +192,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   .viewmk{width:100%;justify-content:center;padding:14px 18px}
   .gstat{align-items:flex-start}
 }
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}
 .mkt{position:relative;background:linear-gradient(180deg,#fffdf8,var(--paper));border:1px solid rgba(20,32,51,.08);border-radius:18px;padding:18px 18px 14px;margin:0 0 16px;box-shadow:0 10px 28px rgba(14,28,47,.05)}
 .mkt::before{content:"";position:absolute;left:18px;right:18px;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-2),transparent)}
 .mkt h2{font-family:var(--serif);font-weight:600;font-size:28px;margin:0 0 12px}
-.contracts{display:flex;flex-wrap:wrap;gap:10px}
-.contract{flex:1 1 140px;text-align:left;font:500 14px/1.3 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink);background:#fff;border:1px solid rgba(166,133,69,.4);border-radius:14px;padding:12px 12px 10px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.contracts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;flex-direction:column;gap:8px}
+.contract{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;font:500 14px/1.3 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink);background:#fff;border:1px solid rgba(166,133,69,.4);border-radius:14px;padding:12px 14px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.contract .clabel{display:flex;flex-direction:column;gap:2px;min-width:0}
+.contract small{display:block}
 .contract .yes{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
-.contract b{display:block;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;margin:4px 0}
+.contract b{font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;margin:0;flex:none}
 .contract small{color:var(--muted);font-size:12px}
 .contract.tone-yes{border-color:rgba(31,107,69,.45)}
 .contract.tone-yes .yes,.contract.tone-yes b{color:var(--fairway)}
@@ -218,13 +220,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .spark .line{fill:none;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}
 .spark .area{stroke:none}
 .chartcap{margin:4px 0 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.ticket{position:sticky;top:16px;background:var(--paper);border:1px solid rgba(20,32,51,.08);border-radius:18px;padding:18px;box-shadow:0 12px 32px rgba(14,28,47,.06)}
-.ticket h2{font-family:var(--serif);font-weight:600;font-size:30px;margin:0 0 8px}
+.slip{background:#fff;border:1px solid rgba(31,107,69,.35);border-radius:14px;padding:14px 14px 12px;box-shadow:0 8px 20px rgba(14,28,47,.06)}
+.slip-price{margin:4px 0;font-size:16px}
+.slip-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.slip .place,.slip .cancel{margin-top:0;min-height:44px}
+.slip .cancel{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:12px 16px;font:600 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.slip .cancel:hover{border-color:var(--fairway);color:var(--fairway)}
+.oknote{color:var(--fairway);font-weight:700;margin:8px 0 0}
 .pay{font-family:var(--serif);font-size:26px;margin:10px 0}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.chips button{margin:0;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);letter-spacing:.08em;padding:8px 12px;font-size:12px;cursor:pointer}
+.chips button{margin:0;min-height:40px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);letter-spacing:.08em;padding:10px 14px;font-size:13px;cursor:pointer}
 .chips button:hover{border-color:var(--fairway);color:var(--fairway)}
+.chips button.on,.chips button.on:hover{background:var(--fairway);color:#f6f1e7;border-color:var(--fairway)}
 .chips button:active{background:#e7f3ea}
+.chips button.on:active{background:#145c38}
 .tracker{margin-top:8px}
 .tracker h2{font-family:var(--serif);font-size:32px;font-weight:600;margin:18px 0 8px}
 .rowline{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(20,32,51,.08);font-size:14px}
@@ -233,11 +242,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .livepill.open{background:#e5f6eb;color:#146b3a}
 .livepill.locked{background:#f8efe8;color:#8d3b45}
 .livepill.final{background:#f6f0dc;color:#6d5420}
-@media (max-width:800px){
-  .layout{grid-template-columns:1fr}
-  .ticket{position:static}
-}
 @media (max-width:720px){
+  .mkt{padding:14px 12px 12px}
+  .mkt h2{font-size:24px}
+  .contract{padding:14px 14px;min-height:56px}
+  .contract b{font-size:28px}
+  .slip-actions{flex-direction:column;align-items:stretch}
+  .slip .place,.slip .cancel{width:100%}
   .wrap{padding:0 18px}
   .mast-in{padding:20px 0;align-items:flex-end}
   .gate{width:52px}
