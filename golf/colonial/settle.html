@@ -28,37 +28,17 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 function clubForm(){G.style.display='';G.innerHTML='<p class="kicker">Members</p><h2>Colonial members password</h2><p class="muted">Enter the club password once. It unlocks this board for your account.</p><label>Club password<input id="cp" type="password" placeholder="Club password" autocomplete="off"></label><div class="actions"><button type="button" id="unlock">Unlock</button><a href="#" id="so">Sign out</a></div><p id="m" class="err"></p>';document.getElementById('unlock').onclick=unlock;document.getElementById('so').onclick=e=>{e.preventDefault();A.signOut()};}
 async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);load()}catch(x){document.getElementById('m').textContent='Wrong club password.'}}
 function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'This day';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric'}).format(new Date(t)):day}
-function paint(sum, day){
+function paint(raw, day){
   const when=fmtDay(day);
   document.title=when+' settle-up · Torii Golf';
   const eye='Colonial CC · '+when;
-  let body='';
-  if(!sum.people.length){
-    body='<p class="muted">No play-money bets on this day yet.</p>';
-  }else if(sum.pending){
-    body='<p class="kstatus"><i></i><span>Pending — settles after rounds are posted</span></p><p class="muted">Markets lock at tee time. Results are posted after the round. Tokens only, no cash value.</p>';
-    sum.people.forEach(p=>{
-      body+='<h2 class="sech">'+esc(p.name)+'</h2>';
-      if(!p.open.length) body+='<p class="muted">No open action.</p>';
-      else p.open.forEach(o=>{body+='<div class="rowline"><span>'+esc(o.title)+' · '+esc(o.label)+'</span><b>'+esc(o.a)+' tokens</b></div>'});
-    });
-  }else{
-    body='<p class="keye">Settled · play money</p><p class="muted">Net tokens are winnings minus stakes. The list below is the smallest set of payments that squares the day.</p>';
-    sum.people.forEach(p=>{
-      const n=p.net;
-      const txt=(n>0?'+':'')+n+' tokens';
-      body+='<div class="rowline"><span>'+esc(p.name)+'</span><b class="'+(n>0?'up':n<0?'dn':'')+'">'+esc(txt)+'</b></div>';
-    });
-    body+='<h2 class="sech">Who owes who</h2>';
-    if(!sum.payments.length) body+='<p class="muted">All square.</p>';
-    else sum.payments.forEach(pay=>{body+='<div class="rowline"><span>'+esc(pay.from)+' owes '+esc(pay.to)+'</span><b>'+esc(pay.amt)+' tokens</b></div>'});
-  }
+  const body=ToriiSettle.sectionsHTML(ToriiSettle.board(raw||{}), esc);
   B.innerHTML='<section class="hero"><small class="keye">'+esc(eye)+'</small><h1>Today\'s settle-up</h1><p>Play money tokens. No cash value. Settled after the round, not during it.</p></section>'+body+'<p class="muted" style="margin-top:28px"><a href="./">Back to the tee sheet</a></p>';
 }
 async function load(){
   let root;try{root=(await D.ref('golf/'+CLUB+'/sheets').once('value')).val()}catch(x){return clubForm()}
   if(!DATE){const days=Object.keys(root||{}).sort();DATE=days.length?days[days.length-1]:''}
-  if(!DATE||!root||!root[DATE]||!root[DATE].groups){G.style.display='none';paint({pending:false,people:[],payments:[]},DATE);return}
+  if(!DATE||!root||!root[DATE]||!root[DATE].groups){G.style.display='none';paint({groups:{},bets:{},activity:{}},DATE);return}
   const groups=root[DATE].groups;
   const bets={};const activity={};
   await Promise.all(Object.keys(groups).map(async gid=>{
@@ -66,10 +46,11 @@ async function load(){
     try{activity[gid]=(await D.ref('golf_activity/'+CLUB+'/'+DATE+'/'+gid).once('value')).val()||{}}catch(e){activity[gid]={}}
   }));
   G.style.display='none';
-  paint(ToriiSettle.summarize({groups,bets,activity}), DATE);
+  let self=null;try{const acct=(await D.ref('golf_accounts/'+A.currentUser.uid).once('value')).val();self={uid:A.currentUser.uid,name:(acct&&acct.n)||'Member'}}catch(err){self={uid:A.currentUser.uid,name:'Member'}}
+  paint({groups,bets,activity,self}, DATE);
 }
 let PREVIEW=false;
 A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;if(!u){B.innerHTML='';return ToriiEnter.showName(G,A,D)}load()});
 ToriiAccountBar.mount({auth:A,db:D});
-window.renderSettlePreview=function(raw){PREVIEW=true;G.style.display='none';paint(ToriiSettle.summarize(raw), raw.date||'2026-11-01')};
+window.renderSettlePreview=function(raw){PREVIEW=true;G.style.display='none';paint(raw, raw.date||'2026-11-01');if(window.ToriiAccountBar)ToriiAccountBar.preview({signedIn:true,bal:100,wagered:0,open:0})};
 </script></body></html>

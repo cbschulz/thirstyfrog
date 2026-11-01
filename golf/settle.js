@@ -44,7 +44,14 @@
     }
     return out;
   }
-  function summarize(raw) {
+  function totalReturn(amount, cents, won) {
+    var a = Math.floor(Number(amount));
+    if (!(a > 0) || !won) return 0;
+    var p = Math.floor(Number(cents));
+    if (p < 1 || p > 99) return 0;
+    return Math.floor(a * 100 / p);
+  }
+  function walk(raw) {
     var groups = raw && raw.groups || {};
     var people = {};
     var pending = false;
@@ -59,30 +66,84 @@
         var uid = b.uid || bid;
         var info = act[bid] || {};
         var name = info.n || b.n || 'Member';
-        if (!people[uid]) people[uid] = { uid: uid, name: name, net: 0, open: [] };
+        if (!people[uid]) people[uid] = { uid: uid, name: name, net: 0, open: [], cash: 100, openStake: 0 };
         if (name && name !== 'Member') people[uid].name = name;
         var line = lines[Number(b.line)] || {};
         var title = info.title || line.title || 'Market';
         var label = info.label || b.label || b.side || '';
         var stake = Math.floor(+b.a || 0);
+        if (!(stake > 0)) return;
         var status = String(line.status || '').toLowerCase();
         var won = b.st === 'won' ? true : b.st === 'lost' ? false : null;
         if (won === null && status === 'settled') won = sideWins(line, b.side, label);
+        people[uid].cash -= stake;
         if (won === null) {
           pending = true;
+          people[uid].openStake += stake;
           people[uid].open.push({ title: title, label: label, a: stake });
           return;
         }
+        people[uid].cash += totalReturn(b.a, b.px, won);
         people[uid].net += profit(b.a, b.px, won);
       });
     });
-    var list = Object.keys(people).map(function (k) { return people[k]; });
+    var self = raw && raw.self;
+    if (self && self.uid && !people[self.uid]) {
+      people[self.uid] = { uid: self.uid, name: self.name || 'Member', net: 0, open: [], cash: 100, openStake: 0 };
+    }
+    return { people: people, pending: pending };
+  }
+  function summarize(raw) {
+    var walked = walk(raw);
+    var list = Object.keys(walked.people).map(function (k) { return walked.people[k]; });
     list.sort(function (a, b) { return b.net - a.net || a.name.localeCompare(b.name); });
     var open = list.some(function (p) { return p.open.length; });
-    return { pending: pending || open, people: list, payments: (pending || open) ? [] : payments(list) };
+    return { pending: walked.pending || open, people: list, payments: (walked.pending || open) ? [] : payments(list) };
+  }
+  function byBankroll(a, b) {
+    return (b.cash + b.openStake) - (a.cash + a.openStake) || a.name.localeCompare(b.name);
+  }
+  function board(raw) {
+    var walked = walk(raw);
+    var list = Object.keys(walked.people).map(function (k) { return walked.people[k]; });
+    list.sort(byBankroll);
+    return { pending: walked.pending, people: list, payments: payments(list) };
+  }
+  function money(n) {
+    var neg = Number(n) < 0;
+    var abs = Math.abs(Math.round(Number(n) * 100) / 100);
+    var parts = String(abs).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '-' : '') + '$' + parts.join('.');
+  }
+  function sectionsHTML(view, esc) {
+    var safe = esc || function (s) { return String(s == null ? '' : s); };
+    var people = (view && view.people) || [];
+    var lb = people.length ? people.map(function (p, i) {
+      var mark = ['🥇', '🥈', '🥉'][i] || ((i + 1) + '.');
+      return '<div><span>' + mark + ' <b>' + safe(p.name) + '</b></span><span>' + money(p.cash) + ' <small>+ ' + money(p.openStake) + ' in open bets</small></span></div>';
+    }).join('') : '<div>No players yet.</div>';
+    var ow;
+    if (!people.length) ow = '<div>No players yet.</div>';
+    else {
+      ow = people.map(function (p) {
+        var net = Math.round(p.net * 100) / 100;
+        var cls = net > 0 ? 'up' : net < 0 ? 'dn' : '';
+        var txt = (net > 0 ? '+' : '') + money(net).replace('$-', '-$');
+        return '<div><span>' + safe(p.name) + '</span><span class="' + cls + '">' + txt + '</span></div>';
+      }).join('');
+      var pays = ((view && view.payments) || []).map(function (p) {
+        return safe(p.from) + ' pays ' + safe(p.to) + ' ' + money(p.amt);
+      });
+      ow += '<div class="settleup"><b>Settle-up:</b> ' + (pays.length ? pays.join(' · ') : 'All square so far.') + '</div>';
+    }
+    return '<div class="standings"><h2>Leaderboard</h2><p class="sub">Cash on hand, plus open bets at cost (stakes still riding).</p><div class="card lb">' + lb + '</div><h2>Who owes who</h2><p class="sub">Settled results only, versus the $100 start. Winners are paid from the losers\' stakes; the House pays nothing.</p><div class="card ow">' + ow + '</div></div>';
   }
   G.profit = profit;
   G.sideWins = sideWins;
   G.payments = payments;
   G.summarize = summarize;
+  G.board = board;
+  G.money = money;
+  G.sectionsHTML = sectionsHTML;
 })(typeof window !== 'undefined' ? (window.ToriiSettle = window.ToriiSettle || {}) : (globalThis.ToriiSettle = globalThis.ToriiSettle || {}));

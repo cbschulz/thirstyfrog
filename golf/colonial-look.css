@@ -256,8 +256,32 @@ body.tf .sech{
   text-transform:none;
 }
 body.tf .sheetlink{color:#c9a86a}
-body.tf .rowline b.up{color:#7fbf95}
-body.tf .rowline b.dn{color:#d98a8a}
+body.tf .rowline b.up,
+body.tf .up{color:#7fbf95;font-weight:700}
+body.tf .rowline b.dn,
+body.tf .dn{color:#d98a8a;font-weight:700}
+body.tf .standings{margin-top:8px}
+body.tf .standings h2{margin:26px 0 4px}
+body.tf .standings .sub{margin:0 0 12px;font-size:14px;color:#b9b3a6}
+body.tf .card.lb,
+body.tf .card.ow{padding:4px 16px 8px;margin:0 0 8px}
+body.tf .lb div,
+body.tf .ow div{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  padding:9px 0;
+  border-top:1px solid rgba(201,168,106,.12);
+  font-size:14px;
+  color:#f3ecdc;
+}
+body.tf .lb div:first-child,
+body.tf .ow div:first-child{border-top:0}
+body.tf .lb small{color:#8d8a83;font-weight:600;font-size:12px}
+body.tf .lb div span:last-child,
+body.tf .ow div span:last-child{text-align:right}
+body.tf .ow .settleup{display:block;padding-top:12px}
 body.tf a{color:#c9a86a}
 @media (max-width:720px){
   body.tf .acctbar .num{font-size:20px}

@@ -17,6 +17,7 @@
 <div class="card" id="gate">Loading…</div><div id="sheet"></div>
 </div></main>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../settle.js"></script>
 <script src="../enter.js"></script>
 <script src="../accountbar.js"></script>
 <script>
@@ -57,12 +58,19 @@ function sortGroups(gs){return gs.slice().sort((a,b)=>{const ta=Date.parse(teeOf
 function withIds(obj){return Object.keys(obj||{}).map(function(id){return Object.assign({id:id}, obj[id]||{})})}
 function groupList(d){if(!d)return {day:'',groups:[]};if(d.sheets&&Object.keys(d.sheets).length){const day=Object.keys(d.sheets).sort().pop(),gs=(d.sheets[day]&&d.sheets[day].groups)?withIds(d.sheets[day].groups):[];return {day,groups:sortGroups(gs)}}if(d.groups)return {day:'',groups:sortGroups(withIds(d.groups))};return {day:'',groups:[]}}
 function tickSheet(){document.querySelectorAll('.phase').forEach(el=>{const phase=phaseNow(el.dataset.settled==='1',Date.parse(el.dataset.tee||''));el.className='phase '+phase.kind;el.hidden=phase.kind!=='count';if(phase.kind==='count'&&el.textContent!==phase.text)el.textContent=phase.text});document.querySelectorAll('.gst').forEach(el=>{const eff=shownStatus(el.dataset.settled==='1'?'settled':el.dataset.status,Date.parse(el.dataset.tee||''));const word=statusWord(eff);el.className='gst st '+eff;if(el.textContent!==word)el.textContent=word})}
+async function dayBooks(day,groups){const bets={},activity={};let all=null;try{all=(await D.ref('golf_bets/'+CLUB+'/'+day).once('value')).val()||{}}catch(err){all=null}await Promise.all(Object.keys(groups).map(async gid=>{if(all)bets[gid]=all[gid]||{};else{try{bets[gid]=(await D.ref('golf_bets/'+CLUB+'/'+day+'/'+gid).once('value')).val()||{}}catch(err){bets[gid]={}}}try{activity[gid]=(await D.ref('golf_activity/'+CLUB+'/'+day+'/'+gid).once('value')).val()||{}}catch(err){activity[gid]={}}}));return {bets,activity}}
+async function selfName(u){let n='Member';try{const acct=(await D.ref('golf_accounts/'+u.uid).once('value')).val();if(acct&&acct.n)n=acct.n}catch(err){}if(n==='Member'){const saved=ToriiEnter.savedName(u);if(saved)n=saved}return {uid:u.uid,name:n}}
+function sheetHTML(pack,body,books){function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'No tee sheet posted yet';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'long',month:'long',day:'numeric'}).format(new Date(t)):day}const board=ToriiSettle.board(books||{groups:{},bets:{},activity:{}});return '<section class="dayhead"><h2>'+(pack.day?e(fmtDay(pack.day)):'No tee sheet posted yet')+'</h2><p class="muted">Tee times in America/Chicago. Lines lock at tee time.</p>'+(pack.day?'<a class="sheetlink" href="settle.html?date='+encodeURIComponent(pack.day)+'">Today\'s settle-up</a>':'')+'<div class="glist">'+body+'</div></section>'+ToriiSettle.sectionsHTML(board,e)}
 async function load(){const u=A.currentUser;let d;try{d=(await D.ref('golf/'+CLUB).once('value')).val()}catch(x){return clubForm()}
  G.innerHTML='<p class="ok">Unlocked as '+e(u.email)+' · <a href="#" onclick="A.signOut();return false">Sign out</a></p>';
  const pack=groupList(d),body=pack.groups.length?pack.groups.map((g,i)=>grpHTML(g,false,pack.day,i)).join(''):grpHTML(sampleGroup(),true,null,0);
- function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'No tee sheet posted yet';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'long',month:'long',day:'numeric'}).format(new Date(t)):day}
-S.innerHTML='<section class="dayhead"><h2>'+(pack.day?e(fmtDay(pack.day)):'No tee sheet posted yet')+'</h2><p class="muted">Tee times in America/Chicago. Lines lock at tee time.</p>'+(pack.day?'<a class="sheetlink" href="settle.html?date='+encodeURIComponent(pack.day)+'">Today\'s settle-up</a>':'')+'<div class="glist">'+body+'</div></section>';tickSheet()}
-A.onAuthStateChanged(async u=>{await ToriiEnter.hold();S.innerHTML='';if(!u)return ToriiEnter.showName(G,A,D);load()});
+ const gmap={};pack.groups.forEach(g=>{gmap[g.id]=g});
+ const books=pack.day?await dayBooks(pack.day,gmap):{bets:{},activity:{}};
+ books.groups=gmap;books.self=await selfName(u);
+S.innerHTML=sheetHTML(pack,body,books);tickSheet()}
+let PREVIEW=false;
+A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;S.innerHTML='';if(!u)return ToriiEnter.showName(G,A,D);load()});
+window.renderSheetPreview=function(opts){PREVIEW=true;G.style.display='none';const groups=opts.groups||[];const day=opts.day||'2026-11-01';const pack={day:day,groups:groups};const body=groups.length?groups.map((g,i)=>grpHTML(Object.assign({id:g.id},g),false,day,i)).join(''):grpHTML(sampleGroup(),true,null,0);const gmap={};groups.forEach(g=>{if(g.id)gmap[g.id]=g});S.innerHTML=sheetHTML(pack,body,{groups:gmap,bets:opts.bets||{},activity:opts.activity||{},self:opts.self||null});if(window.ToriiAccountBar)ToriiAccountBar.preview({signedIn:true,bal:100,wagered:0,open:0});tickSheet()};
 setInterval(tickSheet,1000);
 ToriiAccountBar.mount({auth:A,db:D});
 </script></body></html>
