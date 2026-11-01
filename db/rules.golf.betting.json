@@ -1,0 +1,762 @@
+{
+ "rules": {
+  "prize": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_internetinvite": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_onebite": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_pmt": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_chiclets": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_pickem": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_elpres": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "xfeed_dwts": {
+   ".read": true,
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+  },
+  "admins": {
+   "$uid": {
+    ".read": "auth != null && auth.uid === $uid"
+   },
+   ".write": false
+  },
+  "users": {
+   "$uid": {
+    ".read": "auth != null && (auth.uid === $uid || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+    ".write": "auth != null && auth.uid === $uid",
+    ".validate": "newData.hasChildren(['first','last','email','createdAt'])",
+    "first": {
+     ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 30"
+    },
+    "last": {
+     ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 30"
+    },
+    "email": {
+     ".validate": "newData.isString() && newData.val() === auth.token.email"
+    },
+    "createdAt": {
+     ".validate": "newData.isNumber()"
+    },
+    "boards": {
+     "$b": {
+      ".validate": "newData.isNumber() && $b.matches(/^(internetinvite|onebite|pmt|chiclets|pickem|elpres|dwts)$/)"
+     }
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "wallets": {
+   ".read": true,
+   "$uid": {
+    ".write": "auth != null && ((auth.uid === $uid && newData.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+    ".validate": "newData.hasChildren(['bal','n']) && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!data.exists() && auth.uid === $uid && newData.child('bal').val() === 1000 && !newData.child('lk').exists() && !newData.child('lb').exists() && (!newData.child('cr').exists() || newData.child('cr').val() === 0)) || (data.exists() && auth.uid === $uid && newData.child('n').val() === data.child('n').val() && newData.child('cr').val() === data.child('cr').val() && newData.child('c').val() === data.child('c').val() && newData.child('lb').isString() && newData.child('lb').val().matches(/^(internetinvite|hub_(onebite|pmt|chiclets|pickem|elpres|dwts))$/) && newData.child('lk').isString() && newData.child('lk').val() !== data.child('lk').val() && !root.child(newData.child('lb').val()).child('bets').child(newData.child('lk').val()).exists() && newData.parent().parent().child(newData.child('lb').val()).child('bets').child(newData.child('lk').val()).child('p').val() === $uid && newData.child('bal').val() === data.child('bal').val() - newData.parent().parent().child(newData.child('lb').val()).child('bets').child(newData.child('lk').val()).child('a').val() && newData.child('bal').val() + (newData.child('cr').exists() ? newData.child('cr').val() : 0) >= 0))",
+    "bal": {
+     ".validate": "newData.isNumber()"
+    },
+    "cr": {
+     ".validate": "newData.isNumber()"
+    },
+    "n": {
+     ".validate": "newData.isString() && newData.val().length <= 40"
+    },
+    "c": {
+     ".validate": "newData.isNumber()"
+    },
+    "lb": {
+     ".validate": "newData.isString()"
+    },
+    "lk": {
+     ".validate": "newData.isString()"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "internetinvite": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && false && (!root.child('internetinvite').child('closes').child(newData.child('m').val()).exists() || now < root.child('internetinvite').child('closes').child(newData.child('m').val()).val()) && !root.child('internetinvite').child('settled').child(newData.child('m').val()).exists() && root.child('internetinvite').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'internetinvite' && newData.parent().parent().parent().child('internetinvite').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('internetinvite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('internetinvite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('internetinvite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('internetinvite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'internetinvite' && newData.parent().parent().parent().parent().child('internetinvite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('internetinvite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('internetinvite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('internetinvite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_onebite": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_onebite').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_onebite').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_onebite').child('settled').child(newData.child('m').val()).exists() && root.child('hub_onebite').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_onebite' && newData.parent().parent().parent().child('hub_onebite').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_onebite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_onebite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_onebite').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_onebite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_onebite' && newData.parent().parent().parent().parent().child('hub_onebite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_onebite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_onebite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_onebite').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_pmt": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_pmt').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_pmt').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_pmt').child('settled').child(newData.child('m').val()).exists() && root.child('hub_pmt').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_pmt' && newData.parent().parent().parent().child('hub_pmt').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_pmt').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_pmt').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_pmt').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_pmt').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_pmt' && newData.parent().parent().parent().parent().child('hub_pmt').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_pmt').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_pmt').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_pmt').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_chiclets": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_chiclets').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_chiclets').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_chiclets').child('settled').child(newData.child('m').val()).exists() && root.child('hub_chiclets').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_chiclets' && newData.parent().parent().parent().child('hub_chiclets').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_chiclets').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_chiclets').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_chiclets').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_chiclets').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_chiclets' && newData.parent().parent().parent().parent().child('hub_chiclets').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_chiclets').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_chiclets').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_chiclets').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_pickem": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_pickem').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_pickem').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_pickem').child('settled').child(newData.child('m').val()).exists() && root.child('hub_pickem').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_pickem' && newData.parent().parent().parent().child('hub_pickem').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_pickem').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_pickem').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_pickem').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_pickem').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_pickem' && newData.parent().parent().parent().parent().child('hub_pickem').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_pickem').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_pickem').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_pickem').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_elpres": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_elpres').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_elpres').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_elpres').child('settled').child(newData.child('m').val()).exists() && root.child('hub_elpres').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_elpres' && newData.parent().parent().parent().child('hub_elpres').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_elpres').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_elpres').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_elpres').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_elpres').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_elpres' && newData.parent().parent().parent().parent().child('hub_elpres').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_elpres').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_elpres').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_elpres').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "hub_dwts": {
+   ".read": true,
+   "players": {
+    "$uid": {
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['n','t']) && newData.child('n').isString() && newData.child('n').val().length <= 40 && newData.child('t').isNumber() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || root.child('users').child($uid).exists())"
+    }
+   },
+   "bets": {
+    "$bid": {
+     ".write": "auth != null && ((!data.exists() && newData.child('p').val() === auth.uid && (!root.child('hub_dwts').child('closes').child(newData.child('m').val()).exists() || now < root.child('hub_dwts').child('closes').child(newData.child('m').val()).val()) && !root.child('hub_dwts').child('settled').child(newData.child('m').val()).exists() && root.child('hub_dwts').child('closed').val() !== true && now < 1798779600000 && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_dwts' && newData.parent().parent().parent().child('hub_dwts').child('players').child(auth.uid).exists() && newData.parent().parent().parent().child('hub_dwts').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() === (root.child('hub_dwts').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).exists() ? root.child('hub_dwts').child('pools').child(newData.child('m').val()).child(newData.child('s').val()).val() : 0) + newData.child('a').val()) || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+     ".validate": "newData.hasChildren(['id','m','s','p','a','t']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+     "id": {
+      ".validate": "newData.val() === $bid"
+     },
+     "m": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "s": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-q]$/)"
+     },
+     "p": {
+      ".validate": "newData.isString()"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 1000 && newData.val() % 1 === 0"
+     },
+     "t": {
+      ".validate": "newData.isNumber() && newData.val() <= now + 5000 && newData.val() >= now - 120000"
+     },
+     "sh": {
+      ".validate": "newData.isNumber() && newData.val() > 0"
+     },
+     "px": {
+      ".validate": "newData.hasChildren()",
+      "$i": {
+       ".validate": "newData.isNumber()"
+      }
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   },
+   "pools": {
+    "$m": {
+     "$s": {
+      ".write": "auth != null && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!root.child('hub_dwts').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).exists() && newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lb').val() === 'hub_dwts' && newData.parent().parent().parent().parent().child('hub_dwts').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('m').val() === $m && newData.parent().parent().parent().parent().child('hub_dwts').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('s').val() === $s && newData.parent().parent().parent().parent().child('hub_dwts').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('p').val() === auth.uid && newData.val() === (data.exists() ? data.val() : 0) + newData.parent().parent().parent().parent().child('hub_dwts').child('bets').child(newData.parent().parent().parent().parent().child('wallets').child(auth.uid).child('lk').val()).child('a').val()))",
+      ".validate": "newData.isNumber() && newData.val() >= 0"
+     }
+    }
+   },
+   "paid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)",
+    "$uid": {
+     ".validate": "newData.isNumber()"
+    }
+   },
+   "$other": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true)"
+   }
+  },
+  "golf_keys": {
+   ".read": false,
+   "$club": {
+    ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
+   }
+  },
+  "golf_members": {
+   "$club": {
+    ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
+    "$uid": {
+     ".read": "auth != null && auth.uid === $uid",
+     ".write": "auth != null && ((auth.uid === $uid && !data.exists()) || root.child('admins').child(auth.uid).val() === true)",
+     ".validate": "(root.child('admins').child(auth.uid).val() === true) || (newData.isString() && newData.val().length <= 64 && root.child('golf_keys').child($club).child(newData.val()).val() === true && root.child('users').child($uid).exists())"
+    }
+   }
+  },
+  "golf": {
+   "$club": {
+    ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('golf_members').child($club).child(auth.uid).exists())",
+    ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
+   }
+  },
+  "golf_accounts": {
+   "$uid": {
+    ".read": "auth != null && (auth.uid === $uid || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+    ".write": "auth != null && newData.exists() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (auth.uid === $uid && (!data.exists() && newData.child('bal').val() === 100 && newData.child('granted').val() === true && !newData.child('lk').exists() && !newData.child('lc').exists() && !newData.child('ld').exists() && !newData.child('lg').exists() || data.exists() && data.child('granted').val() === true && newData.child('granted').val() === true && newData.child('n').val() === data.child('n').val() && newData.child('createdAt').val() === data.child('createdAt').val() && newData.child('lk').isString() && newData.child('lc').val() === 'colonial' && newData.child('ld').isString() && newData.child('lg').isString() && newData.child('bal').isNumber() && newData.child('bal').val() >= 0 && newData.child('bal').val() === data.child('bal').val() - newData.parent().parent().child('golf_bets').child(newData.child('lc').val()).child(newData.child('ld').val()).child(newData.child('lg').val()).child(newData.child('lk').val()).child('a').val() && newData.parent().parent().child('golf_bets').child(newData.child('lc').val()).child(newData.child('ld').val()).child(newData.child('lg').val()).child(newData.child('lk').val()).child('uid').val() === $uid && newData.parent().parent().child('golf_bets').child(newData.child('lc').val()).child(newData.child('ld').val()).child(newData.child('lg').val()).child(newData.child('lk').val()).child('a').val() > 0 && newData.parent().parent().child('golf_bets').child(newData.child('lc').val()).child(newData.child('ld').val()).child(newData.child('lg').val()).child(newData.child('lk').val()).child('a').val() <= data.child('bal').val() && !root.child('golf_bets').child(newData.child('lc').val()).child(newData.child('ld').val()).child(newData.child('lg').val()).child(newData.child('lk').val()).exists())))",
+    ".validate": "newData.hasChildren(['bal','granted','n','createdAt'])",
+    "bal": {
+     ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() % 1 === 0 && newData.val() <= 100000"
+    },
+    "granted": {
+     ".validate": "newData.val() === true"
+    },
+    "n": {
+     ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+    },
+    "createdAt": {
+     ".validate": "newData.isNumber()"
+    },
+    "lc": {
+     ".validate": "newData.isString() && newData.val() === 'colonial'"
+    },
+    "ld": {
+     ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)"
+    },
+    "lg": {
+     ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+    },
+    "lk": {
+     ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{8,24}$/)"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "golf_bets": {
+   "$club": {
+    "$date": {
+     "$gid": {
+      "$bid": {
+       ".read": "auth != null && (data.child('uid').val() === auth.uid || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+       ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (auth != null && !data.exists() && newData.child('uid').val() === auth.uid && newData.child('st').val() === 'open' && newData.child('id').val() === $bid && newData.child('a').isNumber() && newData.child('a').val() > 0 && newData.child('a').val() % 1 === 0 && newData.child('px').isNumber() && newData.child('px').val() >= 1 && newData.child('px').val() <= 99 && newData.child('px').val() % 1 === 0 && newData.child('line').isString() && newData.child('line').val().matches(/^[0-3]$/) && newData.child('side').isString() && newData.child('side').val().matches(/^[a-z0-9]{1,8}$/) && newData.child('t').isNumber() && newData.child('t').val() <= now + 5000 && newData.child('t').val() >= now - 120000 && root.child('golf_members').child($club).child(auth.uid).exists() && root.child('golf').child($club).child('sheets').child($date).child('groups').child($gid).child('lines').child(newData.child('line').val()).child('status').val() === 'open' && root.child('golf').child($club).child('sheets').child($date).child('groups').child($gid).child('teeTimeMs').isNumber() && root.child('golf').child($club).child('sheets').child($date).child('groups').child($gid).child('teeTimeMs').val() > now && newData.parent().parent().parent().parent().parent().child('golf_accounts').child(auth.uid).child('lk').val() === $bid && newData.parent().parent().parent().parent().parent().child('golf_accounts').child(auth.uid).child('lc').val() === $club && newData.parent().parent().parent().parent().parent().child('golf_accounts').child(auth.uid).child('ld').val() === $date && newData.parent().parent().parent().parent().parent().child('golf_accounts').child(auth.uid).child('lg').val() === $gid && newData.parent().parent().parent().parent().parent().child('golf_accounts').child(auth.uid).child('bal').val() === root.child('golf_accounts').child(auth.uid).child('bal').val() - newData.child('a').val())",
+       ".validate": "newData.hasChildren(['id','line','side','uid','a','px','t','st']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+       "id": {
+        ".validate": "newData.val() === $bid"
+       },
+       "line": {
+        ".validate": "newData.isString() && newData.val().matches(/^[0-3]$/)"
+       },
+       "side": {
+        ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{1,8}$/)"
+       },
+       "uid": {
+        ".validate": "newData.isString()"
+       },
+       "a": {
+        ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100 && newData.val() % 1 === 0"
+       },
+       "px": {
+        ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99 && newData.val() % 1 === 0"
+       },
+       "t": {
+        ".validate": "newData.isNumber()"
+       },
+       "st": {
+        ".validate": "newData.isString() && newData.val().matches(/^(open|settled|won|lost)$/)"
+       },
+       "$other": {
+        ".validate": false
+       }
+      }
+     }
+    }
+   }
+  },
+  "golf_mybets": {
+   "$uid": {
+    ".read": "auth != null && (auth.uid === $uid || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+    "$bid": {
+     ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (auth != null && auth.uid === $uid && !data.exists() && newData.child('st').val() === 'open' && newData.child('a').val() === newData.parent().parent().parent().child('golf_bets').child(newData.child('club').val()).child(newData.child('date').val()).child(newData.child('gid').val()).child($bid).child('a').val() && newData.parent().parent().parent().child('golf_bets').child(newData.child('club').val()).child(newData.child('date').val()).child(newData.child('gid').val()).child($bid).child('uid').val() === $uid)",
+     ".validate": "newData.hasChildren(['club','date','gid','line','side','a','px','t','st','title','label'])",
+     "club": {
+      ".validate": "newData.val() === 'colonial'"
+     },
+     "date": {
+      ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)"
+     },
+     "gid": {
+      ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_]{1,40}$/)"
+     },
+     "line": {
+      ".validate": "newData.isString() && newData.val().matches(/^[0-3]$/)"
+     },
+     "side": {
+      ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{1,8}$/)"
+     },
+     "a": {
+      ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100 && newData.val() % 1 === 0"
+     },
+     "px": {
+      ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99"
+     },
+     "t": {
+      ".validate": "newData.isNumber()"
+     },
+     "st": {
+      ".validate": "newData.isString() && newData.val().matches(/^(open|settled|won|lost)$/)"
+     },
+     "title": {
+      ".validate": "newData.isString() && newData.val().length <= 80"
+     },
+     "label": {
+      ".validate": "newData.isString() && newData.val().length <= 80"
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   }
+  },
+  "golf_activity": {
+   "$club": {
+    "$date": {
+     "$gid": {
+      ".read": "auth != null && (root.child('golf_members').child($club).child(auth.uid).exists() || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+      "$bid": {
+       ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (auth != null && !data.exists() && root.child('golf_members').child($club).child(auth.uid).exists() && newData.child('n').val() === root.child('golf_accounts').child(newData.parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('uid').val()).child('n').val() && newData.child('a').val() === newData.parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('a').val() && newData.parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('uid').val() === auth.uid)",
+       ".validate": "newData.hasChildren(['n','line','side','a','t','title','label'])",
+       "n": {
+        ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+       },
+       "line": {
+        ".validate": "newData.isString() && newData.val().matches(/^[0-3]$/)"
+       },
+       "side": {
+        ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{1,8}$/)"
+       },
+       "a": {
+        ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100"
+       },
+       "t": {
+        ".validate": "newData.isNumber()"
+       },
+       "title": {
+        ".validate": "newData.isString() && newData.val().length <= 80"
+       },
+       "label": {
+        ".validate": "newData.isString() && newData.val().length <= 80"
+       },
+       "$other": {
+        ".validate": false
+       }
+      }
+     }
+    }
+   }
+  },
+  "golf_prices": {
+   "$club": {
+    "$date": {
+     "$gid": {
+      "$line": {
+       ".read": "auth != null && (root.child('golf_members').child($club).child(auth.uid).exists() || (auth != null && root.child('admins').child(auth.uid).val() === true))",
+       "open": {
+        "$side": {
+         ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (auth != null && !data.exists() && root.child('golf_members').child($club).child(auth.uid).exists() && newData.child('src').val() === 'open' && newData.child('side').val() === $side && newData.child('c').isNumber() && newData.child('c').val() >= 1 && newData.child('c').val() <= 99)",
+         ".validate": "newData.hasChildren(['c','t','src','side'])",
+         "c": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99"
+         },
+         "t": {
+          ".validate": "newData.isNumber()"
+         },
+         "src": {
+          ".validate": "newData.val() === 'open'"
+         },
+         "side": {
+          ".validate": "newData.isString() && newData.val() === $side"
+         },
+         "$other": {
+          ".validate": false
+         }
+        }
+       },
+       "trades": {
+        "$bid": {
+         ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (auth != null && !data.exists() && root.child('golf_members').child($club).child(auth.uid).exists() && newData.child('src').val() === 'trade' && newData.child('c').val() === newData.parent().parent().parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('px').val() && newData.child('side').val() === newData.parent().parent().parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('side').val() && newData.parent().parent().parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('uid').val() === auth.uid && newData.parent().parent().parent().parent().parent().parent().parent().child('golf_bets').child($club).child($date).child($gid).child($bid).child('line').val() === $line)",
+         ".validate": "newData.hasChildren(['c','t','src','side']) && $bid.matches(/^[a-z0-9]{8,24}$/)",
+         "c": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99"
+         },
+         "t": {
+          ".validate": "newData.isNumber()"
+         },
+         "src": {
+          ".validate": "newData.val() === 'trade'"
+         },
+         "side": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{1,8}$/)"
+         },
+         "$other": {
+          ".validate": false
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
