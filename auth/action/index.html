@@ -34,7 +34,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;letter-spacing:.08em;ma
 </head>
 <body>
 <header>
-  <a class="brand" href="/hub/" aria-label="Torii Prediction Platform">
+  <a class="brand" href="/" aria-label="Torii Prediction Platform">
     <svg width="34" height="29" viewBox="0 0 100 86" aria-hidden="true"><path fill="#c9a86a" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="#c9a86a" x="10" y="19" width="80" height="6"/><rect fill="#c9a86a" x="46" y="25" width="8" height="11"/><rect fill="#c9a86a" x="13" y="31" width="74" height="6"/><path fill="#c9a86a" d="M22 19h9l2 61h-13z"/><path fill="#c9a86a" d="M69 19h9l2 61h-13z"/></svg>
     <span class="bw"><b>TORII</b><small>PREDICTION PLATFORM</small></span>
   </a>
@@ -75,7 +75,7 @@ function safeNext(){
       if(u.origin===location.origin||/(^|\.)toriipredict\.com$/.test(u.hostname)||u.hostname==='cbschulz.github.io') return u.href;
     }
   }catch(e){}
-  return '/hub/';
+  return '/';
 }
 const NEXT=safeNext();
 function show(title,html){box.innerHTML='<h1>'+title+'</h1>'+html}
@@ -92,7 +92,7 @@ function signInHref(email){
   q.set('signin','1');
   const e=String(email||'').trim();
   if(e) q.set('email',e);
-  return '/hub/?'+q.toString();
+  return '/?'+q.toString();
 }
 function signInPrompt(title,line,email){
   show(title,'<p>'+esc(line)+'</p><a class="btn" href="'+esc(signInHref(email))+'">Sign in to Torii</a>');
@@ -104,11 +104,11 @@ async function signedInAfterReload(){
   if(!u) return false;
   try{await u.reload()}catch(e){return false}
   if(!FA.currentUser) return false;
-  location.replace('/hub/');
+  location.replace('/');
   return true;
 }
 function missing(){
-  show('Invalid or missing link','<p>This page opens from a Torii account email. The link is invalid or missing the details we need.</p><p class="muted">Request a new verification or password reset from the boards.</p>'+hubLink('Back to /hub/'));
+  show('Invalid or missing link','<p>This page opens from a Torii account email. The link is invalid or missing the details we need.</p><p class="muted">Request a new verification or password reset from the boards.</p>'+hubLink('Back to /'));
 }
 function fail(x){
   const c=x&&x.code||'';
@@ -166,7 +166,7 @@ async function recoverEmail(){
     '<p>Your account email is back to <b>'+esc(old)+'</b>.</p>'+
     '<p class="muted">If you didn’t request that change, reset your password now.</p>'+
     '<button id="r" type="button">Send password reset</button><div class="err" id="e"></div>'+
-    hubLink('Back to /hub/'));
+    hubLink('Back to /'));
   const e=document.getElementById('e');
   document.getElementById('r').onclick=async()=>{
     const btn=document.getElementById('r');
@@ -194,13 +194,13 @@ async function recoverEmail(){
   try{
     if(!mode||!code){missing();return}
     if(apiKey&&apiKey!==HUB_KEY){
-      show('Invalid or missing link','<p>This link is not for Torii Prediction Platform.</p>'+hubLink('Back to /hub/'));
+      show('Invalid or missing link','<p>This link is not for Torii Prediction Platform.</p>'+hubLink('Back to /'));
       return;
     }
     if(mode==='resetPassword') await resetPassword();
     else if(mode==='verifyEmail') await verifyEmail();
     else if(mode==='recoverEmail') await recoverEmail();
-    else show('Unknown link','<p>We don’t recognize this kind of account link.</p>'+hubLink('Back to /hub/'));
+    else show('Unknown link','<p>We don’t recognize this kind of account link.</p>'+hubLink('Back to /'));
   }catch(x){fail(x)}
 })();
 </script>

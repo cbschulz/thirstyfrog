@@ -19,12 +19,15 @@
     if (!bar) return;
     if (!s || !s.signedIn) {
       bar.className = 'acctbar out';
-      bar.innerHTML = '<a href="#gate">Sign in to get 100 free tokens</a>';
+      bar.innerHTML = '<a href="#gate">Enter your name to get 100 free tokens</a>';
       return;
     }
     var n = s.open === 1 ? '1 open bet' : s.open + ' open bets';
+    var q = new URLSearchParams(location.search);
+    var day = q.get('date') || '';
+    var href = 'settle.html' + (day ? '?date=' + encodeURIComponent(day) : '');
     bar.className = 'acctbar in';
-    bar.innerHTML = '<div class="abrow"><div class="ab"><span class="lbl">Balance</span><span class="num">' + s.bal + '</span></div><div class="ab"><span class="lbl">Wagered</span><span class="num">' + s.wagered + '</span></div><p class="openbets">' + n + '</p></div>';
+    bar.innerHTML = '<div class="abrow"><div class="ab"><span class="lbl">Balance</span><span class="num">' + s.bal + '</span></div><div class="ab"><span class="lbl">Wagered</span><span class="num">' + s.wagered + '</span></div><p class="openbets">' + n + '</p></div><a class="settlelink" href="' + href + '">Today\'s settle-up</a>';
   }
 
   function unsub() {

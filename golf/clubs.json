@@ -55,6 +55,28 @@
    "c1": "#2b1d14",
    "c2": "#6b8f4e",
    "plate": false
+  },
+  {
+   "slug": "ridglea",
+   "name": "Ridglea",
+   "full": "Ridglea Country Club",
+   "city": "Fort Worth, TX",
+   "status": "soon",
+   "logo": "logos/ridglea.svg",
+   "c1": "#1e4a32",
+   "c2": "#b89c53",
+   "plate": true
+  },
+  {
+   "slug": "shadyoaks",
+   "name": "Shady Oaks",
+   "full": "Shady Oaks Country Club",
+   "city": "Fort Worth, TX",
+   "status": "soon",
+   "logo": "logos/shadyoaks.svg",
+   "c1": "#4a3018",
+   "c2": "#3d7a45",
+   "plate": true
   }
  ]
 }

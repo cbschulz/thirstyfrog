@@ -129,6 +129,42 @@ await check('non-admin settle blocked', async () => {
   await assertSucceeds(admin().ref('golf_bets/colonial/2026-11-02/g1/bet0seed/st').set('settled'));
 });
 
+await check('members can read the day sheet of bets', async () => {
+  await seed(async (db) => {
+    await db.ref('golf_bets/colonial/2026-11-02/g1/bet0bob1').set({ id: 'bet0bob1', line: '0', side: 'o0', uid: 'bob', a: 10, px: 40, t: Date.now(), st: 'open' });
+  });
+  await assertSucceeds(alice().ref('golf_bets/colonial/2026-11-02').get());
+  await assertFails(testEnv.unauthenticatedContext().database().ref('golf_bets/colonial/2026-11-02').get());
+  const stranger = testEnv.authenticatedContext('stranger', { email: 's@example.com' }).database();
+  await assertFails(stranger.ref('golf_bets/colonial/2026-11-02').get());
+  await assertFails(alice().ref('golf_bets/colonial/2026-11-02/g1/bet0bob1/st').set('won'));
+});
+
+function anonDb() {
+  return testEnv.authenticatedContext('anon1', { firebase: { sign_in_provider: 'anonymous' } }).database();
+}
+
+await check('anon name and colonial unlock', async () => {
+  await seed(async (db) => { await db.ref('golf_keys/colonial/test-pass').set(true); });
+  const a = anonDb();
+  const profile = { first: 'Ada', last: 'Chen', email: '', createdAt: 1700000000000 };
+  await assertFails(a.ref('users/anon1').set({ ...profile, email: 'ada@evil.com' }));
+  await assertSucceeds(a.ref('users/anon1').set(profile));
+  await assertFails(a.ref('users/bob').set(profile));
+  await assertFails(a.ref('golf_members/colonial/anon1').set('wrong-pass'));
+  await assertSucceeds(a.ref('golf_members/colonial/anon1').set('test-pass'));
+  await assertFails(a.ref('golf_members/colonial/bob').set('test-pass'));
+  await assertFails(a.ref('golf_accounts/anon1').set({ bal: 1000, granted: true, n: 'Ada Chen', createdAt: 1 }));
+  await assertFails(a.ref('golf_accounts/anon1/bal').set(500));
+  await assertFails(a.ref('golf_accounts/alice/bal').set(0));
+});
+
+await check('email account cannot use a blank email', async () => {
+  const cara = testEnv.authenticatedContext('cara', { email: 'cara@example.com', firebase: { sign_in_provider: 'password' } }).database();
+  await assertFails(cara.ref('users/cara').set({ first: 'Cara', last: 'C', email: '', createdAt: 1 }));
+  await assertSucceeds(cara.ref('users/cara').set({ first: 'Cara', last: 'C', email: 'cara@example.com', createdAt: 1 }));
+});
+
 await check('activity hides private fields', async () => {
   await seed(async (db) => { await db.ref('golf_accounts/alice').set(grant('Alice A')); });
   const updates = betUpdate('alice', 'Alice A', 100, { amount: 5, bid: 'bet00005' });
