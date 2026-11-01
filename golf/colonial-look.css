@@ -1,0 +1,248 @@
+/* Colonial pages, styled like the Ridglea match board. Scoped to body.tf. */
+body.tf{
+  background:#0c0c0e !important;
+  background-image:radial-gradient(ellipse at top,#1a1712 0,#0c0c0e 60%) !important;
+  color:#f3ecdc !important;
+  font-family:Inter,system-ui,sans-serif;
+}
+body.tf::before{display:none}
+body.tf .topbar{position:sticky;top:0;z-index:40}
+body.tf header.mast{
+  position:static;
+  background:#0a0a0c !important;
+  color:#f3ecdc !important;
+  border-bottom:1px solid rgba(201,168,106,.22) !important;
+  overflow:visible;
+}
+body.tf header.mast::after{display:none}
+body.tf .mast-in{padding:10px 0 !important;align-items:center}
+body.tf .gate{width:28px;height:auto;color:#c9a86a}
+body.tf .brand{gap:8px;color:#f3ecdc;text-decoration:none}
+body.tf .wm strong{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:0;
+  color:#f3ecdc;
+}
+body.tf .wm{display:flex;align-items:baseline;gap:6px}
+body.tf .wm em{display:inline;margin:0;font-style:normal;font-family:Inter,system-ui,sans-serif;font-size:16px;font-weight:800;letter-spacing:0;text-transform:none;color:#c9a86a}
+body.tf .toplink,
+body.tf a.me{
+  color:#f3ecdc !important;
+  background:#1d1d22;
+  border:1px solid rgba(201,168,106,.45) !important;
+  border-radius:20px;
+  padding:6px 10px !important;
+  font:700 13px/1 Inter,system-ui,sans-serif !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  text-decoration:none;
+}
+body.tf .acctbar{position:static;background:#0a0a0c;border-bottom:1px solid rgba(201,168,106,.22);color:#f3ecdc}
+body.tf .acctbar.in .abrow,
+body.tf .acctbar .abrow{
+  max-width:760px;
+  padding:0 14px 12px;
+  gap:8px;
+}
+body.tf .acctbar .lbl{color:#8d8a83;letter-spacing:.08em}
+body.tf .acctbar .num{color:#e6cf9b;font-size:22px;font-family:Inter,system-ui,sans-serif}
+body.tf .acctbar .openbets{color:#c9c3b6}
+body.tf .acctbar .settlelink,
+body.tf .acctbar.in .settlelink{
+  color:#c9a86a;
+  max-width:760px;
+  padding:0 14px 12px;
+}
+body.tf .acctbar.out{background:#0a0a0c;color:#e6cf9b}
+body.tf .acctbar.out a{color:#e6cf9b}
+body.tf .wrap{max-width:760px;padding:0 14px}
+body.tf .page{padding:0 0 48px}
+body.tf .hero{
+  background:linear-gradient(160deg,#17151a,#0f0e11);
+  border:1px solid rgba(201,168,106,.22);
+  border-top:1px solid #c9a86a;
+  border-radius:14px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5);
+  padding:22px 18px;
+  margin:14px 0;
+}
+body.tf .hero .keye,
+body.tf .hero .eyebrow,
+body.tf .hero small{
+  display:block;
+  margin:0 0 8px;
+  font-family:Inter,system-ui,sans-serif;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(243,236,220,.85);
+}
+body.tf h1,
+body.tf .hero h1,
+body.tf .dayhead h2,
+body.tf .gcard .tt{
+  font-family:"Playfair Display","Cormorant Garamond",Georgia,serif;
+  color:#f3ecdc;
+  letter-spacing:.01em;
+}
+body.tf .hero h1,
+body.tf h1{font-size:clamp(26px,7vw,40px);line-height:1.05;font-weight:600;margin:6px 0}
+body.tf .hero .lede,
+body.tf .hero p,
+body.tf .sub{color:#c9c3b6;font-size:15px;margin:0}
+body.tf .hero .rule{display:none}
+body.tf .kstatus{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:0 0 8px;
+  background:#dc2626;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  padding:4px 9px;
+  border-radius:20px;
+}
+body.tf .kstatus i{width:6px;height:6px;background:#fff}
+body.tf .sync{font-size:11px;color:#8d8a83;margin:0 0 12px}
+body.tf .crumb{background:transparent;border:0;color:#bdb7aa;margin:0 0 8px;padding:0}
+body.tf .crumb a{color:#c9a86a;border:0}
+body.tf .card,
+body.tf .gcard,
+body.tf .mkt,
+body.tf .slip,
+body.tf #gate.card{
+  background:#16161a !important;
+  border:1px solid rgba(201,168,106,.22) !important;
+  border-radius:14px !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.45) !important;
+  color:#f3ecdc !important;
+}
+body.tf .gcard{padding:18px 16px 16px 18px}
+body.tf .gcard::before{background:#c9a86a;width:4px}
+body.tf .gcard.alt{background:#16161a !important}
+body.tf .gcard .tt{font-size:28px;font-weight:600}
+body.tf .gcard .muted,
+body.tf .prow span,
+body.tf .who span,
+body.tf .muted,
+body.tf .chartcap,
+body.tf .vol{color:#8d8a83 !important}
+body.tf .prow,
+body.tf .rowline,
+body.tf .orow{
+  border-bottom:1px solid rgba(201,168,106,.12);
+  color:#f3ecdc;
+  padding:9px 0;
+}
+body.tf .prow b,
+body.tf .who b{
+  font-family:"Cormorant Garamond",Georgia,serif;
+  font-size:20px;
+  font-weight:600;
+  color:#e9e3d4;
+}
+body.tf .gst,
+body.tf .phase{
+  font-family:Inter,system-ui,sans-serif;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  border-radius:20px;
+  padding:4px 9px;
+  border:0;
+}
+body.tf .gst.st.open,
+body.tf .phase.count{background:#dc2626;color:#fff}
+body.tf .gst.st.closed{background:#1d1d22;color:#c9c3b6;border:1px solid rgba(201,168,106,.35)}
+body.tf .gst.st.settled,
+body.tf .phase.final{background:#c9a86a;color:#17130b}
+body.tf .viewmk,
+body.tf .yesbtn,
+body.tf .place,
+body.tf .card button,
+body.tf #gate button{
+  background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a) !important;
+  color:#17130b !important;
+  border:0 !important;
+  border-radius:12px !important;
+  font-weight:800;
+  box-shadow:0 4px 14px rgba(201,168,106,.25);
+}
+body.tf .viewmk{display:flex;justify-content:center;margin-top:14px;text-decoration:none}
+body.tf .yesbtn.sel{box-shadow:inset 0 0 0 2px #f3ecdc}
+body.tf .opct{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+body.tf .kchart{
+  background:#101013;
+  border:1px solid rgba(201,168,106,.12);
+  border-radius:10px;
+  padding:8px 8px 4px;
+  height:220px;
+  margin:8px 0 10px;
+}
+body.tf .kgrid i{border-top-color:rgba(201,168,106,.18)}
+body.tf .mtabs{gap:8px}
+body.tf .mtabs button,
+body.tf .ranges button{
+  background:#1d1d22;
+  color:#ece6d8;
+  border:1px solid rgba(201,168,106,.22);
+  border-radius:12px;
+  padding:10px 12px;
+  font-weight:800;
+}
+body.tf .mtabs button.on,
+body.tf .ranges button.on{background:#c9a86a;color:#17130b;border-color:#c9a86a}
+body.tf .slip{
+  background:#141417 !important;
+  border-top:2px solid #c9a86a !important;
+  margin:8px 0 12px;
+}
+body.tf .slip .kicker,
+body.tf .slip label,
+body.tf .slip .muted{color:#c9c3b6 !important}
+body.tf .slip-price,
+body.tf .pay{color:#f3ecdc !important;font-family:Inter,system-ui,sans-serif}
+body.tf .chips button{
+  background:#1d1d22 !important;
+  color:#ece6d8 !important;
+  border:1px solid rgba(201,168,106,.45) !important;
+  border-radius:10px !important;
+}
+body.tf .chips button.on,
+body.tf .chips button.on:hover{background:#c9a86a !important;color:#17130b !important;border-color:#c9a86a !important}
+body.tf .slip .cancel{
+  background:transparent !important;
+  color:#f3ecdc !important;
+  border:1px solid rgba(201,168,106,.5) !important;
+}
+body.tf input{
+  background:#0f0f12 !important;
+  color:#f3ecdc !important;
+  border:1px solid rgba(201,168,106,.4) !important;
+}
+body.tf h2,
+body.tf .tracker h2,
+body.tf .sech{
+  font-family:"Playfair Display",Georgia,serif;
+  color:#c9a86a;
+  font-weight:600;
+  font-size:21px;
+  letter-spacing:.04em;
+  text-transform:none;
+}
+body.tf .sheetlink{color:#c9a86a}
+body.tf .rowline b.up{color:#7fbf95}
+body.tf .rowline b.dn{color:#d98a8a}
+body.tf a{color:#c9a86a}
+@media (max-width:720px){
+  body.tf .acctbar .num{font-size:20px}
+  body.tf .gcard .tt{font-size:26px}
+  body.tf .viewmk,body.tf .slip-actions,body.tf .slip .place,body.tf .slip .cancel{width:100%}
+  body.tf .slip-actions{flex-direction:column;align-items:stretch}
+}

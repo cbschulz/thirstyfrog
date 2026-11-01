@@ -1,10 +1,13 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Today's settle-up · Torii Golf</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../club.css">
 <link rel="stylesheet" href="../group.css">
-</head><body class="mk">
-<header class="mast"><div class="wrap mast-in"><a class="brand" href="/"><svg class="gate" viewBox="0 0 100 86" role="img" aria-label="Torii gate"><path fill="currentColor" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="currentColor" x="10" y="19" width="80" height="6"/><rect fill="currentColor" x="46" y="25" width="8" height="11"/><rect fill="currentColor" x="13" y="31" width="74" height="6"/><path fill="currentColor" d="M22 19h9l2 61h-13z"/><path fill="currentColor" d="M69 19h9l2 61h-13z"/><rect fill="currentColor" x="17" y="78" width="19" height="6"/><rect fill="currentColor" x="64" y="78" width="19" height="6"/></svg><span class="wm"><strong>Torii</strong></span></a><a class="toplink" href="./">Tee sheet</a></div></header>
+<link rel="stylesheet" href="../colonial-look.css">
+</head><body class="mk tf">
+<div class="topbar">
+<header class="mast"><div class="wrap mast-in"><a class="brand" href="/"><svg class="gate" viewBox="0 0 100 86" role="img" aria-label="Torii gate"><path fill="currentColor" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="currentColor" x="10" y="19" width="80" height="6"/><rect fill="currentColor" x="46" y="25" width="8" height="11"/><rect fill="currentColor" x="13" y="31" width="74" height="6"/><path fill="currentColor" d="M22 19h9l2 61h-13z"/><path fill="currentColor" d="M69 19h9l2 61h-13z"/><rect fill="currentColor" x="17" y="78" width="19" height="6"/><rect fill="currentColor" x="64" y="78" width="19" height="6"/></svg><span class="wm"><strong>Torii</strong><em>Golf</em></span></a><a class="toplink" href="./">Tee sheet</a></div></header>
 <div id="acctbar" class="acctbar out" role="status"><a href="#gate">Enter your name to get 100 free tokens</a></div>
+</div>
 <main class="page"><div class="wrap">
 <div class="card" id="gate">Loading…</div>
 <div id="board"></div>
@@ -50,7 +53,7 @@ function paint(sum, day){
     if(!sum.payments.length) body+='<p class="muted">All square.</p>';
     else sum.payments.forEach(pay=>{body+='<div class="rowline"><span>'+esc(pay.from)+' owes '+esc(pay.to)+'</span><b>'+esc(pay.amt)+' tokens</b></div>'});
   }
-  B.innerHTML='<p class="keye">'+esc(eye)+'</p><h1>Today\'s settle-up</h1>'+body+'<p class="muted" style="margin-top:28px"><a href="./">Back to the tee sheet</a></p>';
+  B.innerHTML='<section class="hero"><small class="keye">'+esc(eye)+'</small><h1>Today\'s settle-up</h1><p>Play money tokens. No cash value. Settled after the round, not during it.</p></section>'+body+'<p class="muted" style="margin-top:28px"><a href="./">Back to the tee sheet</a></p>';
 }
 async function load(){
   let root;try{root=(await D.ref('golf/'+CLUB+'/sheets').once('value')).val()}catch(x){return clubForm()}
