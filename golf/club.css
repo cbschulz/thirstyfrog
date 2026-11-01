@@ -1,0 +1,166 @@
+/* Torii Golf Prediction Platform. The gate mark reuses the hub torii geometry. */
+:root{
+  --ink:#142033;
+  --navy:#0e1c2f;
+  --green:#16352b;
+  --ivory:#f3eee4;
+  --paper:#fbf8f2;
+  --gold:#a68545;
+  --gold-2:#c4ae78;
+  --muted:#5c675f;
+  --line:rgba(166,133,69,.45);
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background-color:var(--ivory);
+  background-image:
+    radial-gradient(1100px 480px at 8% -10%, rgba(22,53,43,.07), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(166,133,69,.10), transparent 50%);
+  line-height:1.5;
+}
+body::before{
+  content:"";
+  pointer-events:none;
+  position:fixed;
+  inset:0;
+  opacity:.35;
+  background-image:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(166,133,69,.045) 28px);
+}
+a{color:var(--green)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;position:relative}
+.mast{
+  background:
+    radial-gradient(600px 180px at 15% 0%, rgba(196,174,120,.16), transparent 60%),
+    var(--navy);
+  color:#f6f1e7;
+  border-bottom:1px solid var(--gold-2);
+}
+.mast-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:28px 0 26px}
+.brand{display:flex;align-items:center;gap:16px;color:inherit;text-decoration:none;min-width:0}
+.gate{width:76px;height:auto;color:var(--gold-2);display:block;flex:0 0 auto}
+.wm strong{font-family:var(--serif);font-weight:600;font-size:46px;line-height:.9;letter-spacing:.01em;display:block}
+.wm em{font-style:normal;display:block;margin-top:6px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-2)}
+.toplink{color:#f6f1e7;text-decoration:none;font-size:12px;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid var(--gold-2);padding-bottom:3px;white-space:nowrap}
+.toplink:hover{color:var(--gold-2)}
+.page{padding:42px 0 72px}
+.eyebrow{margin:0 0 8px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--serif);font-weight:500;font-size:64px;line-height:.95;margin:0;letter-spacing:-.01em}
+.rule{width:72px;height:1px;background:var(--gold);margin:18px 0}
+.lede,.place{max-width:46rem;color:var(--muted);font-size:17px;margin:0 0 28px}
+.crumb{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 14px;color:var(--muted)}
+.crumb a{color:var(--green);text-decoration:none;border-bottom:1px solid var(--line)}
+.crumb span{margin-left:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+.club{
+  position:relative;
+  display:flex;flex-direction:column;gap:14px;
+  background:var(--paper);
+  color:inherit;text-decoration:none;
+  border:1px solid rgba(20,32,51,.08);
+  border-radius:18px;
+  padding:16px 16px 14px;
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 12px 32px rgba(14,28,47,.05);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.club::before{
+  content:"";
+  position:absolute;left:18px;right:18px;top:0;height:2px;
+  background:linear-gradient(90deg, transparent, var(--accent, var(--gold)), transparent);
+}
+a.club:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 18px 40px rgba(14,28,47,.12)}
+.club.soon{cursor:default}
+.club.soon:hover{transform:none;box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 0 12px 32px rgba(14,28,47,.05)}
+.well{
+  height:158px;border-radius:14px;
+  border:1px solid rgba(166,133,69,.35);
+  display:flex;align-items:center;justify-content:center;
+  padding:18px 16px;
+  background:#fff;
+}
+.well img{width:100%;height:120px;object-fit:contain;object-position:center;display:block}
+.tile{text-align:center;color:var(--ink)}
+.tile b{display:block;font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.tile i{display:block;margin-top:6px;font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.meta h2{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.05;margin:0}
+.meta p{margin:6px 0 0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.badge{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6d5a32}
+a.club .badge{color:var(--green)}
+.card,.sheet{
+  background:var(--paper);
+  border:1px solid rgba(20,32,51,.08);
+  border-radius:18px;
+  padding:26px 26px 22px;
+  box-shadow:0 12px 32px rgba(14,28,47,.05);
+  margin:0 0 22px;
+}
+.kicker{margin:0;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.card h2,.sheet h2{font-family:var(--serif);font-weight:600;font-size:36px;margin:4px 0 8px;line-height:1}
+.muted{color:var(--muted);font-size:15px}
+label{display:block;margin-top:14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+input{
+  display:block;width:100%;margin-top:6px;
+  font:16px/1.4 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink);
+  padding:12px 14px;border:1px solid rgba(20,32,51,.16);border-radius:10px;background:#fff;
+}
+button{
+  margin-top:16px;font:600 12px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  padding:14px 22px;border:0;border-radius:999px;background:var(--green);color:#f6f1e7;cursor:pointer;
+}
+button:hover{background:#1e4a3c}
+.actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.actions a,.ok a{color:var(--green)}
+.err{color:#8d3b32;font-weight:600;min-height:1.2em}
+.ok{color:var(--green);margin:0}
+.grp{border-top:1px solid var(--line);padding:18px 0 6px;margin-top:8px}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 16px}
+.tt{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.1;flex:1 1 14rem;min-width:0}
+.tt .muted{font-family:var(--sans);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.phase{
+  flex:0 0 auto;
+  font:600 13px/1.2 var(--sans);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  border-radius:999px;
+  padding:8px 14px;
+  border:1px solid var(--line);
+}
+.phase.count{background:var(--navy);color:#f6f1e7;border-color:var(--navy)}
+.phase.oncourse{background:#f8f1e0;color:#7a5b28}
+.phase.final{background:#e7f0e8;color:#1c4a34}
+.phase.tbd{color:var(--muted);background:transparent}
+.players{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.players span{background:#f4efe6;border:1px solid rgba(20,32,51,.06);border-radius:999px;padding:5px 10px;font-size:13px}
+.line{padding:12px 0;border-top:1px solid rgba(20,32,51,.06)}
+.line .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:var(--serif);font-size:22px;font-weight:600}
+.st{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.st.open{background:#e7f0e8;color:#1c4a34}
+.st.closed{background:#eeeae3;color:#5c675f}
+.st.settled{background:#f8f1e0;color:#7a5b28}
+.res{font-weight:600;margin-top:6px;color:var(--green)}
+.outs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.odd{display:inline-block;padding:6px 10px;border-radius:8px;background:#fff;border:1px solid rgba(166,133,69,.35);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.sample{background:#fbf6ea;border:1px dashed var(--gold);border-radius:16px;padding:16px 18px 8px;margin-top:8px}
+.sample .lbl{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#7a5b28}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media (max-width:720px){
+  .wrap{padding:0 18px}
+  .mast-in{padding:20px 0;align-items:flex-end}
+  .gate{width:52px}
+  .wm strong{font-size:34px}
+  .wm em{letter-spacing:.16em}
+  .page{padding:28px 0 48px}
+  h1{font-size:42px}
+  .meta h2,.tt,.card h2,.sheet h2{font-size:28px}
+  .card,.sheet{padding:18px 16px}
+  .phase{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){
+  .club,a.club:hover{transition:none;transform:none}
+}
