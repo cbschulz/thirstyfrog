@@ -91,6 +91,7 @@ rules.golf_mybets = {
 };
 
 const memberRead = "auth != null && (root.child('golf_members').child($club).child(auth.uid).exists() || " + admin + ")";
+rules.golf_bets.$club[".read"] = memberRead;
 
 rules.golf_activity = {
   "$club": {

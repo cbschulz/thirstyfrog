@@ -620,7 +620,8 @@
        }
       }
      }
-    }
+    },
+    ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('golf_members').child($club).child(auth.uid).exists())"
    }
   },
   "golf_mybets": {

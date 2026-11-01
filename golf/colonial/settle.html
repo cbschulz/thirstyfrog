@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Today's settle-up · Torii Golf</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../club.css">
+<link rel="stylesheet" href="../group.css">
+</head><body class="mk">
+<header class="mast"><div class="wrap mast-in"><a class="brand" href="/"><svg class="gate" viewBox="0 0 100 86" role="img" aria-label="Torii gate"><path fill="currentColor" d="M2 6 Q50 14 98 6 L96 15 Q50 21 4 15Z"/><rect fill="currentColor" x="10" y="19" width="80" height="6"/><rect fill="currentColor" x="46" y="25" width="8" height="11"/><rect fill="currentColor" x="13" y="31" width="74" height="6"/><path fill="currentColor" d="M22 19h9l2 61h-13z"/><path fill="currentColor" d="M69 19h9l2 61h-13z"/><rect fill="currentColor" x="17" y="78" width="19" height="6"/><rect fill="currentColor" x="64" y="78" width="19" height="6"/></svg><span class="wm"><strong>Torii</strong></span></a><a class="toplink" href="./">Tee sheet</a></div></header>
+<div id="acctbar" class="acctbar out" role="status"><a href="#gate">Enter your name to get 100 free tokens</a></div>
+<main class="page"><div class="wrap">
+<div class="card" id="gate">Loading…</div>
+<div id="board"></div>
+</div></main>
+<script src="../settle.js"></script>
+<script src="../enter.js"></script>
+<script src="../accountbar.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const CLUB='colonial';
+const qs=new URLSearchParams(location.search);
+let DATE=qs.get('date')||'';
+firebase.initializeApp({apiKey:'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA',authDomain:'thirstyfrog-e2aed.firebaseapp.com',databaseURL:'https://thirstyfrog-e2aed-default-rtdb.firebaseio.com',projectId:'thirstyfrog-e2aed',appId:'1:656084503103:web:aca5e6473fd2b920ec868a'});
+const A=firebase.auth(),D=firebase.database(),G=document.getElementById('gate'),B=document.getElementById('board');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function clubForm(){G.style.display='';G.innerHTML='<p class="kicker">Members</p><h2>Colonial members password</h2><p class="muted">Enter the club password once. It unlocks this board for your account.</p><label>Club password<input id="cp" type="password" placeholder="Club password" autocomplete="off"></label><div class="actions"><button type="button" id="unlock">Unlock</button><a href="#" id="so">Sign out</a></div><p id="m" class="err"></p>';document.getElementById('unlock').onclick=unlock;document.getElementById('so').onclick=e=>{e.preventDefault();A.signOut()};}
+async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);load()}catch(x){document.getElementById('m').textContent='Wrong club password. Anonymous accounts also need a users profile before the club password can be saved, and that profile requires an email under the current rules.'}}
+function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'This day';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric'}).format(new Date(t)):day}
+function paint(sum, day){
+  const when=fmtDay(day);
+  document.title=when+' settle-up · Torii Golf';
+  const eye='Colonial CC · '+when;
+  let body='';
+  if(!sum.people.length){
+    body='<p class="muted">No play-money bets on this day yet.</p>';
+  }else if(sum.pending){
+    body='<p class="kstatus"><i></i><span>Pending — settles after rounds are posted</span></p><p class="muted">Markets lock at tee time. Results are posted after the round. Tokens only, no cash value.</p>';
+    sum.people.forEach(p=>{
+      body+='<h2 class="sech">'+esc(p.name)+'</h2>';
+      if(!p.open.length) body+='<p class="muted">No open action.</p>';
+      else p.open.forEach(o=>{body+='<div class="rowline"><span>'+esc(o.title)+' · '+esc(o.label)+'</span><b>'+esc(o.a)+' tokens</b></div>'});
+    });
+  }else{
+    body='<p class="keye">Settled · play money</p><p class="muted">Net tokens are winnings minus stakes. The list below is the smallest set of payments that squares the day.</p>';
+    sum.people.forEach(p=>{
+      const n=p.net;
+      const txt=(n>0?'+':'')+n+' tokens';
+      body+='<div class="rowline"><span>'+esc(p.name)+'</span><b class="'+(n>0?'up':n<0?'dn':'')+'">'+esc(txt)+'</b></div>';
+    });
+    body+='<h2 class="sech">Who owes who</h2>';
+    if(!sum.payments.length) body+='<p class="muted">All square.</p>';
+    else sum.payments.forEach(pay=>{body+='<div class="rowline"><span>'+esc(pay.from)+' owes '+esc(pay.to)+'</span><b>'+esc(pay.amt)+' tokens</b></div>'});
+  }
+  B.innerHTML='<p class="keye">'+esc(eye)+'</p><h1>Today\'s settle-up</h1>'+body+'<p class="muted" style="margin-top:28px"><a href="./">Back to the tee sheet</a></p>';
+}
+async function load(){
+  let root;try{root=(await D.ref('golf/'+CLUB+'/sheets').once('value')).val()}catch(x){return clubForm()}
+  if(!DATE){const days=Object.keys(root||{}).sort();DATE=days.length?days[days.length-1]:''}
+  if(!DATE||!root||!root[DATE]||!root[DATE].groups){G.style.display='none';paint({pending:false,people:[],payments:[]},DATE);return}
+  const groups=root[DATE].groups;
+  const bets={};const activity={};
+  await Promise.all(Object.keys(groups).map(async gid=>{
+    try{bets[gid]=(await D.ref('golf_bets/'+CLUB+'/'+DATE+'/'+gid).once('value')).val()||{}}catch(e){bets[gid]={}}
+    try{activity[gid]=(await D.ref('golf_activity/'+CLUB+'/'+DATE+'/'+gid).once('value')).val()||{}}catch(e){activity[gid]={}}
+  }));
+  G.style.display='none';
+  paint(ToriiSettle.summarize({groups,bets,activity}), DATE);
+}
+let PREVIEW=false;
+A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;if(!u){B.innerHTML='';return ToriiEnter.showName(G,A)}load()});
+ToriiAccountBar.mount({auth:A,db:D});
+window.renderSettlePreview=function(raw){PREVIEW=true;G.style.display='none';paint(ToriiSettle.summarize(raw), raw.date||'2026-11-01')};
+</script></body></html>

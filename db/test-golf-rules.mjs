@@ -129,6 +129,17 @@ await check('non-admin settle blocked', async () => {
   await assertSucceeds(admin().ref('golf_bets/colonial/2026-11-02/g1/bet0seed/st').set('settled'));
 });
 
+await check('members can read the day sheet of bets', async () => {
+  await seed(async (db) => {
+    await db.ref('golf_bets/colonial/2026-11-02/g1/bet0bob1').set({ id: 'bet0bob1', line: '0', side: 'o0', uid: 'bob', a: 10, px: 40, t: Date.now(), st: 'open' });
+  });
+  await assertSucceeds(alice().ref('golf_bets/colonial/2026-11-02').get());
+  await assertFails(testEnv.unauthenticatedContext().database().ref('golf_bets/colonial/2026-11-02').get());
+  const stranger = testEnv.authenticatedContext('stranger', { email: 's@example.com' }).database();
+  await assertFails(stranger.ref('golf_bets/colonial/2026-11-02').get());
+  await assertFails(alice().ref('golf_bets/colonial/2026-11-02/g1/bet0bob1/st').set('won'));
+});
+
 await check('activity hides private fields', async () => {
   await seed(async (db) => { await db.ref('golf_accounts/alice').set(grant('Alice A')); });
   const updates = betUpdate('alice', 'Alice A', 100, { amount: 5, bid: 'bet00005' });

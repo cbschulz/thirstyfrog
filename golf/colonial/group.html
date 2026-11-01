@@ -13,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../enter.js"></script>
 <script src="../accountbar.js"></script>
 <script>
 const CLUB='colonial';
@@ -26,11 +27,9 @@ const TG=window.ToriiGolf;
 const COLORS=['#12a06a','#2f6fed','#e07a2f','#7b4de0','#d23b6a','#1493a8'];
 let USER=null,ACCT=null,GROUP=null,MEMBER=false;
 let PRICES={},ACTIVITY={},MY={},SEL={line:-1,side:''},AMT=10,NOTE=null,TAB=0,RANGE='all';
-function signInForm(){G.style.display='';G.innerHTML='<p class="kicker">Members</p><h2>Sign in with your Torii account</h2><p class="muted">Same login as the Torii hub. First sign-in on golf grants 100 Torii tokens ($100 play money, no cash value), once per account.</p><label>Email<input id="em" type="email" placeholder="Email" autocomplete="email"></label><label>Password<input id="pw" type="password" placeholder="Torii password" autocomplete="current-password"></label><button onclick="si()">Sign in</button><p id="m" class="err"></p>';}
-async function si(){try{await A.signInWithEmailAndPassword(document.getElementById('em').value.trim(),document.getElementById('pw').value)}catch(x){document.getElementById('m').textContent='Sign-in failed. Check your email and password.'}}
 function clubForm(){G.style.display='';G.innerHTML='<p class="kicker">Members</p><h2>Colonial members password</h2><p class="muted">Enter the club password once. It unlocks this board for your account.</p><label>Club password<input id="cp" type="password" placeholder="Club password" autocomplete="off"></label><div class="actions"><button onclick="unlock()">Unlock</button><a href="#" onclick="A.signOut();return false">Sign out</a></div><p id="m" class="err"></p>';}
 async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);loadGroup()}catch(x){document.getElementById('m').textContent='Wrong club password.'}}
-async function displayName(user){let n=user.displayName||'';try{const u=await D.ref('users/'+user.uid).once('value');if(u.exists()&&u.val().first)n=(u.val().first+' '+(u.val().last||'')).trim()}catch(e){}if(!n)n='Member';return n.slice(0,40)}
+async function displayName(user){let n=ToriiEnter.savedName(user);try{const u=await D.ref('users/'+user.uid).once('value');if(u.exists()&&u.val().first)n=(u.val().first+' '+(u.val().last||'')).trim()}catch(e){}if(!n)n='Member';return n.slice(0,40)}
 async function ensureAccount(user){const ref=D.ref('golf_accounts/'+user.uid);const snap=await ref.once('value');if(snap.exists())return snap.val();const acct={bal:100,granted:true,n:await displayName(user),createdAt:Date.now()};await ref.set(acct);return acct}
 function linesOf(g){const raw=g.lines;if(Array.isArray(raw))return raw.slice(0,4);if(raw&&typeof raw==='object')return Object.keys(raw).sort().map(k=>raw[k]).slice(0,4);return []}
 function rulesReady(group){const ms=+group.teeTimeMs;return Number.isFinite(ms)&&ms>Date.now()}
@@ -63,7 +62,7 @@ async function seedOpen(){if(!USER||!MEMBER||!GROUP)return;const lines=linesOf(G
 function listen(){if(!USER)return;D.ref('golf_accounts/'+USER.uid).on('value',s=>{ACCT=s.val();draw()});D.ref('golf_mybets/'+USER.uid).on('value',s=>{MY=s.val()||{};draw()});if(!MEMBER)return;D.ref('golf_prices/'+CLUB+'/'+DATE+'/'+GID).on('value',s=>{PRICES=s.val()||{};draw()});D.ref('golf_activity/'+CLUB+'/'+DATE+'/'+GID).on('value',s=>{ACTIVITY=s.val()||{};draw()})}
 async function loadGroup(){if(!DATE||!GID){G.style.display='';G.innerHTML='<h2>Missing tee time</h2><p class="muted"><a href="./">Back to the tee sheet</a></p>';return}try{ACCT=await ensureAccount(USER)}catch(e){ACCT=null}let snap;try{snap=await D.ref('golf/'+CLUB+'/sheets/'+DATE+'/groups/'+GID).once('value')}catch(x){return clubForm()}if(!snap.exists()){G.style.display='';G.innerHTML='<h2>Group not found</h2><p class="muted"><a href="./">Back to the tee sheet</a></p>';return}MEMBER=true;GROUP=snap.val();G.style.display='none';listen();draw();seedOpen()}
 let PREVIEW=false;
-A.onAuthStateChanged(async u=>{if(PREVIEW)return;USER=u;MEMBER=false;GROUP=null;ACCT=null;PRICES={};ACTIVITY={};MY={};if(!u){B.innerHTML='';return signInForm()}G.innerHTML='<p class="ok">Signed in as '+esc(u.email)+'</p>';loadGroup()});
+A.onAuthStateChanged(async u=>{await ToriiEnter.hold();if(PREVIEW)return;USER=u;MEMBER=false;GROUP=null;ACCT=null;PRICES={};ACTIVITY={};MY={};if(!u){B.innerHTML='';return ToriiEnter.showName(G,A)}G.innerHTML='<p class="ok">Signed in'+(u.email?' as '+esc(u.email):'')+'</p>';loadGroup()});
 setInterval(()=>{const el=document.getElementById('livephase');if(!el||!GROUP)return;const next=statusText();if(el.textContent!==next)el.textContent=next},1000);
 window.renderGroupPreview=function(group){PREVIEW=true;GROUP=group;ACCT={bal:100,granted:true,n:'Member'};USER={uid:'preview',email:'member@example.com'};MEMBER=true;G.style.display='none';draw()};
 ToriiAccountBar.mount({auth:A,db:D});

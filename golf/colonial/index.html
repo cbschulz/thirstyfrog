@@ -13,14 +13,13 @@
 <div class="card" id="gate">Loading…</div><div id="sheet"></div>
 </div></main>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="../enter.js"></script>
 <script src="../accountbar.js"></script>
 <script>
 const CLUB='colonial';
 firebase.initializeApp({apiKey:'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA',authDomain:'thirstyfrog-e2aed.firebaseapp.com',databaseURL:'https://thirstyfrog-e2aed-default-rtdb.firebaseio.com',projectId:'thirstyfrog-e2aed',appId:'1:656084503103:web:aca5e6473fd2b920ec868a'});
 const A=firebase.auth(),D=firebase.database(),G=document.getElementById('gate'),S=document.getElementById('sheet');
 const e=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function signInForm(){G.innerHTML='<p class="kicker">Members</p><h2>Sign in with your Torii account</h2><p class="muted">Same login as the Torii hub. New here? <a href="../../hub/">Join on the hub</a> first.</p><label>Email<input id="em" type="email" placeholder="Email" autocomplete="email"></label><label>Password<input id="pw" type="password" placeholder="Torii password" autocomplete="current-password"></label><button onclick="si()">Sign in</button><p id="m" class="err"></p>'}
-async function si(){try{await A.signInWithEmailAndPassword(document.getElementById('em').value.trim(),document.getElementById('pw').value)}catch(x){document.getElementById('m').textContent='Sign-in failed. Check your email and password.'}}
 function clubForm(){G.innerHTML='<p class="kicker">Members</p><h2>Colonial members password</h2><p class="muted">Enter the club password once. It unlocks this board for your account.</p><label>Club password<input id="cp" type="password" placeholder="Club password" autocomplete="off"></label><div class="actions"><button onclick="unlock()">Unlock</button><a href="#" onclick="A.signOut();return false">Sign out</a></div><p id="m" class="err"></p>'}
 async function unlock(){const v=document.getElementById('cp').value.trim();try{await D.ref('golf_members/'+CLUB+'/'+A.currentUser.uid).set(v);load()}catch(x){document.getElementById('m').textContent='Wrong club password.'}}
 // Group at golf/<club>/sheets/<day>/groups/<id> (or golf/<club>/groups/<id>):
@@ -58,8 +57,8 @@ async function load(){const u=A.currentUser;let d;try{d=(await D.ref('golf/'+CLU
  G.innerHTML='<p class="ok">Unlocked as '+e(u.email)+' · <a href="#" onclick="A.signOut();return false">Sign out</a></p>';
  const pack=groupList(d),body=pack.groups.length?pack.groups.map((g,i)=>grpHTML(g,false,pack.day,i)).join(''):grpHTML(sampleGroup(),true,null,0);
  function fmtDay(day){if(!/^\d{4}-\d{2}-\d{2}$/.test(day||''))return day||'No tee sheet posted yet';const t=Date.parse(day+'T12:00:00-06:00');return Number.isFinite(t)?new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'long',month:'long',day:'numeric'}).format(new Date(t)):day}
-S.innerHTML='<section class="dayhead"><h2>'+(pack.day?e(fmtDay(pack.day)):'No tee sheet posted yet')+'</h2><p class="muted">Tee times in America/Chicago. Lines lock at tee time.</p><div class="glist">'+body+'</div></section>';tickSheet()}
-A.onAuthStateChanged(u=>{S.innerHTML='';u?load():signInForm()});
+S.innerHTML='<section class="dayhead"><h2>'+(pack.day?e(fmtDay(pack.day)):'No tee sheet posted yet')+'</h2><p class="muted">Tee times in America/Chicago. Lines lock at tee time.</p>'+(pack.day?'<a class="sheetlink" href="settle.html?date='+encodeURIComponent(pack.day)+'">Today\'s settle-up</a>':'')+'<div class="glist">'+body+'</div></section>';tickSheet()}
+A.onAuthStateChanged(async u=>{await ToriiEnter.hold();S.innerHTML='';if(!u)return ToriiEnter.showName(G,A);load()});
 setInterval(tickSheet,1000);
 ToriiAccountBar.mount({auth:A,db:D});
 </script></body></html>
