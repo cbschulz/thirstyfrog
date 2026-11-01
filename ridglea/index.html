@@ -155,7 +155,7 @@ a{color:var(--lx-gold)}
 </main>
 <footer>Thirsty Frog: Ridglea Match · One-Off Event page · Thirsty Frog Prediction Markets</footer>
 
-<div class="modal" id="whoM"><div class="sheet"><h3>Who's playing?</h3><p>Type your name to join, or tap yours if you're already in. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" style="margin-top:10px" onclick="join()">Join with $100</button><div class="pick" id="pick" style="margin-top:12px"></div></div></div>
+<div class="modal" id="whoM"><div class="sheet"><h3>Who's playing?</h3><p>Type your name to join, or tap yours if you're already in. This phone will remember you.</p><input id="nm" maxlength="16" placeholder="Your name" autocomplete="off"><button class="btn" style="margin-top:10px" onclick="join()">Join with $100</button><button class="btn" style="margin-top:8px;background:#fff;color:#111;border:1px solid #d1d5db" onclick="browse()">Just browsing</button><div class="pick" id="pick" style="margin-top:12px"></div></div></div>
 <div class="modal" id="betM"><div class="sheet"><h3 id="bQ"></h3><p id="bSide"></p>
 <input id="amt" oninput="quote()" type="number" inputmode="numeric" min="1" placeholder="Amount ($)">
 <div class="quick"><button onclick="q(5)">$5</button><button onclick="q(10)">$10</button><button onclick="q(25)">$25</button><button onclick="q('max')">All in</button></div>
@@ -170,6 +170,13 @@ a{color:var(--lx-gold)}
 
 <script>
 const STORE='https://thirstyfrog-e2aed-default-rtdb.firebaseio.com/ridglea.json';
+const AK='AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA';
+async function tok(){let t=null;try{t=JSON.parse(localStorage.getItem('tf_anon')||'null')}catch(e){}
+ if(t&&t.exp>Date.now()+60000)return t.id;
+ let r,j;if(t&&t.rt){r=await fetch('https://securetoken.googleapis.com/v1/token?key='+AK,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(t.rt)});if(r.ok){j=await r.json();t={id:j.id_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000};localStorage.setItem('tf_anon',JSON.stringify(t));return t.id}}
+ r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+AK,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"returnSecureToken":true}'});j=await r.json();
+ t={id:j.idToken,rt:j.refreshToken,exp:Date.now()+j.expiresIn*1000};localStorage.setItem('tf_anon',JSON.stringify(t));return t.id}
+async function SURL(){try{return STORE+'?auth='+(await tok())}catch(e){return STORE}}
 const SCORER_PIN='1234'; // change the scorer PIN here
 const arr=x=>x?Object.values(x):[];
 const norm=d=>({v:(d&&d.v)||1,bets:arr(d&&d.bets),settled:(d&&d.settled)||{},closed:!!(d&&d.closed),players:(d&&d.players)||{},scores:{p:(d&&d.scores&&d.scores.p)||{},w:(d&&d.scores&&d.scores.w)||{}},anchors:arr(d&&d.anchors),sug:(d&&d.sug)||{}});let fails=0,pollT=null;
@@ -333,17 +340,18 @@ function render(){const c=compute();
  const mb=me?S.bets.filter(b=>b.p===me):[];
  $('mybets').innerHTML=!me?'<div>Pick who you are to see your record.</div>':mb.length?mb.slice().reverse().map(b=>{const m=mk(b.m);if(!m)return'';const st=S.settled[b.m],g=c.pay[b.id];return`<div><time>${tm(b.t)}</time>${fmt(b.a)} → ${b.sh.toFixed(1)} shares <b>${lab(m,b.s)}</b> @ ${ct(b.a/b.sh)} · ${m[2]} · ${st?(g>0?(SP(S,b.m).refund?`<span>refunded (no bet)</span>`:`<span class="up">won ${fmt(g)}</span>`):`<span class="dn">lost</span>`):'open, est. '+fmt(estOpen(S,b))+' if right (depends on final pot)'}</div>`}).join(''):'<div>No bets yet. The board is waiting.</div>'}
 function setTab(t){tab=t;render();window.scrollTo({top:$('tabs').offsetTop-60,behavior:'smooth'})}
-async function load(){try{const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();S=norm(j);fails=0;lastOk=Date.now();localStorage.setItem('tf_ridglea_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(lastOk)}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying… (showing last saved board)'}render()}
-async function getD(){const r=await fetch(STORE,{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
+async function load(){try{const r=await fetch(await SURL(),{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();S=norm(j);fails=0;lastOk=Date.now();localStorage.setItem('tf_ridglea_cache',JSON.stringify(S));$('sync').textContent='🟢 Live · synced '+tm(lastOk)}catch(e){fails++;$('sync').textContent='🟠 Offline, retrying… (showing last saved board)'}render()}
+async function getD(){const r=await fetch(await SURL(),{cache:'no-store'});if(!r.ok)throw r.status;return norm(await r.json())}
 async function mutate(fn,check){for(let k=0;k<5;k++){try{const d=await getD();
  const err=fn(d);if(err){S=d;render();return err}
- const w=await fetch(STORE,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!w.ok)throw w.status;
+ const w=await fetch(await SURL(),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!w.ok)throw w.status;
  await new Promise(r=>setTimeout(r,200+Math.random()*400));const v=await getD();
  if(check(v)){S=v;fails=0;render();return null}}catch(e){}await new Promise(r=>setTimeout(r,500*(k+1)+Math.random()*900))}return 'Save failed. It did NOT go through. Check your signal and try again.'}
 function openWho(){compute();$('pick').innerHTML=NAMES.map(n=>`<button onclick="setMe('${n}')">${n}</button>`).join('');$('whoM').classList.add('s')}
 async function join(){const n=clean($('nm').value);if(!n)return toast('Type your name.');compute();const ex=NAMES.find(x=>x.toLowerCase()===n.toLowerCase());if(ex)return setMe(ex);
  const err=await mutate(d=>{d.players=d.players||{};if(!d.players[n])d.players[n]=Date.now()},d=>d&&d.players&&d.players[n]);if(err)return toast(err);setMe(n)}
 function setMe(n){me=n;localStorage.setItem('tf_ridglea_me',n);closeM('whoM');render();toast('Welcome, '+n+'. You have '+fmt(compute().bal[n])+' to play with.')}
+function browse(){localStorage.setItem('tf_ridglea_browse','1');closeM('whoM');toast('Browsing. Tap Who are you? any time to join.')}
 function closeM(id){$(id).classList.remove('s')}
 async function toggleClose(){if(!me)return openWho();const c=!S.closed;if(!confirm(c?'Close betting for everyone? New bets get blocked so you can settle.':'Reopen betting? People can bet again, including with any winnings.'))return;const err=await mutate(d=>{d.closed=c},d=>d&&!!d.closed===c);toast(err||(c?'Betting closed. Settle away.':'Betting reopened.'))}
 function quote(){const a=parseFloat($('amt').value);const m=mk(cur.id),q=qv(m,S),k=K.indexOf(cur.s),p=prices(q)[k];
@@ -392,6 +400,6 @@ const TEE=Date.parse('2026-10-17T12:40:00-05:00');
 function teeTick(){const e=$('tee'),r=round(S);if(r.p.n||r.w.n){e.style.display='none';$('live').style.display='inline-block';return}e.style.display='inline-block';$('live').style.display='none';const ms=TEE-Date.now();
  if(ms>0){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sec=t%60;e.textContent=`Tee time 12:40 PM CT · starts in ${h?h+'h ':''}${m}m ${sec}s`}else e.textContent='On the course · waiting for first score'}
 setInterval(teeTick,1000);
-render();load();if(!me)openWho();teeTick();
+render();load();if(!me&&!localStorage.getItem('tf_ridglea_browse'))openWho();teeTick();
 function sched(){clearTimeout(pollT);pollT=setTimeout(async()=>{if(!document.hidden)await load();sched()},Math.min(120000,10000*Math.pow(2,Math.min(fails,4))))}sched();document.addEventListener('visibilitychange',()=>{if(!document.hidden){load();sched()}});
 </script></body></html>
