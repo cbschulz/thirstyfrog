@@ -87,15 +87,6 @@
       : '<p>' + esc(m.yes) + ' / ' + esc(m.no) + '. Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢. That read is not a trade and not a live price. The number on the card does not move. A tie voids the outright winner only. Oakridge −15.5 needs a win by 16 or more. Combined 56.5: 57 or more is over. 35 and 21 are included on those yes sides. The house does not take a side. Unmatched tokens come back if you cancel or the board closes.</p>';
     return '<details class="rules"><summary>Rules &amp; sources</summary>' + body + '</details>';
   }
-  function lastPct(mid) {
-    var pts = [];
-    Object.keys(state.fills || {}).forEach(function (id) {
-      var f = state.fills[id];
-      if (f && f.mid === mid && typeof f.yesPay === 'number') pts.push(f);
-    });
-    pts.sort(function (a, b) { return a.t - b.t || String(a.id).localeCompare(String(b.id)); });
-    return pts.length ? pts[pts.length - 1].yesPay : null;
-  }
   function card(mid) {
     var prop = X.PROPS[mid], m = X.MARKETS[mid];
     var kicker = prop ? prop.player + ' · #' + prop.num + ' ' + prop.pos : 'Game line';
@@ -104,8 +95,6 @@
     var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '';
     var open = sel && sel.mid === mid;
     var canOffer = preview || rulesLive;
-    var px = lastPct(mid);
-    var odds = '<div class="ol"><span><i class="g"></i>' + esc(X.outcomeName(mid, 'yes')) + '</span><b>' + (px == null ? '—' : px + '%') + '</b></div><div class="ol"><span><i class="b"></i>' + esc(X.outcomeName(mid, 'no')) + '</span><b>' + (px == null ? '—' : (100 - px) + '%') + '</b></div>';
     var offers = book(mid);
     var pend = offers.indexOf('empty') >= 0 ? '' : offers;
     function sideBtn(side, cls) {
@@ -115,7 +104,7 @@
     var buttons = canOffer
       ? '<div class="row">' + sideBtn('yes', 'yes') + sideBtn('no', 'no') + '</div>'
       : '<p class="sub">Posts are closed until this board is open.</p>';
-    return '<article class="card" id="' + mid + '"><div class="cat">' + esc(kicker) + '</div><div class="q">' + esc(X.ask(mid)) + '</div>' + (line ? '<p class="basis">' + esc(line) + '</p>' : '') + face + odds + chart(mid) + buttons + pend + rulesBox(mid) + '</article>';
+    return '<article class="card" id="' + mid + '"><div class="cat">' + esc(kicker) + '</div><div class="q">' + esc(X.ask(mid)) + '</div>' + (line ? '<p class="basis">' + esc(line) + '</p>' : '') + face + chart(mid) + buttons + pend + rulesBox(mid) + '</article>';
   }
   function profiles() {
     var rows = [

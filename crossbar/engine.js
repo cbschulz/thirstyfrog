@@ -334,53 +334,68 @@
       pts.push(f);
     });
     pts.sort(function (a, b) { return a.t - b.t || String(a.id || '').localeCompare(String(b.id || '')); });
-    var plotX = 34, plotY = 8, plotW = 274, plotH = 96;
+    var plotX = 2, plotY = 12, plotW = 228, plotH = 92, vbH = 120;
     function yOf(p) {
       var c = Math.max(0, Math.min(100, p));
       return plotY + ((100 - c) / 100) * plotH;
     }
     function xOf(t) {
-      if (pts.length < 2 || pts[pts.length - 1].t === pts[0].t) return plotX + plotW / 2;
+      if (pts.length < 2 || pts[pts.length - 1].t === pts[0].t) return plotX + plotW;
       return plotX + ((t - pts[0].t) / (pts[pts.length - 1].t - pts[0].t)) * plotW;
     }
-    function pathOf(side) {
+    function lineD(side) {
       return pts.map(function (f, i) {
         var p = side === 'yes' ? f.yesPay : (100 - f.yesPay);
         return (i ? 'L' : 'M') + xOf(f.t).toFixed(1) + ' ' + yOf(p).toFixed(1);
       }).join(' ');
     }
-    var grid = [100, 50, 0].map(function (p) {
-      var y = yOf(p);
-      return '<line x1="' + plotX + '" x2="' + (plotX + plotW) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="#3c4338" stroke-width="1"/>' +
-        '<text x="2" y="' + (y + 4).toFixed(1) + '" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + p + '</text>';
-    }).join('');
+    function areaD(side) {
+      var base = (plotY + plotH).toFixed(1);
+      return lineD(side) + ' L' + xOf(pts[pts.length - 1].t).toFixed(1) + ' ' + base + ' L' + xOf(pts[0].t).toFixed(1) + ' ' + base + ' Z';
+    }
     var marks = '';
     if (pts.length >= 2) {
-      marks += '<path data-side="yes" d="' + pathOf('yes') + '" fill="none" stroke="' + color.yes + '" stroke-width="2.5" stroke-linejoin="round"/>';
-      marks += '<path data-side="no" d="' + pathOf('no') + '" fill="none" stroke="' + color.no + '" stroke-width="2.5" stroke-dasharray="5 4" stroke-linejoin="round"/>';
+      marks += '<path class="wash" data-side="yes" d="' + areaD('yes') + '" fill="' + color.yes + '" opacity="0.14" stroke="none"/>';
+      marks += '<path class="wash" data-side="no" d="' + areaD('no') + '" fill="' + color.no + '" opacity="0.12" stroke="none"/>';
+      marks += '<path data-side="yes" d="' + lineD('yes') + '" fill="none" stroke="' + color.yes + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      marks += '<path data-side="no" d="' + lineD('no') + '" fill="none" stroke="' + color.no + '" stroke-width="2.5" stroke-dasharray="5 4" stroke-linejoin="round"/>';
     }
-    pts.forEach(function (f) {
-      var x = xOf(f.t).toFixed(1);
-      marks += '<circle data-side="no" cx="' + x + '" cy="' + yOf(100 - f.yesPay).toFixed(1) + '" r="6.5" fill="none" stroke="' + color.no + '" stroke-width="2"/>';
-      marks += '<circle data-side="yes" cx="' + x + '" cy="' + yOf(f.yesPay).toFixed(1) + '" r="4" fill="' + color.yes + '"/>';
-    });
-    var wait = pts.length ? '' : '<text x="171" y="56" text-anchor="middle" fill="#c9c2b4" font-size="12" font-family="Outfit,sans-serif">Waiting for first matched trade</text>';
-    var times = '';
-    if (pts.length === 1) times = '<text x="171" y="128" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
-    else if (pts.length > 1) {
-      times = '<text x="' + plotX + '" y="128" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>' +
-        '<text x="' + (plotX + plotW) + '" y="128" text-anchor="end" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[pts.length - 1].t)) + '</text>';
-    } else times = '<text x="171" y="128" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">Central time</text>';
     var last = pts.length ? pts[pts.length - 1] : null;
-    var yesPct = last ? (Math.round(last.yesPay * 10) / 10) : null;
-    var noPct = last ? (Math.round((100 - last.yesPay) * 10) / 10) : null;
-    var legend = '<div class="legend"><span><i class="dot" style="background:' + color.yes + '"></i>' + xml(yesName) + ' <b>' + (yesPct == null ? '—' : yesPct + '%') + '</b></span>' +
-      '<span><i class="ring" style="border-color:' + color.no + '"></i>' + xml(noName) + ' <b>' + (noPct == null ? '—' : noPct + '%') + '</b></span></div>';
-    var aria = (pts.length ? ('Last matched price ' + yesPct + '% ' + yesName + ', ' + noPct + '% ' + noName + '. ') : 'Waiting for first matched trade. ') +
-      'Both chances add to 100. Not a count of bets.';
-    var cap = pts.length ? 'Last matched price. The two chances add to 100. Not a count of bets.' : 'No matched price yet. This is not 50 just because nobody has traded.';
-    return '<div class="chart">' + legend + '<svg viewBox="0 0 320 136" role="img" aria-label="' + xml(aria) + '">' +
-      grid + wait + marks + times + '</svg><p>' + cap + '</p></div>';
+    if (last) {
+      var x = xOf(last.t).toFixed(1);
+      marks += '<circle data-side="no" cx="' + x + '" cy="' + yOf(100 - last.yesPay).toFixed(1) + '" r="5.5" fill="' + color.no + '"/>';
+      marks += '<circle data-side="yes" cx="' + x + '" cy="' + yOf(last.yesPay).toFixed(1) + '" r="5.5" fill="' + color.yes + '"/>';
+    }
+    var wait = pts.length ? '' : '<text x="116" y="58" text-anchor="middle" fill="#b9b3a6" font-size="12" font-family="Inter,sans-serif">No matched price yet</text>';
+    var times = '';
+    if (pts.length === 1) times = '<text x="116" y="116" text-anchor="middle" fill="#8d8a83" font-size="10" font-family="Inter,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
+    else if (pts.length > 1) {
+      times = '<text x="' + plotX + '" y="116" fill="#8d8a83" font-size="10" font-family="Inter,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>' +
+        '<text x="' + (plotX + plotW) + '" y="116" text-anchor="end" fill="#8d8a83" font-size="10" font-family="Inter,sans-serif">' + xml(ctStamp(pts[pts.length - 1].t)) + '</text>';
+    }
+    var yesPct = last ? Math.round(last.yesPay * 10) / 10 : null;
+    var noPct = last ? Math.round((100 - last.yesPay) * 10) / 10 : null;
+    function labelTops(a, b) {
+      if (Math.abs(a - b) >= 28) return [a, b];
+      var mid = (a + b) / 2;
+      var hi = Math.max(8, mid - 18);
+      var lo = Math.min(80, mid + 18);
+      if (a < b) return [hi, lo];
+      if (a > b) return [lo, hi];
+      return [hi, lo];
+    }
+    var yesLine = last ? (yOf(last.yesPay) / vbH) * 100 : 22;
+    var noLine = last ? (yOf(100 - last.yesPay) / vbH) * 100 : 68;
+    var tops = labelTops(yesLine, noLine);
+    var yesLabel = tops[0];
+    var noLabel = tops[1];
+    var read = '<div class="kread" aria-hidden="true">' +
+      '<div class="kend" data-side="yes" style="top:' + yesLabel.toFixed(1) + '%;color:' + color.yes + '"><span>' + xml(yesName) + '</span><b>' + (yesPct == null ? '—' : yesPct + '%') + '</b></div>' +
+      '<div class="kend" data-side="no" style="top:' + noLabel.toFixed(1) + '%;color:' + color.no + '"><span>' + xml(noName) + '</span><b>' + (noPct == null ? '—' : noPct + '%') + '</b></div></div>';
+    var aria = (pts.length ? ('Last matched price ' + yesPct + '% ' + yesName + ', ' + noPct + '% ' + noName + '. ') : 'No matched price yet. ') +
+      'Not the price of a new post. Not a count of bets.';
+    return '<div class="chart"><div class="kchart"><div class="kplot"><svg viewBox="0 0 232 ' + vbH + '" role="img" aria-label="' + xml(aria) + '">' +
+      wait + marks + times + '</svg></div>' + read + '</div></div>';
   }
 
   function claimAll(state, uid) {
