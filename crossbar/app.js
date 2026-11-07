@@ -2,17 +2,33 @@
   var X = window.Crossbar, W = window.CrossbarWire;
   var FB = { apiKey: 'AIzaSyALDF-z2uZONruRz2EXbJAfWKHnW4FS5qA', authDomain: 'thirstyfrog-e2aed.firebaseapp.com', databaseURL: 'https://thirstyfrog-e2aed-default-rtdb.firebaseio.com', projectId: 'thirstyfrog-e2aed', appId: '1:656084503103:web:aca5e6473fd2b920ec868a' };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-  var PROP_COPY = {
-    p_stadler_td: 'Provisional researched line, not a price. Over 0.5 means 1 or more scoring touchdowns: rushing, receiving, kick or punt return, or a defensive return. Passing touchdowns, extra points, and two-point conversions do not count. His 2026–27 card shows 2 receiving touchdowns and the profile says 3 total; the third type is not verified and is not a probability.',
-    p_homan_rush: 'Provisional researched line, not a price. Over 58.5 means 59 or more rushing yards on the official count. 589 yards in 10 games is 58.9 a game, rounded to the nearest half-point. No opponent adjustment. Not a fitted price.',
-    p_homan_td: 'Provisional researched line, not a price. Over 0.5 means 1 or more scoring touchdowns: rushing, receiving, kick or punt return, or a defensive return. Passing touchdowns, extra points, and two-point conversions do not count. 8 rushing and 3 receiving touchdowns in 10 games are the season count, not an anytime probability.',
-    p_stadler_rec: 'Provisional researched line, not a price. Over 29.5 means 30 or more receiving yards on the official count. The number is an equal-weight blend of his season average (401 yards in 10 games, 40.1) and 18 yards on 1 catch against Oakridge on Oct 9, which is 29.05, rounded to 29.5. Subjective. Not fitted.',
-    p_stadler_tck: 'Provisional researched line, not a price. Total tackles means solo plus assisted, overtime included. Each assist counts as one. Over 4.5 means 5 or more. 2026–27 coach-entered MaxPreps defense table: 10 games, 21 solo, 26 assisted, 47 total, 4.7 a game. Nearest half-point. No opponent adjustment.',
-    p_bluntzer_tck: 'Provisional researched line, not a price. Total tackles means solo plus assisted, overtime included. Each assist counts as one. Over 9.5 means 10 or more. 2026–27 coach-entered MaxPreps defense table: 10 games, 38 solo, 59 assisted, 97 total, 9.7 a game. Nearest half-point. No opponent adjustment.'
+  var BASIS = {
+    p_stadler_td: '2 receiving touchdowns in 10 games. Over 0.5 means at least one scoring touchdown.',
+    p_stadler_rec: '40.1 receiving yards a game, blended with 18 against Oakridge, to 29.5.',
+    p_stadler_tck: '47 total tackles in 10 games, 4.7 a game, to the nearest half-point.',
+    p_homan_rush: '589 rushing yards in 10 games, 58.9 a game, to the nearest half-point.',
+    p_homan_td: '8 rushing and 3 receiving touchdowns in 10 games. Over 0.5 means at least one scoring touchdown.',
+    p_bluntzer_tck: '97 total tackles in 10 games, 9.7 a game, to the nearest half-point.'
   };
-  var SETTLE = 'Settled only from the coach-entered MaxPreps box score for this player in the Nov 7 game against Oakridge, overtime included. The operator has 72 hours after the official final. If that stat is missing or unpublished, the sources disagree, participation is unconfirmed or he did not play, or the game is canceled or unfinished, this market is void and every token is refunded. A missing stat is never entered as zero. Posting the final score does not settle player props.';
+  var DETAIL = {
+    p_stadler_td: 'Scoring touchdowns are rushing, receiving, kick or punt return, or a defensive return. Passing touchdowns, extra points, and two-point conversions do not count. The season card shows 2 receiving touchdowns. A profile total of 3 is not used, because the third score is not verified. This line is an anytime threshold, not a chance.',
+    p_stadler_rec: 'Receiving yards are the official receiving-yard count. Over 29.5 means 30 or more. The line weights his season average (401 yards in 10 games) equally with 18 yards on 1 catch against Oakridge on Oct 9, which is 29.05, then rounds to 29.5. That blend is a judgment, not a fitted price.',
+    p_stadler_tck: 'Total tackles are solo plus assisted. Each assist counts as one. Overtime counts. Over 4.5 means 5 or more. The 2026–27 defense table lists 10 games, 21 solo, 26 assisted, and 47 total. No opponent or pace adjustment.',
+    p_homan_rush: 'Rushing yards are the official rushing-yard count. Over 58.5 means 59 or more. 124 carries and 589 yards in 10 games is 58.9 a game. No opponent adjustment, and no earlier Oakridge rushing line is used.',
+    p_homan_td: 'Scoring touchdowns are rushing, receiving, kick or punt return, or a defensive return. Passing touchdowns, extra points, and two-point conversions do not count. The season card shows 8 rushing and 3 receiving touchdowns in 10 games. That count is not an anytime chance. No tackle line is offered.',
+    p_bluntzer_tck: 'Total tackles are solo plus assisted. Each assist counts as one. Overtime counts. Over 9.5 means 10 or more. The 2026–27 defense table lists 10 games, 38 solo, 59 assisted, and 97 total. No opponent or pace adjustment.'
+  };
+  var SOURCES = {
+    p_stadler_td: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/william-stadler/football/stats/?careerid=4tigea67b3q00',
+    p_stadler_rec: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/william-stadler/football/stats/?careerid=4tigea67b3q00',
+    p_stadler_tck: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/william-stadler/football/stats/?careerid=4tigea67b3q00',
+    p_homan_rush: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/harrison-homan/football/stats/?careerid=2ukpsvlkthgrb',
+    p_homan_td: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/harrison-homan/football/stats/?careerid=2ukpsvlkthgrb',
+    p_bluntzer_tck: 'https://www.maxpreps.com/tx/fort-worth/fort-worth-country-day-falcons/athletes/thomas-bluntzer/football/stats/?careerid=v15n941ughscc'
+  };
+  var SETTLE = 'Settlement uses the coach-entered MaxPreps box score for this player in the Nov 7 game against Oakridge, overtime included. It is not a season total and not a guess from earlier games. The operator has 72 hours after the official final. If the stat is missing, unpublished, or in unresolved conflict, if participation is unconfirmed or he did not play, or if the game is canceled or unfinished, the market is void and every token is refunded. A blank stat is never entered as zero. Posting the final score does not settle a player prop.';
   var state = X.blank();
-  var uid = null, mine = null, admin = false, sel = null, note = '', preview = location.hash === '#preview';
+  var uid = null, mine = null, admin = false, sel = null, note = '', rulesLive = false, preview = location.hash === '#preview';
   var root = document.getElementById('app');
 
   function tok(c) { return X.tokens(c) + (Math.abs(c) === 100 ? '' : ''); }
@@ -54,6 +70,7 @@
   }
   function chart(mid) {
     var pts = trades(mid);
+    if (!pts.length) return '<p class="wait">Waiting for first match</p>';
     var ref = X.MARKETS[mid] ? X.MARKETS[mid].refYes : null;
     var d = '';
     pts.forEach(function (f, i) {
@@ -62,10 +79,8 @@
       d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
     });
     var refY = ref == null ? '' : '<line x1="0" x2="100" y1="' + (100 - ref) + '" y2="' + (100 - ref) + '" stroke="#8d8a83" stroke-dasharray="2 2" stroke-width="0.6"/>';
-    var path = pts.length ? '<path d="' + d + '" fill="none" stroke="#e4c98a" stroke-width="1.6" vector-effect="non-scaling-stroke"/>' : '';
-    var cap = pts.length ? pts.length + ' matched trade' + (pts.length === 1 ? '' : 's') : 'No matched trades yet. An empty book stays empty.';
-    var est = ref == null ? 'No model price on this prop. The line on the chart would be trades only.' : 'Dotted line is the pregame estimate (' + ref + '¢), not a trade.';
-    return '<div class="chart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Matched prices">' + refY + path + '</svg><p>' + cap + ' ' + est + '</p></div>';
+    var note = ref == null ? 'Matched prices only.' : 'Gold is matched trades. The dotted line is the pregame read, not a trade.';
+    return '<div class="chart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Matched prices">' + refY + '<path d="' + d + '" fill="none" stroke="#e4c98a" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg><p>' + pts.length + ' match' + (pts.length === 1 ? '' : 'es') + '. ' + note + '</p></div>';
   }
   function book(mid) {
     var list = Object.keys(state.orders).map(function (id) { return state.orders[id]; }).filter(function (o) { return o && o.mid === mid && o.st === 'open' && o.rem > 0; });
@@ -77,22 +92,36 @@
       return '<div class="offer"><span>' + (o.side === 'yes' ? 'YES' : 'NO') + ' ' + o.px + '¢ · ' + o.rem + ' ' + esc(who) + ' · ' + esc(tag) + '</span>' + mineBtn + '</div>';
     }).join('');
   }
+  function rulesBox(mid) {
+    var prop = X.PROPS[mid], m = X.MARKETS[mid];
+    var body = prop
+      ? '<p>' + esc(DETAIL[mid]) + '</p><p>' + esc(SETTLE) + '</p><p><a href="' + esc(SOURCES[mid]) + '">MaxPreps season stats</a></p>'
+      : '<p>' + esc(m.yes) + ' / ' + esc(m.no) + '. Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢. That read is not a trade and not a live price. The number on the card does not move. A tie voids the outright winner only. Oakridge −15.5 needs a win by 16 or more. Combined 56.5: 57 or more is over. 35 and 21 are included on those yes sides. The house does not take a side. Unmatched tokens come back if you cancel or the board closes.</p>';
+    return '<details class="rules"><summary>Rules &amp; sources</summary>' + body + '</details>';
+  }
   function slip(mid, side) {
     var prop = X.PROPS[mid];
     var label = side === 'yes' ? (prop ? 'Over ' + prop.line : X.MARKETS[mid].yes) : (prop ? 'Under ' + prop.line : X.MARKETS[mid].no);
-    return '<form class="slip" data-mid="' + mid + '" data-side="' + side + '"><p class="slip-k">You set the price. ' + esc(label) + '</p>' + (prop ? '<p class="rule">' + esc(PROP_COPY[mid]) + ' ' + esc(SETTLE) + '</p>' : '<p class="rule">The point total or spread does not move. You are buying a token share from another person. If nobody takes the other side, you can cancel and the tokens come back.</p>') + '<label>Shares<input name="shares" type="number" min="1" step="1" value="5" inputmode="numeric"></label><div class="chips"><button type="button" data-sh="1">1</button><button type="button" data-sh="5">5</button><button type="button" data-sh="10">10</button></div><label>Your limit, cents per share<input name="px" type="number" min="1" max="99" step="1" value="" placeholder="1–99" inputmode="numeric"></label><p class="quote"></p><p class="err"></p><button class="go" type="submit">Place offer</button><button class="ghost" type="button" data-close>Not now</button></form>';
+    return '<form class="slip" data-mid="' + mid + '" data-side="' + side + '"><p class="slip-k">' + esc(label) + '</p><label>Shares<input name="shares" type="number" min="1" step="1" value="5" inputmode="numeric"></label><div class="chips"><button type="button" data-sh="1">1</button><button type="button" data-sh="5">5</button><button type="button" data-sh="10">10</button></div><label>Price, cents<input name="px" type="number" min="1" max="99" step="1" value="" placeholder="1–99" inputmode="numeric"></label><p class="quote"></p>' + rulesBox(mid) + '<p class="err"></p><button class="go" type="submit">Place offer</button><button class="ghost" type="button" data-close>Not now</button></form>';
   }
   function card(mid) {
     var prop = X.PROPS[mid], m = X.MARKETS[mid];
-    var title = prop ? prop.player + ' · ' + prop.title : m.title;
-    var sub = prop ? '#' + prop.num + ' ' + prop.pos + ' · Over / under ' + prop.line : m.yes + ' / ' + m.no;
+    var kicker = prop ? prop.player + ' · #' + prop.num + ' ' + prop.pos : 'Game line';
+    var title = prop ? prop.title : m.title;
+    var line = prop ? 'O/U ' + prop.line : '';
     var yes = bestOpen(mid, 'yes'), no = bestOpen(mid, 'no');
-    var yesTxt = yes ? yes.px + '¢ offered' : 'No yes offer';
-    var noTxt = no ? no.px + '¢ offered' : 'No no offer';
-    var est = prop ? '<p class="est">No model percentage. Prices appear only after someone offers.</p>' : '<p class="est">Estimate ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢ · rough pregame read, not a trade and not the live price.</p>';
-    var rule = prop ? '<p class="rule">' + esc(PROP_COPY[mid]) + '</p><p class="rule">' + esc(SETTLE) + '</p>' : '';
-    var open = sel && sel.mid === mid ? slip(mid, sel.side) : '';
-    return '<article class="mkt' + (prop ? ' prop' : '') + '" id="' + mid + '"><p class="kicker">' + (prop ? 'Provisional player prop' : 'Game line') + '</p><h2>' + esc(title) + '</h2><p class="sub">' + esc(sub) + '</p>' + est + rule + '<div class="sides"><button type="button" data-bet="' + mid + '" data-side="yes"><b>' + (prop ? 'Over' : 'Yes') + '</b><small>' + yesTxt + '</small></button><button type="button" data-bet="' + mid + '" data-side="no"><b>' + (prop ? 'Under' : 'No') + '</b><small>' + noTxt + '</small></button></div>' + open + chart(mid) + '<h3>Pending offers</h3>' + book(mid) + '</article>';
+    var yesTxt = yes ? yes.px + '¢' : 'No offer';
+    var noTxt = no ? no.px + '¢' : 'No offer';
+    var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '<p class="basis">' + esc(m.yes) + ' / ' + esc(m.no) + '</p><p class="est">Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢</p>';
+    var open = sel && sel.mid === mid;
+    var canOffer = preview || rulesLive;
+    var extra = open && canOffer ? slip(mid, sel.side) + chart(mid) : '';
+    var offers = book(mid);
+    var pend = offers.indexOf('empty') >= 0 ? '' : '<div class="offers">' + offers + '</div>';
+    var controls = canOffer
+      ? '<div class="sides"><button type="button" data-bet="' + mid + '" data-side="yes"><b>' + (prop ? 'Over' : 'Yes') + '</b><small>' + yesTxt + '</small></button><button type="button" data-bet="' + mid + '" data-side="no"><b>' + (prop ? 'Under' : 'No') + '</b><small>' + noTxt + '</small></button></div>' + extra + pend
+      : '<p class="wait">Offers are closed until the token rules are published.</p>';
+    return '<article class="mkt' + (prop ? ' prop' : '') + (open ? ' on' : '') + '" id="' + mid + '"><p class="kicker">' + esc(kicker) + '</p><h2>' + esc(title) + '</h2>' + (line ? '<p class="oline">' + esc(line) + '</p>' : '') + face + rulesBox(mid) + controls + '</article>';
   }
   function profiles() {
     var rows = [
@@ -102,7 +131,7 @@
       ['#10 William Stadler', 'WR/CB · 10 GP', '29 catches · 401 rec yds · 2 rec TD · 47 total tackles (21 solo, 26 assisted)'],
       ['#28 Thomas Bluntzer', 'OLB/DE · 10 GP', '97 total tackles (38 solo, 59 assisted)']
     ];
-    return '<section class="profiles"><h2>Season snapshots</h2><p class="sub">2026–27 MaxPreps football stats for five Falcons. Not a ranking. Games played are the listed sample, not an injury note.</p><div class="prow">' + rows.map(function (r) {
+    return '<section class="profiles"><h2>Season snapshots</h2><p class="sub">2026–27 stats. Not a ranking.</p><div class="prow">' + rows.map(function (r) {
       return '<article><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span><p>' + esc(r[2]) + '</p></article>';
     }).join('') + '</div></section>';
   }
@@ -121,6 +150,7 @@
   }
   function gate() {
     if (preview) return '';
+    if (!rulesLive) return '<p class="toast">Play tokens are not open. Offers stay off until this game’s rules are published on the existing database.</p>';
     if (mine) return '<p class="bal"><b>' + X.tokens(mine.bal) + '</b> play tokens · ' + esc(mine.n) + ' · ' + esc(mine.tag) + '</p>';
     return '<form class="gate" id="gate"><h2>Your name for this game</h2><p>This event only. You get 100 play tokens once on this browser. The same name on another phone is a different stack. Clearing this browser can get another 100. A name is not proof you are the only person using it.</p><label>Display name<input name="n" maxlength="24" autocomplete="nickname" required></label><button class="go" type="submit">Get 100 play tokens</button></form>';
   }
@@ -130,7 +160,7 @@
     var phase = state.status === 'open' && Date.now() < X.CUTOFF ? 'Orders open until 6:00 p.m. CT' : (state.status === 'settled' ? 'Final posted' : 'Orders closed');
     root.innerHTML = '<p class="phase">' + phase + '</p>' + gate() + (note ? '<p class="toast">' + esc(note) + '</p>' : '') +
       '<section><h2>The game</h2>' + ['ml', 'spd', 'tot', 'o35', 'f21'].map(card).join('') + '</section>' +
-      profiles() + '<section><h2>Player props</h2><p class="sub">Six researched lines. No model price. No other player, and no parent challenge, is on this board.</p>' + ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') + '</section>' +
+      profiles() + '<section><h2>Player props</h2><p class="sub">You set the price.</p>' + ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') + '</section>' +
       standings() + (admin ? '<section class="ops"><h2>Operator</h2><p class="sub">Final score does not settle player props. A missing box-score stat is Void, not zero.</p><form id="score"><label>Oakridge<input name="oak" type="number" min="0" max="200"></label><label>Country Day<input name="fw" type="number" min="0" max="200"></label><button class="go" type="submit">Post final</button></form><button type="button" id="voidgame">Void the game and refund</button></section>' : '');
     bind();
   }
@@ -172,6 +202,7 @@
     var shares = Math.floor(+f.shares.value || 0), px = Math.floor(+f.px.value || 0);
     var order = { id: X.id(), uid: uid, mid: f.dataset.mid, side: f.dataset.side, px: px, shares: shares, t: Date.now() };
     var built = W.steps(state, order);
+    if (!preview && !rulesLive) { f.querySelector('.err').textContent = 'Offers are closed.'; return; }
     if (built.error) { f.querySelector('.err').textContent = built.error; return; }
     if (preview) {
       var applied = X.submit(state, order);
@@ -213,11 +244,12 @@
     var db = firebase.database();
     var bag = { orders: {}, fills: {}, accounts: {}, event: null, results: {} };
     function paint() { ingest(rows(bag.orders), bag.fills, bag.accounts, bag.event, bag.results); mine = uid && bag.accounts[uid] || null; draw(); }
-    db.ref('xbar_orders').on('value', function (s) { bag.orders = s.val() || {}; paint(); });
-    db.ref('xbar_fills').on('value', function (s) { bag.fills = s.val() || {}; paint(); });
-    db.ref('xbar_accounts').on('value', function (s) { bag.accounts = s.val() || {}; paint(); });
-    db.ref('xbar_event').on('value', function (s) { bag.event = s.val(); paint(); });
-    db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); });
+    function closed() { rulesLive = false; draw(); }
+    db.ref('xbar_orders').on('value', function (s) { bag.orders = s.val() || {}; paint(); }, closed);
+    db.ref('xbar_fills').on('value', function (s) { bag.fills = s.val() || {}; paint(); }, closed);
+    db.ref('xbar_accounts').on('value', function (s) { bag.accounts = s.val() || {}; paint(); }, closed);
+    db.ref('xbar_event').on('value', function (s) { rulesLive = true; bag.event = s.val(); paint(); }, closed);
+    db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); }, closed);
     db.ref('admins/' + uid).once('value').then(function (s) { admin = s.val() === true; draw(); });
   }
   if (preview) {
