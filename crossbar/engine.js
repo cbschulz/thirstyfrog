@@ -403,7 +403,58 @@
   G.payoutFor = payoutFor;
   G.conservation = conservation;
   G.locked = locked;
+  function ask(mid) {
+    var prop = PROPS[mid];
+    if (mid === 'ml') return 'Who wins?';
+    if (mid === 'spd') return 'Who covers?';
+    if (mid === 'tot') return 'Combined score?';
+    if (mid === 'o35') return 'Oakridge points?';
+    if (mid === 'f21') return 'Country Day points?';
+    if (prop && prop.kind === 'scoring_td') return 'Does ' + prop.player + ' score a TD?';
+    if (prop) return prop.player + ' · ' + prop.title + '?';
+    return 'Pick a side';
+  }
+  function outcomeName(mid, side) {
+    var prop = PROPS[mid], m = MARKETS[mid];
+    if (prop && prop.kind === 'scoring_td') return side === 'yes' ? 'Scores a TD' : 'No TD';
+    if (prop) return (side === 'yes' ? 'Over ' : 'Under ') + prop.line;
+    if (m) return side === 'yes' ? m.yes : m.no;
+    return side === 'yes' ? 'Yes' : 'No';
+  }
+  function quoteStake(state, order) {
+    var budget = Math.round(Number(order.tokens) * 100);
+    if (!Number.isFinite(budget) || budget < 1) return { error: 'Enter how many play tokens to risk.' };
+    if (order.side !== 'yes' && order.side !== 'no') return { error: 'Pick a side first.' };
+    var best = null;
+    Object.keys(state.orders || {}).forEach(function (id) {
+      var o = state.orders[id];
+      if (!o || o.st !== 'open' || !(o.rem > 0) || o.mid !== order.mid || o.side === order.side) return;
+      if (!best || o.px > best.px || (o.px === best.px && (o.t < best.t || (o.t === best.t && o.id < best.id)))) best = o;
+    });
+    if (best && best.uid === order.uid) return { error: 'You already have the other side posted. Cancel that first.' };
+    var px = best ? (100 - best.px) : 50;
+    if (!(px >= 1 && px <= 99)) return { error: 'That side cannot be posted.' };
+    var shares = Math.floor(budget / px);
+    if (shares < 1) return { error: 'That is too small. The smallest post here is ' + tokens(px) + ' play tokens.' };
+    var cost = shares * px;
+    var acct = state.accounts && state.accounts[order.uid];
+    if (!acct) return { error: 'Get your play tokens first.' };
+    if (acct.bal < cost) return { error: 'You only have ' + tokens(acct.bal) + ' play tokens available.' };
+    var planned = plan(state, { id: order.id || 'quoteid0001', uid: order.uid, mid: order.mid, side: order.side, px: px, shares: shares, t: order.t });
+    if (planned.error) return { error: planned.self ? 'You already have the other side posted. Cancel that first.' : planned.error };
+    var matched = 0;
+    (planned.fills || []).forEach(function (f) { matched += f.shares; });
+    return {
+      px: px, shares: shares, cost: cost, leftover: budget - cost, payout: shares * 100,
+      matched: matched, waiting: planned.order.rem, even: !best,
+      matchedRisk: matched * px, waitingRisk: planned.order.rem * px
+    };
+  }
+
   G.chartHtml = chartHtml;
   G.ledger = ledger;
   G.ctStamp = ctStamp;
+  G.outcomeName = outcomeName;
+  G.ask = ask;
+  G.quoteStake = quoteStake;
 })(typeof window !== 'undefined' ? (window.Crossbar = window.Crossbar || {}) : (globalThis.Crossbar = globalThis.Crossbar || {}));

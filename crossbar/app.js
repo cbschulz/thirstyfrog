@@ -28,7 +28,7 @@
   };
   var SETTLE = 'Settlement uses the coach-entered MaxPreps box score for this player in the Nov 7 game against Oakridge, overtime included. It is not a season total and not a guess from earlier games. The operator has 72 hours after the official final. If the stat is missing, unpublished, or in unresolved conflict, if participation is unconfirmed or he did not play, or if the game is canceled or unfinished, the market is void and every token is refunded. A blank stat is never entered as zero. Posting the final score does not settle a player prop.';
   var state = X.blank();
-  var uid = null, mine = null, admin = false, sel = null, note = '', rulesLive = false, preview = location.hash === '#preview';
+  var uid = null, mine = null, admin = false, sel = null, note = '', rulesLive = false, busy = false, preview = location.hash === '#preview';
   var root = document.getElementById('app');
 
   function tok(c) { return X.tokens(c) + (Math.abs(c) === 100 ? '' : ''); }
@@ -79,7 +79,7 @@
       var who = (state.accounts[o.uid] && state.accounts[o.uid].n) || 'Player';
       var tag = (state.accounts[o.uid] && state.accounts[o.uid].tag) || '';
       var mineBtn = o.uid === uid ? '<button type="button" data-cancel="' + esc(o.id) + '">Cancel</button>' : '';
-      return '<div class="offer"><span>' + (o.side === 'yes' ? 'YES' : 'NO') + ' ' + o.px + '¢ · ' + o.rem + ' ' + esc(who) + ' · ' + esc(tag) + '</span>' + mineBtn + '</div>';
+      return '<div class="offer"><span>' + esc(X.outcomeName(mid, o.side)) + ' · ' + X.tokens(o.rem * o.px) + ' waiting · ' + esc(who) + ' · ' + esc(tag) + '</span>' + mineBtn + '</div>';
     }).join('');
   }
   function rulesBox(mid) {
@@ -90,27 +90,27 @@
     return '<details class="rules"><summary>Rules &amp; sources</summary>' + body + '</details>';
   }
   function slip(mid, side) {
-    var prop = X.PROPS[mid];
-    var label = side === 'yes' ? (prop ? 'Over ' + prop.line : X.MARKETS[mid].yes) : (prop ? 'Under ' + prop.line : X.MARKETS[mid].no);
-    return '<form class="slip" data-mid="' + mid + '" data-side="' + side + '"><p class="slip-k">' + esc(label) + '</p><label>Shares<input name="shares" type="number" min="1" step="1" value="5" inputmode="numeric"></label><div class="chips"><button type="button" data-sh="1">1</button><button type="button" data-sh="5">5</button><button type="button" data-sh="10">10</button></div><label>Price, cents<input name="px" type="number" min="1" max="99" step="1" value="" placeholder="1–99" inputmode="numeric"></label><p class="quote"></p>' + rulesBox(mid) + '<p class="err"></p><button class="go" type="submit">Place offer</button><button class="ghost" type="button" data-close>Not now</button></form>';
+    var label = X.outcomeName(mid, side);
+    return '<form class="slip" data-mid="' + mid + '" data-side="' + side + '"><p class="slip-k">' + esc(label) + '</p><p class="ask">How many play tokens do you want to risk?</p><div class="chips"><button type="button" data-amt="1">1</button><button type="button" data-amt="5" class="pick">5</button><button type="button" data-amt="10">10</button></div><label>Play tokens<input name="amt" type="number" min="0.5" step="0.01" value="5" inputmode="decimal"></label><p class="quote"></p><p class="err"></p><button class="go" type="submit">Post</button><button class="ghost" type="button" data-close>Not now</button></form>';
   }
   function card(mid) {
     var prop = X.PROPS[mid], m = X.MARKETS[mid];
     var kicker = prop ? prop.player + ' · #' + prop.num + ' ' + prop.pos : 'Game line';
     var title = prop ? prop.title : m.title;
-    var line = prop ? 'O/U ' + prop.line : '';
-    var yes = bestOpen(mid, 'yes'), no = bestOpen(mid, 'no');
-    var yesTxt = yes ? yes.px + '¢' : 'No offer';
-    var noTxt = no ? no.px + '¢' : 'No offer';
-    var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '<p class="basis">' + esc(m.yes) + ' / ' + esc(m.no) + '</p><p class="est">Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢</p>';
+    var line = prop && prop.kind !== 'scoring_td' ? 'O/U ' + prop.line : '';
+    var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '';
     var open = sel && sel.mid === mid;
     var canOffer = preview || rulesLive;
     var extra = open && canOffer ? slip(mid, sel.side) : '';
     var offers = book(mid);
     var pend = offers.indexOf('empty') >= 0 ? '' : '<div class="offers">' + offers + '</div>';
-    var buttons = '<div class="sides"><button type="button" data-bet="' + mid + '" data-side="yes"><b>' + (prop ? 'Over' : 'Yes') + '</b><small>' + yesTxt + '</small></button><button type="button" data-bet="' + mid + '" data-side="no"><b>' + (prop ? 'Under' : 'No') + '</b><small>' + noTxt + '</small></button></div>';
+    function sideBtn(side) {
+      var picked = open && sel.side === side ? ' pick' : '';
+      return '<button type="button" class="' + picked + '" data-bet="' + mid + '" data-side="' + side + '"><b>' + esc(X.outcomeName(mid, side)) + '</b></button>';
+    }
+    var buttons = '<p class="ask">' + esc(X.ask(mid)) + '</p><div class="sides">' + sideBtn('yes') + sideBtn('no') + '</div>';
     var controls = canOffer
-      ? buttons + chart(mid) + extra + pend
+      ? buttons + extra + chart(mid) + pend
       : '<p class="wait">Offers are closed until the token rules are published.</p>' + chart(mid);
     return '<article class="mkt' + (prop ? ' prop' : '') + (open ? ' on' : '') + '" id="' + mid + '"><p class="kicker">' + esc(kicker) + '</p><h2>' + esc(title) + '</h2>' + (line ? '<p class="oline">' + esc(line) + '</p>' : '') + face + rulesBox(mid) + controls + '</article>';
   }
@@ -130,12 +130,7 @@
     var prop = X.PROPS[mid], m = X.MARKETS[mid];
     return prop ? prop.player + ' · ' + prop.title : (m ? m.title : mid);
   }
-  function sname(mid, side) {
-    var prop = X.PROPS[mid], m = X.MARKETS[mid];
-    if (prop) return (side === 'yes' ? 'Over ' : 'Under ') + prop.line;
-    if (m) return side === 'yes' ? m.yes : m.no;
-    return side === 'yes' ? 'Yes' : 'No';
-  }
+  function sname(mid, side) { return X.outcomeName(mid, side); }
   function pname(uid) {
     var a = state.accounts[uid];
     return a ? esc(a.n) + ' · ' + esc(a.tag) : 'Player';
@@ -157,7 +152,7 @@
         '<span>Settled result ' + (p.settledKnown ? X.tokens(p.settled) : '—') + '</span></div>';
     }).join('') : '<div class="person">No one has taken tokens yet.</div>';
     var offers = book.offers.length ? book.offers.map(function (o) {
-      return '<div class="bet"><b>Open offer · not a bet yet</b><p>' + pname(o.uid) + ' · ' + esc(mtitle(o.mid)) + ' · ' + esc(sname(o.mid, o.side)) + ' · ' + o.rem + ' shares at ' + o.px + '¢</p><p class="cond">' + X.tokens(o.hold) + ' reserved at that offer price. Cancel, or the board closing, returns it. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
+      return '<div class="bet"><b>Waiting for another player</b><p>' + pname(o.uid) + ' · ' + esc(mtitle(o.mid)) + ' · ' + esc(sname(o.mid, o.side)) + '</p><p class="cond">' + X.tokens(o.hold) + ' play tokens set aside. Not matched yet. Cancel returns them. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
     }).join('') : '<div class="person">No unmatched offers.</div>';
     var bets = book.bets.length ? book.bets.map(function (b) {
       var why = b.call == null
@@ -167,11 +162,11 @@
           : pname(b.call === 'yes' ? b.yes.uid : b.no.uid) + ' gets ' + X.tokens(b.call === 'yes' ? b.yes.payout : b.no.payout) + ' play tokens from the escrow. ' + pname(b.call === 'yes' ? b.no.uid : b.yes.uid) + ' gets 0.');
       function line(row) {
         var back = row.improved ? ' ' + X.tokens(row.improved) + ' already returned to available because the match was better than the offer.' : '';
-        return '<p>' + pname(row.uid) + ' · ' + esc(sname(b.mid, row.side)) + ' · ' + b.shares + ' shares · cost ' + X.tokens(row.cost) + back + '</p><p class="cond">' + sideStatus(row, sname(b.mid, row.side)) + '</p>';
+        return '<p>' + pname(row.uid) + ' · ' + esc(sname(b.mid, row.side)) + ' · risked ' + X.tokens(row.cost) + back + '</p><p class="cond">' + sideStatus(row, sname(b.mid, row.side)) + '</p>';
       }
       return '<div class="bet"><b>' + esc(mtitle(b.mid)) + ' · ' + esc(X.ctStamp(b.t)) + '</b>' + line(b.yes) + line(b.no) + '<p class="cond">' + why + ' No cash.</p></div>';
     }).join('') : '<div class="person">No matched trades yet. Nothing is owed.</div>';
-    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Rank is available, plus reserved offers, plus stake still in a match, plus a settled payout not in the wallet yet. A possible win is not included. The same name stays distinct by the short id. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Open offers</h2><div class="lb">' + offers + '</div><h2>Matched bets</h2><p class="sub">Who took each side. Paid only from tokens already escrowed.</p><div class="lb">' + bets + '</div></section>';
+    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Available is what you can still post. Set aside is waiting for another player. In a match is already paired. A possible win is not counted until the result is in. Same names stay distinct by the short id. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Waiting posts</h2><div class="lb">' + offers + '</div><h2>Matched play</h2><p class="sub">Who took each side. Tokens already set aside pay the winner. Nothing is owed in cash.</p><div class="lb">' + bets + '</div></section>';
   }
   function gate() {
     if (preview) return '';
@@ -185,7 +180,7 @@
     var phase = state.status === 'open' && Date.now() < X.CUTOFF ? 'Orders open until 6:00 p.m. CT' : (state.status === 'settled' ? 'Final posted' : 'Orders closed');
     root.innerHTML = '<p class="phase">' + phase + '</p>' + gate() + (note ? '<p class="toast">' + esc(note) + '</p>' : '') +
       '<section><h2>The game</h2>' + ['ml', 'spd', 'tot', 'o35', 'f21'].map(card).join('') + '</section>' +
-      profiles() + '<section><h2>Player props</h2><p class="sub">You set the price.</p>' + ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') + '</section>' +
+      profiles() + '<section><h2>Player props</h2><p class="sub">Pick a side, then how many play tokens.</p>' + ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') + '</section>' +
       standings() + (admin ? '<section class="ops"><h2>Operator</h2><p class="sub">Final score does not settle player props. A missing box-score stat is Void, not zero.</p><form id="score"><label>Oakridge<input name="oak" type="number" min="0" max="200"></label><label>Country Day<input name="fw" type="number" min="0" max="200"></label><button class="go" type="submit">Post final</button></form><button type="button" id="voidgame">Void the game and refund</button></section>' : '');
     bind();
   }
@@ -201,8 +196,13 @@
       };
     });
     root.querySelectorAll('[data-close]').forEach(function (b) { b.onclick = function () { sel = null; draw(); }; });
-    root.querySelectorAll('[data-sh]').forEach(function (b) {
-      b.onclick = function () { var i = b.closest('form').shares; i.value = b.dataset.sh; quote(b.closest('form')); };
+    root.querySelectorAll('[data-amt]').forEach(function (b) {
+      b.onclick = function () {
+        var f = b.closest('form');
+        f.amt.value = b.dataset.amt;
+        f.querySelectorAll('[data-amt]').forEach(function (c) { c.classList.toggle('pick', c === b); });
+        quote(f);
+      };
     });
     root.querySelectorAll('.slip').forEach(function (f) {
       f.oninput = function () { quote(f); };
@@ -217,25 +217,42 @@
     var vg = document.getElementById('voidgame');
     if (vg) vg.onclick = voidGame;
   }
+  function quoteWords(q, label) {
+    if (q.error) return q.error;
+    var text = 'You risk ' + X.tokens(q.cost) + ' play tokens. If ' + label + ' hits, you get ' + X.tokens(q.payout) + ' play tokens back. That payout is possible, not won yet.';
+    if (q.even) text += ' Nobody is on the other side yet, so this waits at an even split until someone takes it.';
+    else if (q.matched && q.waiting) text += ' ' + X.tokens(q.matchedRisk) + ' can match someone now. ' + X.tokens(q.waitingRisk) + ' waits for another player at the same terms.';
+    else if (q.matched) text += ' This matches someone already waiting on the other side.';
+    else text += ' This waits until someone takes the other side.';
+    if (q.leftover > 0) text += ' ' + X.tokens(q.leftover) + ' stays in your wallet.';
+    return text;
+  }
   function quote(f) {
-    var shares = Math.floor(+f.shares.value || 0), px = Math.floor(+f.px.value || 0);
     var q = f.querySelector('.quote');
-    if (!(shares >= 1 && px >= 1 && px <= 99)) { q.textContent = 'Enter a whole number of shares and a price from 1¢ to 99¢.'; return; }
-    q.textContent = 'You escrow ' + X.tokens(shares * px) + ' tokens. If matched and you win, each share pays 1 token from the other side. If the price improves, the difference comes back.';
+    var got = X.quoteStake(state, { uid: uid, mid: f.dataset.mid, side: f.dataset.side, tokens: f.amt.value, t: Date.now() });
+    q.textContent = quoteWords(got, X.outcomeName(f.dataset.mid, f.dataset.side));
   }
   function place(f) {
-    var shares = Math.floor(+f.shares.value || 0), px = Math.floor(+f.px.value || 0);
-    var order = { id: X.id(), uid: uid, mid: f.dataset.mid, side: f.dataset.side, px: px, shares: shares, t: Date.now() };
+    if (busy) return;
+    var err = f.querySelector('.err');
+    if (!preview && !rulesLive) { err.textContent = 'Posts are closed.'; return; }
+    var t = Date.now();
+    var got = X.quoteStake(state, { uid: uid, mid: f.dataset.mid, side: f.dataset.side, tokens: f.amt.value, t: t });
+    if (got.error) { err.textContent = got.error; return; }
+    var order = { id: X.id(), uid: uid, mid: f.dataset.mid, side: f.dataset.side, px: got.px, shares: got.shares, t: t };
     var built = W.steps(state, order);
-    if (!preview && !rulesLive) { f.querySelector('.err').textContent = 'Offers are closed.'; return; }
-    if (built.error) { f.querySelector('.err').textContent = built.error; return; }
+    if (built.error) { err.textContent = built.error; return; }
+    busy = true;
+    var btn = f.querySelector('.go');
+    if (btn) btn.disabled = true;
     if (preview) {
       var applied = X.submit(state, order);
       state = applied.state;
-      note = applied.fills && applied.fills.length ? 'Matched on this phone only.' : 'Offer posted on this phone only.';
+      busy = false;
+      note = applied.fills && applied.fills.length ? 'Posted on this phone only. Some of it is matched.' : 'Posted on this phone only. It waits for another player.';
       sel = null; draw(); return;
     }
-    sendSteps(built.steps, built.planned.fills.length ? 'Offer matched or posted.' : 'Offer posted. It sits until someone takes the other side.');
+    sendSteps(built.steps, got.matched ? 'Posted. Some of it is matched. The rest waits for another player.' : 'Posted. It waits until someone takes the other side.');
   }
   function cancel(id) {
     if (preview) { var r = X.cancel(state, id, uid, Date.now()); state = r.state; note = r.error || 'Canceled. Tokens returned.'; draw(); return; }
@@ -246,8 +263,8 @@
     var db = firebase.database();
     var i = 0;
     function next(err) {
-      if (err) { note = 'The book changed or the offer was rejected. Nothing extra was taken.'; draw(); return; }
-      if (i >= steps.length) { note = ok; sel = null; draw(); return; }
+      if (err) { busy = false; note = 'The book changed or the post was rejected. Nothing extra was taken.'; draw(); return; }
+      if (i >= steps.length) { busy = false; note = ok; sel = null; draw(); return; }
       db.ref().update(steps[i++]).then(function () { next(); }).catch(function () { next(true); });
     }
     next();
