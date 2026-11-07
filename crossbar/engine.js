@@ -320,18 +320,22 @@
       minute: '2-digit'
     }).format(new Date(ms));
   }
+  function chartColors(mid) {
+    if (mid === 'f21') return { yes: '#173d79', no: '#1f9d55' };
+    return { yes: '#1f9d55', no: '#173d79' };
+  }
   function chartHtml(mid, fills) {
-    var prop = PROPS[mid], m = MARKETS[mid];
-    var yes = prop ? ('Over ' + prop.line) : (m ? m.yes : 'Yes');
-    var no = prop ? ('Under ' + prop.line) : (m ? m.no : 'No');
+    var yesName = outcomeName(mid, 'yes');
+    var noName = outcomeName(mid, 'no');
+    var color = chartColors(mid);
     var pts = [];
     Object.keys(fills || {}).forEach(function (id) {
       var f = fills[id];
       if (!f || f.mid !== mid || typeof f.yesPay !== 'number' || typeof f.t !== 'number') return;
       pts.push(f);
     });
-    pts.sort(function (a, b) { return a.t - b.t || String(a.id).localeCompare(String(b.id)); });
-    var plotX = 32, plotY = 14, plotW = 276, plotH = 78;
+    pts.sort(function (a, b) { return a.t - b.t || String(a.id || '').localeCompare(String(b.id || '')); });
+    var plotX = 34, plotY = 8, plotW = 274, plotH = 96;
     function yOf(p) {
       var c = Math.max(0, Math.min(100, p));
       return plotY + ((100 - c) / 100) * plotH;
@@ -340,6 +344,12 @@
       if (pts.length < 2 || pts[pts.length - 1].t === pts[0].t) return plotX + plotW / 2;
       return plotX + ((t - pts[0].t) / (pts[pts.length - 1].t - pts[0].t)) * plotW;
     }
+    function pathOf(side) {
+      return pts.map(function (f, i) {
+        var p = side === 'yes' ? f.yesPay : (100 - f.yesPay);
+        return (i ? 'L' : 'M') + xOf(f.t).toFixed(1) + ' ' + yOf(p).toFixed(1);
+      }).join(' ');
+    }
     var grid = [100, 50, 0].map(function (p) {
       var y = yOf(p);
       return '<line x1="' + plotX + '" x2="' + (plotX + plotW) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="#3c4338" stroke-width="1"/>' +
@@ -347,27 +357,30 @@
     }).join('');
     var marks = '';
     if (pts.length >= 2) {
-      marks += '<path d="' + pts.map(function (f, i) {
-        return (i ? 'L' : 'M') + xOf(f.t).toFixed(1) + ' ' + yOf(f.yesPay).toFixed(1);
-      }).join(' ') + '" fill="none" stroke="#e4c98a" stroke-width="2" stroke-linejoin="round"/>';
+      marks += '<path data-side="yes" d="' + pathOf('yes') + '" fill="none" stroke="' + color.yes + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      marks += '<path data-side="no" d="' + pathOf('no') + '" fill="none" stroke="' + color.no + '" stroke-width="2.5" stroke-dasharray="5 4" stroke-linejoin="round"/>';
     }
     pts.forEach(function (f) {
-      marks += '<circle cx="' + xOf(f.t).toFixed(1) + '" cy="' + yOf(f.yesPay).toFixed(1) + '" r="3.5" fill="#e4c98a"/>';
+      var x = xOf(f.t).toFixed(1);
+      marks += '<circle data-side="no" cx="' + x + '" cy="' + yOf(100 - f.yesPay).toFixed(1) + '" r="6.5" fill="none" stroke="' + color.no + '" stroke-width="2"/>';
+      marks += '<circle data-side="yes" cx="' + x + '" cy="' + yOf(f.yesPay).toFixed(1) + '" r="4" fill="' + color.yes + '"/>';
     });
-    var wait = pts.length ? '' : '<text x="170" y="58" text-anchor="middle" fill="#c9c2b4" font-size="12" font-family="Outfit,sans-serif">Waiting for first matched trade</text>';
+    var wait = pts.length ? '' : '<text x="171" y="56" text-anchor="middle" fill="#c9c2b4" font-size="12" font-family="Outfit,sans-serif">Waiting for first matched trade</text>';
     var times = '';
-    if (pts.length === 1) {
-      times = '<text x="170" y="118" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
-    } else if (pts.length > 1) {
-      times = '<text x="' + plotX + '" y="118" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>' +
-        '<text x="' + (plotX + plotW) + '" y="118" text-anchor="end" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[pts.length - 1].t)) + '</text>';
-    } else {
-      times = '<text x="170" y="118" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">Central time</text>';
-    }
-    var aria = (pts.length ? (pts.length + ' matched trade' + (pts.length === 1 ? '' : 's') + '. ') : 'Waiting for first matched trade. ') +
-      yes + ' price in cents, from 0 to 100. ' + no + ' is 100 cents minus that.';
-    var cap = xml(yes) + ' ¢. ' + xml(no) + ' is 100¢ minus this. Central time.';
-    return '<div class="chart"><svg viewBox="0 0 320 128" role="img" aria-label="' + xml(aria) + '">' +
+    if (pts.length === 1) times = '<text x="171" y="128" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
+    else if (pts.length > 1) {
+      times = '<text x="' + plotX + '" y="128" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>' +
+        '<text x="' + (plotX + plotW) + '" y="128" text-anchor="end" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[pts.length - 1].t)) + '</text>';
+    } else times = '<text x="171" y="128" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">Central time</text>';
+    var last = pts.length ? pts[pts.length - 1] : null;
+    var yesPct = last ? (Math.round(last.yesPay * 10) / 10) : null;
+    var noPct = last ? (Math.round((100 - last.yesPay) * 10) / 10) : null;
+    var legend = '<div class="legend"><span><i class="dot" style="background:' + color.yes + '"></i>' + xml(yesName) + ' <b>' + (yesPct == null ? '—' : yesPct + '%') + '</b></span>' +
+      '<span><i class="ring" style="border-color:' + color.no + '"></i>' + xml(noName) + ' <b>' + (noPct == null ? '—' : noPct + '%') + '</b></span></div>';
+    var aria = (pts.length ? ('Last matched price ' + yesPct + '% ' + yesName + ', ' + noPct + '% ' + noName + '. ') : 'Waiting for first matched trade. ') +
+      'Both chances add to 100. Not a count of bets.';
+    var cap = pts.length ? 'Last matched price. The two chances add to 100. Not a count of bets.' : 'No matched price yet. This is not 50 just because nobody has traded.';
+    return '<div class="chart">' + legend + '<svg viewBox="0 0 320 136" role="img" aria-label="' + xml(aria) + '">' +
       grid + wait + marks + times + '</svg><p>' + cap + '</p></div>';
   }
 
