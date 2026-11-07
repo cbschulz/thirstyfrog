@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Oakridge vs Fort Worth Country Day play-token board. No cash value.">
+<title>Oakridge vs Country Day · Torii play tokens</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@400;560;750&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10140f;--card:#171e18;--line:rgba(228,201,138,.28);--ivory:#f6f1e6;--mut:#c9c2b4;--gold:#e4c98a;--oak:#1f9d55;--fw:#173d79;--red:#e15b70}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2418 0,#10140f 55%);color:var(--ivory);font-family:Outfit,system-ui,sans-serif}
+.banner{background:#3a2a12;color:#f8e7c0;text-align:center;font-weight:750;letter-spacing:.08em;font-size:12px;padding:8px 12px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.brand{color:var(--ivory);text-decoration:none;font-weight:750} .brand em{color:var(--gold);font-style:normal}
+a.back{color:var(--gold);font-size:14px}
+main{max-width:880px;margin:0 auto;padding:16px 14px 64px}
+.hero{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:linear-gradient(160deg,#142218,#121820);border:1px solid var(--line);border-radius:18px;padding:16px 12px}
+.team{text-align:center} .team img{width:88px;height:88px;object-fit:contain;background:#0c0f0c;border-radius:16px}
+.team b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:6px}
+.team span,.vs small{color:var(--mut);font-size:12px} .vs{font-family:Fraunces,Georgia,serif;font-size:28px;color:var(--gold)}
+.note,.rule,.est,.sub,.empty{color:var(--mut);font-size:14px;line-height:1.45}
+.note{background:#241c12;border-radius:12px;padding:10px 12px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:560;margin:18px 0 8px} h1{font-size:34px;line-height:1.05} h2{font-size:28px;color:var(--gold)}
+.mkt{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 14px}
+.mkt.prop{border-color:rgba(31,157,85,.45)}
+.kicker{margin:0;font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.mkt h2{font-size:22px;margin:2px 0;color:var(--ivory)}
+.oline{margin:0 0 4px;font-family:Fraunces,Georgia,serif;font-size:34px;line-height:1}
+.basis{margin:4px 0 8px;font-size:15px;line-height:1.35}
+details.rules{margin:0 0 10px;font-size:14px;color:var(--mut)}
+details.rules summary{color:var(--gold);font-weight:750;cursor:pointer}
+details.rules p{margin:8px 0}
+.wait{margin:8px 0 0;color:var(--mut);font-size:13px}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sides button,.go,.ghost{font:750 16px/1.2 Outfit,system-ui,sans-serif;border-radius:12px;min-height:56px}
+.sides button{border:0;background:#243028;color:var(--ivory)} .sides button small{display:block;font-weight:560;color:var(--mut);font-size:12px}
+.sides button:first-child{background:linear-gradient(180deg,#1f9d55,#146b3a)} .sides button:last-child{background:#173d79}
+.go{width:100%;border:0;background:linear-gradient(135deg,#f0d7a0,#c9a86a);color:#1b1408;margin-top:8px}
+.ghost{width:100%;margin-top:8px;background:transparent;color:var(--ivory);border:1px solid var(--line)}
+.slip{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+label{display:block;font-size:13px;margin:8px 0} input{width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e120f;color:var(--ivory);font:600 18px Outfit,sans-serif}
+.chips{display:flex;gap:8px} .chips button{flex:1;min-height:44px;border-radius:999px;border:1px solid var(--line);background:#10140f;color:var(--ivory);font-weight:750}
+.chart{margin-top:8px;background:#0e120f;border-radius:12px;padding:8px} .chart svg{width:100%;height:92px;display:block} .chart p{margin:6px 0 0;color:var(--mut);font-size:12px}
+.offer{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-top:1px solid rgba(228,201,138,.12);font-size:14px}
+.offer button{border:0;background:transparent;color:var(--gold);font-weight:750}
+.lb div{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(228,201,138,.12)}
+.bal{font-size:18px} .bal b{font-size:28px;color:var(--gold)}
+.toast{background:#243024;border-radius:12px;padding:10px 12px}
+.err{color:#ffb4c0;min-height:1em}
+.phase{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.prow{display:flex;gap:8px;overflow:auto;padding-bottom:6px} .prow article{flex:0 0 210px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px} .prow b{display:block;font-size:15px} .prow span{color:var(--gold);font-size:12px} .prow p{margin:6px 0 0;color:var(--mut);font-size:13px;line-height:1.35}
+footer{color:var(--mut);font-size:12px;line-height:1.45}
+@media(min-width:800px){.team img{width:120px;height:120px}.team b{font-size:28px} .hero{padding:22px}}
+</style></head><body>
+<p class="banner">PLAY TOKENS · NO CASH VALUE · NO DEPOSITS · NO WITHDRAWALS · NO MONEY PAYOUTS</p>
+<header><a class="brand" href="/">Torii <em>play tokens</em></a><a class="back" href="/">Clubs</a></header>
+<main>
+<section class="hero">
+<div class="team"><img src="logos/oakridge.png" alt="The Oakridge School athletics mark"><b>Oakridge</b><span>Owls · Arlington</span></div>
+<div class="vs">VS<small>Nov 7</small></div>
+<div class="team"><img src="logos/fwcd.png" alt="Fort Worth Country Day falcon mark"><b>Country Day</b><span>Falcons · Fort Worth</span></div>
+</section>
+<h1>Oakridge at home. Country Day in town.</h1>
+<p class="note">Kickoff is unconfirmed, listed at 6:00 or 7:00 p.m. Central. This board stops new orders at 6:00 p.m. Central Saturday (midnight UTC). If the game starts sooner, an operator can close it. Overtime is part of the final. Torii is not affiliated with either school, and these marks are not an endorsement.</p>
+<div id="app">Loading the board…</div>
+<footer>
+<p>School marks: Oakridge athletics logo from theoakridgeschool.org athletics page; Fort Worth Country Day logo from fwcd.org/gsd-logo.png. Colors from those sites (Country Day navy #173d79 and red #c22c47). Not an official school product.</p>
+<p>Team lines use a rough pregame estimate, labeled as an estimate. Player props have no estimate. Prices exist only when two people trade. The house does not take a side. One token per share is escrowed by the two sides together. Unmatched tokens refund. A one-sided offer is not a bet.</p>
+</footer>
+</main>
+<script src="engine.js"></script>
+<script src="wire.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="app.js"></script>
+</body></html>

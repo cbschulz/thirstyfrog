@@ -758,6 +758,203 @@
      }
     }
    }
+  },
+  "ridglea": {
+   ".read": "auth != null"
+  },
+  "xbar_event": {
+   ".read": "auth != null",
+   ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) && newData.exists() && (!data.exists() || data.child('status').val() == 'open' || data.child('status').val() == 'closed') && (newData.child('status').val() == 'closed' || newData.child('status').val() == 'void' || (newData.child('status').val() == 'settled' && newData.child('oak').isNumber() && newData.child('oak').val() % 1 == 0 && newData.child('oak').val() >= 0 && newData.child('oak').val() <= 200 && newData.child('fw').isNumber() && newData.child('fw').val() % 1 == 0 && newData.child('fw').val() >= 0 && newData.child('fw').val() <= 200 && newData.child('finalAt').isNumber()))",
+   "status": {
+    ".validate": "newData.val() == 'open' || newData.val() == 'closed' || newData.val() == 'settled' || newData.val() == 'void'"
+   },
+   "oak": {
+    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 200 && newData.val() % 1 == 0"
+   },
+   "fw": {
+    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 200 && newData.val() % 1 == 0"
+   },
+   "t": {
+    ".validate": "newData.isNumber()"
+   },
+   "finalAt": {
+    ".validate": "newData.isNumber()"
+   },
+   "$other": {
+    ".validate": false
+   }
+  },
+  "xbar_results": {
+   ".read": "auth != null",
+   "$mid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) && !data.exists() && newData.exists() && root.child('xbar_event').child('status').val() == 'settled' && root.child('xbar_event').child('finalAt').isNumber() && now <= root.child('xbar_event').child('finalAt').val() + 259200000 && ($mid == 'p_stadler_td' || $mid == 'p_stadler_rec' || $mid == 'p_stadler_tck' || $mid == 'p_bluntzer_tck' || $mid == 'p_homan_rush' || $mid == 'p_homan_td') && (newData.child('kind').val() == 'void' || (newData.child('kind').val() == 'stat' && newData.child('played').val() == true && newData.child('conflict').val() != true && newData.child('stat').isNumber() && newData.child('stat').val() % 1 == 0 && newData.child('stat').val() >= 0 && newData.child('stat').val() <= 500))",
+    ".validate": "newData.hasChildren(['kind','t'])",
+    "kind": {
+     ".validate": "newData.val() == 'void' || newData.val() == 'stat'"
+    },
+    "stat": {
+     ".validate": "newData.isNumber()"
+    },
+    "played": {
+     ".validate": "newData.isBoolean()"
+    },
+    "conflict": {
+     ".validate": "newData.isBoolean()"
+    },
+    "t": {
+     ".validate": "newData.isNumber()"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "xbar_void": {
+   ".read": "auth != null",
+   "$mid": {
+    ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) && !data.exists() && newData.child('void').val() == true",
+    ".validate": "newData.hasChildren(['void','t'])",
+    "void": {
+     ".validate": "newData.val() == true"
+    },
+    "t": {
+     ".validate": "newData.isNumber()"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "xbar_accounts": {
+   "$uid": {
+    ".read": "auth != null",
+    ".write": "auth != null && newData.exists() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!data.exists() && auth.uid == $uid && newData.child('bal').val() == 10000 && !newData.child('k').exists() && !newData.child('m').exists() && !newData.child('f').exists() && auth.uid.beginsWith(newData.child('tag').val())) || (data.exists() && auth.uid == $uid && newData.child('n').val() == data.child('n').val() && newData.child('tag').val() == data.child('tag').val() && newData.child('createdAt').val() == data.child('createdAt').val() && newData.child('granted').val() == true && newData.child('f').val() == '' && !root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).exists() && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('uid').val() == $uid && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('rem').val() == newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('shares').val() && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('st').val() == 'open' && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('fid').val() == '' && newData.child('bal').val() == data.child('bal').val() - newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('shares').val() * newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void') || (data.exists() && auth.uid == $uid && newData.child('n').val() == data.child('n').val() && newData.child('tag').val() == data.child('tag').val() && newData.child('createdAt').val() == data.child('createdAt').val() && newData.child('granted').val() == true && newData.child('f').exists() && !root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).exists() && !root.child('xbar_fills').child(newData.child('f').val()).exists() && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('uid').val() == $uid && newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('shares').val() == newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('shares').val() - newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('rem').val() && (newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesOid').val() == newData.child('k').val() || newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noOid').val() == newData.child('k').val()) && (newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid || newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noUid').val() == $uid) && newData.child('bal').val() == data.child('bal').val() - (newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('shares').val() * newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val()) + ((newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() - (newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid ? newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesPay').val() : newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noPay').val())) * newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('shares').val()) && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void') || (data.exists() && newData.child('n').val() == data.child('n').val() && newData.child('tag').val() == data.child('tag').val() && newData.child('createdAt').val() == data.child('createdAt').val() && newData.child('granted').val() == true && newData.child('f').exists() && root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).exists() && !root.child('xbar_fills').child(newData.child('f').val()).exists() && root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('uid').val() == $uid && (newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid || newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noUid').val() == $uid) && (auth.uid == newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() || auth.uid == newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noUid').val()) && newData.child('bal').val() == data.child('bal').val() + ((root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() - (newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid ? newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('yesPay').val() : newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('noPay').val())) * newData.parent().parent().child('xbar_fills').child(newData.child('f').val()).child('shares').val()) && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void') || (data.exists() && newData.child('n').val() == data.child('n').val() && newData.child('tag').val() == data.child('tag').val() && newData.child('createdAt').val() == data.child('createdAt').val() && newData.child('granted').val() == true && newData.child('f').val() == '' && root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).exists() && root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('uid').val() == $uid && root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('st').val() == 'open' && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('rem').val() == 0 && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('st').val() == 'canceled' && newData.parent().parent().child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() == root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() && newData.child('bal').val() == data.child('bal').val() + root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('rem').val() * root.child('xbar_orders').child(newData.child('m').val()).child(newData.child('k').val()).child('px').val() && (auth.uid == $uid || now >= 1794096000000 || !(root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void'))) || (data.exists() && auth.uid == $uid && newData.child('n').val() == data.child('n').val() && newData.child('tag').val() == data.child('tag').val() && newData.child('createdAt').val() == data.child('createdAt').val() && newData.child('granted').val() == true && newData.child('f').val() != '' && root.child('xbar_fills').child(newData.child('f').val()).exists() && (root.child('xbar_event').child('status').val() == 'settled' || root.child('xbar_event').child('status').val() == 'void') && (!((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_td' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_rec' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_bluntzer_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_rush' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_td')) || ((root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() == 'void' || root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('played').val() == false || root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('conflict').val() == true || ((root.child('xbar_event').child('finalAt').isNumber() && now > root.child('xbar_event').child('finalAt').val() + 259200000) && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() != 'stat'))) || ((root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() == 'stat' && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('played').val() == true && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('conflict').val() != true && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').isNumber() && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').val() % 1 == 0 && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').val() >= 0))) && (root.child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid || root.child('xbar_fills').child(newData.child('f').val()).child('noUid').val() == $uid) && newData.child('bal').val() == data.child('bal').val() + ((root.child('xbar_event').child('status').val() == 'void' || root.child('xbar_void').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('void').val() == true || ((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_td' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_rec' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_bluntzer_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_rush' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_td') && ((root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() == 'void' || root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('played').val() == false || root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('conflict').val() == true || ((root.child('xbar_event').child('finalAt').isNumber() && now > root.child('xbar_event').child('finalAt').val() + 259200000) && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() != 'stat')))) || (!((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_td' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_rec' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_bluntzer_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_rush' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_td')) && root.child('xbar_event').child('status').val() == 'settled' && root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'ml' && root.child('xbar_event').child('oak').val() == root.child('xbar_event').child('fw').val())) ? ((root.child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid ? root.child('xbar_fills').child(newData.child('f').val()).child('yesPay').val() : root.child('xbar_fills').child(newData.child('f').val()).child('noPay').val())) * (root.child('xbar_fills').child(newData.child('f').val()).child('shares').val()) : ((((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_td' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_rec' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_bluntzer_tck' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_rush' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_td') ? (((root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('kind').val() == 'stat' && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('played').val() == true && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('conflict').val() != true && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').isNumber() && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').val() % 1 == 0 && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').val() >= 0) && root.child('xbar_results').child(root.child('xbar_fills').child(newData.child('f').val()).child('mid').val()).child('stat').val() * 10 > ((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_td' || root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_td') ? 5 : (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_rec') ? 295 : (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_homan_rush') ? 585 : (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'p_stadler_tck') ? 45 : 95))) : (((root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'ml' && root.child('xbar_event').child('oak').val() > root.child('xbar_event').child('fw').val()) || (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'spd' && root.child('xbar_event').child('oak').val() - root.child('xbar_event').child('fw').val() >= 16) || (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'tot' && root.child('xbar_event').child('oak').val() + root.child('xbar_event').child('fw').val() >= 57) || (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'o35' && root.child('xbar_event').child('oak').val() >= 35) || (root.child('xbar_fills').child(newData.child('f').val()).child('mid').val() == 'f21' && root.child('xbar_event').child('fw').val() >= 21))))) == (root.child('xbar_fills').child(newData.child('f').val()).child('yesUid').val() == $uid) ? (root.child('xbar_fills').child(newData.child('f').val()).child('shares').val()) * 100 : 0))))",
+    ".validate": "newData.hasChildren(['bal','granted','n','tag','createdAt']) && newData.child('bal').isNumber() && newData.child('bal').val() >= 0 && newData.child('bal').val() % 1 == 0 && newData.child('bal').val() <= 1000000 && newData.child('granted').val() === true && newData.child('n').isString() && newData.child('n').val().length >= 1 && newData.child('n').val().length <= 24 && newData.child('tag').isString() && newData.child('tag').val().length == 4 && newData.child('createdAt').isNumber()",
+    "bal": {
+     ".validate": "newData.isNumber()"
+    },
+    "granted": {
+     ".validate": "newData.val() === true"
+    },
+    "n": {
+     ".validate": "newData.isString()"
+    },
+    "tag": {
+     ".validate": "newData.isString()"
+    },
+    "createdAt": {
+     ".validate": "newData.isNumber()"
+    },
+    "k": {
+     ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9]{8,24}$/)"
+    },
+    "m": {
+     ".validate": "newData.val().matches(/^(ml|spd|tot|o35|f21|p_stadler_td|p_stadler_rec|p_stadler_tck|p_bluntzer_tck|p_homan_rush|p_homan_td)$/)"
+    },
+    "f": {
+     ".validate": "newData.isString() && (newData.val() == '' || newData.val().matches(/^[a-z0-9]{8,24}$/))"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
+  },
+  "xbar_orders": {
+   "$mid": {
+    ".read": "auth != null",
+    "$oid": {
+     ".write": "auth != null && newData.exists() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!data.exists() && auth.uid == newData.child('uid').val() && newData.child('id').val() == $oid && newData.child('mid').val() == $mid && ((newData.child('rem').val() > 0 && newData.child('st').val() == 'open') || (newData.child('rem').val() == 0 && newData.child('st').val() == 'filled')) && (newData.child('side').val() == 'yes' || newData.child('side').val() == 'no') && newData.child('px').val() >= 1 && newData.child('px').val() <= 99 && newData.child('px').val() % 1 == 0 && newData.child('shares').val() >= 1 && newData.child('shares').val() <= 5000 && newData.child('shares').val() % 1 == 0 && newData.child('rem').val() >= 0 && newData.child('rem').val() <= newData.child('shares').val() && newData.child('t').val() <= now + 5000 && newData.child('t').val() >= now - 120000 && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void' && ((newData.child('rem').val() == newData.child('shares').val() && newData.child('fid').val() == '' && newData.child('lf').val() == '') || (newData.child('lf').val() != '' && newData.child('fid').val() == newData.child('lf').val() && !root.child('xbar_fills').child(newData.child('lf').val()).exists() && newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('shares').val() == newData.child('shares').val() - newData.child('rem').val() && (newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('yesOid').val() == $oid || newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('noOid').val() == $oid)))) || (data.exists() && newData.child('uid').val() == data.child('uid').val() && newData.child('px').val() == data.child('px').val() && newData.child('side').val() == data.child('side').val() && newData.child('shares').val() == data.child('shares').val() && newData.child('t').val() == data.child('t').val() && newData.child('mid').val() == data.child('mid').val() && newData.child('id').val() == data.child('id').val() && newData.child('fid').val() == data.child('fid').val() && newData.child('lf').val() == data.child('lf').val() && data.child('st').val() == 'open' && newData.child('rem').val() == 0 && newData.child('st').val() == 'canceled' && (auth.uid == data.child('uid').val() || now >= 1794096000000 || !(root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void'))) || (data.exists() && newData.child('uid').val() == data.child('uid').val() && newData.child('px').val() == data.child('px').val() && newData.child('side').val() == data.child('side').val() && newData.child('shares').val() == data.child('shares').val() && newData.child('t').val() == data.child('t').val() && newData.child('mid').val() == data.child('mid').val() && newData.child('id').val() == data.child('id').val() && newData.child('fid').val() == data.child('fid').val() && data.child('st').val() == 'open' && newData.child('lf').val() != '' && !root.child('xbar_fills').child(newData.child('lf').val()).exists() && newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('shares').val() == data.child('rem').val() - newData.child('rem').val() && (newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('yesOid').val() == $oid || newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('noOid').val() == $oid) && ((newData.child('rem').val() == 0 && newData.child('st').val() == 'filled') || (newData.child('rem').val() > 0 && newData.child('st').val() == 'open')) && (auth.uid == newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('yesUid').val() || auth.uid == newData.parent().parent().parent().child('xbar_fills').child(newData.child('lf').val()).child('noUid').val()) && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void'))",
+     ".validate": "newData.hasChildren(['id','uid','mid','side','px','shares','rem','t','st','fid','lf']) && newData.child('mid').val() == $mid && newData.child('id').val() == $oid",
+     "id": {
+      ".validate": "newData.isString()"
+     },
+     "uid": {
+      ".validate": "newData.isString()"
+     },
+     "mid": {
+      ".validate": "newData.isString() && newData.val().matches(/^(ml|spd|tot|o35|f21|p_stadler_td|p_stadler_rec|p_stadler_tck|p_bluntzer_tck|p_homan_rush|p_homan_td)$/)"
+     },
+     "side": {
+      ".validate": "newData.val() == 'yes' || newData.val() == 'no'"
+     },
+     "px": {
+      ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99"
+     },
+     "shares": {
+      ".validate": "newData.isNumber()"
+     },
+     "rem": {
+      ".validate": "newData.isNumber()"
+     },
+     "t": {
+      ".validate": "newData.isNumber()"
+     },
+     "st": {
+      ".validate": "newData.val() == 'open' || newData.val() == 'filled' || newData.val() == 'canceled'"
+     },
+     "fid": {
+      ".validate": "newData.isString()"
+     },
+     "lf": {
+      ".validate": "newData.isString()"
+     },
+     "$other": {
+      ".validate": false
+     }
+    }
+   }
+  },
+  "xbar_fills": {
+   ".read": "auth != null",
+   "$fid": {
+    ".write": "auth != null && newData.exists() && ((auth != null && root.child('admins').child(auth.uid).val() === true) || (!data.exists() && newData.child('id').val() == $fid && newData.child('claimedYes').val() == false && newData.child('claimedNo').val() == false && newData.child('yesUid').val() != newData.child('noUid').val() && newData.child('shares').val() >= 1 && newData.child('yesPay').val() + newData.child('noPay').val() == 100 && newData.child('yesPay').val() >= 1 && newData.child('noPay').val() >= 1 && newData.child('yesPay').val() <= newData.child('yesPx').val() && newData.child('noPay').val() <= newData.child('noPx').val() && newData.child('yesPx').val() == newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('px').val() && newData.child('noPx').val() == newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('px').val() && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('side').val() == 'yes' && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('side').val() == 'no' && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('uid').val() == newData.child('yesUid').val() && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('uid').val() == newData.child('noUid').val() && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('mid').val() == newData.child('mid').val() && newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('mid').val() == newData.child('mid').val() && (auth.uid == newData.child('yesUid').val() || auth.uid == newData.child('noUid').val()) && newData.child('t').val() <= now + 5000 && newData.child('t').val() >= now - 120000 && now < 1794096000000 && root.child('xbar_event').child('status').val() != 'closed' && root.child('xbar_event').child('status').val() != 'settled' && root.child('xbar_event').child('status').val() != 'void' && ((!root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).exists() || (root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).exists() && root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).exists() && (root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('t').val() < root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('t').val() || (root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('t').val() == root.child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('t').val() && newData.child('yesOid').val() < newData.child('noOid').val())))) ? (newData.child('yesPay').val() == newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('px').val() && newData.child('noPay').val() == 100 - newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('yesOid').val()).child('px').val()) : (newData.child('noPay').val() == newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('px').val() && newData.child('yesPay').val() == 100 - newData.parent().parent().child('xbar_orders').child(newData.child('mid').val()).child(newData.child('noOid').val()).child('px').val()))) || (data.exists() && newData.child('id').val() == data.child('id').val() && newData.child('mid').val() == data.child('mid').val() && newData.child('shares').val() == data.child('shares').val() && newData.child('yesOid').val() == data.child('yesOid').val() && newData.child('noOid').val() == data.child('noOid').val() && newData.child('yesUid').val() == data.child('yesUid').val() && newData.child('noUid').val() == data.child('noUid').val() && newData.child('yesPay').val() == data.child('yesPay').val() && newData.child('noPay').val() == data.child('noPay').val() && newData.child('yesPx').val() == data.child('yesPx').val() && newData.child('noPx').val() == data.child('noPx').val() && newData.child('t').val() == data.child('t').val() && data.child('claimedYes').val() == false && newData.child('claimedYes').val() == true && newData.child('claimedNo').val() == data.child('claimedNo').val() && auth.uid == data.child('yesUid').val() && (root.child('xbar_event').child('status').val() == 'settled' || root.child('xbar_event').child('status').val() == 'void')) || (data.exists() && newData.child('id').val() == data.child('id').val() && newData.child('mid').val() == data.child('mid').val() && newData.child('shares').val() == data.child('shares').val() && newData.child('yesOid').val() == data.child('yesOid').val() && newData.child('noOid').val() == data.child('noOid').val() && newData.child('yesUid').val() == data.child('yesUid').val() && newData.child('noUid').val() == data.child('noUid').val() && newData.child('yesPay').val() == data.child('yesPay').val() && newData.child('noPay').val() == data.child('noPay').val() && newData.child('yesPx').val() == data.child('yesPx').val() && newData.child('noPx').val() == data.child('noPx').val() && newData.child('t').val() == data.child('t').val() && data.child('claimedNo').val() == false && newData.child('claimedNo').val() == true && newData.child('claimedYes').val() == data.child('claimedYes').val() && auth.uid == data.child('noUid').val() && (root.child('xbar_event').child('status').val() == 'settled' || root.child('xbar_event').child('status').val() == 'void')))",
+    ".validate": "newData.hasChildren(['id','mid','shares','yesOid','noOid','yesUid','noUid','yesPay','noPay','yesPx','noPx','t','claimedYes','claimedNo']) && newData.child('id').val() == $fid",
+    "id": {
+     ".validate": "newData.isString()"
+    },
+    "mid": {
+     ".validate": "newData.isString() && newData.val().matches(/^(ml|spd|tot|o35|f21|p_stadler_td|p_stadler_rec|p_stadler_tck|p_bluntzer_tck|p_homan_rush|p_homan_td)$/)"
+    },
+    "shares": {
+     ".validate": "newData.isNumber()"
+    },
+    "yesOid": {
+     ".validate": "newData.isString()"
+    },
+    "noOid": {
+     ".validate": "newData.isString()"
+    },
+    "yesUid": {
+     ".validate": "newData.isString()"
+    },
+    "noUid": {
+     ".validate": "newData.isString()"
+    },
+    "yesPay": {
+     ".validate": "newData.isNumber()"
+    },
+    "noPay": {
+     ".validate": "newData.isNumber()"
+    },
+    "yesPx": {
+     ".validate": "newData.isNumber()"
+    },
+    "noPx": {
+     ".validate": "newData.isNumber()"
+    },
+    "t": {
+     ".validate": "newData.isNumber()"
+    },
+    "claimedYes": {
+     ".validate": "newData.isBoolean()"
+    },
+    "claimedNo": {
+     ".validate": "newData.isBoolean()"
+    },
+    "$other": {
+     ".validate": false
+    }
+   }
   }
  }
 }
