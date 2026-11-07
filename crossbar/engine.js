@@ -253,6 +253,61 @@
     return { state: next, amt: amt };
   }
 
+  function ledger(state) {
+    var people = {};
+    function person(uid) {
+      if (!people[uid]) {
+        var a = (state.accounts && state.accounts[uid]) || {};
+        people[uid] = {
+          uid: uid, n: a.n || 'Player', tag: a.tag || '',
+          available: a.bal || 0, reserved: 0, escrow: 0, collect: 0,
+          settled: 0, settledKnown: false, stack: a.bal || 0
+        };
+      }
+      return people[uid];
+    }
+    Object.keys(state.accounts || {}).forEach(person);
+    var offers = [];
+    Object.keys(state.orders || {}).forEach(function (id) {
+      var o = state.orders[id];
+      if (!o || o.st !== 'open' || !(o.rem > 0)) return;
+      var hold = o.rem * o.px;
+      var p = person(o.uid);
+      p.reserved += hold;
+      p.stack += hold;
+      offers.push({ id: id, uid: o.uid, mid: o.mid, side: o.side, px: o.px, rem: o.rem, shares: o.shares, hold: hold, t: o.t });
+    });
+    var bets = [];
+    Object.keys(state.fills || {}).forEach(function (id) {
+      var f = state.fills[id];
+      if (!f) return;
+      var call = marketCall(f, state);
+      if (call === 'bad') call = null;
+      function sideRow(side) {
+        var uid = side === 'yes' ? f.yesUid : f.noUid;
+        var pay = side === 'yes' ? f.yesPay : f.noPay;
+        var limit = side === 'yes' ? f.yesPx : f.noPx;
+        var claimed = side === 'yes' ? !!f.claimedYes : !!f.claimedNo;
+        var cost = pay * f.shares;
+        var improved = (typeof limit === 'number' && limit > pay) ? (limit - pay) * f.shares : 0;
+        var p = person(uid);
+        var payout = call == null ? null : payoutFor(f, side, state);
+        if (!claimed) {
+          if (payout == null) { p.escrow += cost; p.stack += cost; }
+          else { p.collect += payout; p.stack += payout; }
+        }
+        if (payout != null) { p.settled += payout - cost; p.settledKnown = true; }
+        return { uid: uid, side: side, cost: cost, payout: payout, claimed: claimed, possible: 100 * f.shares, improved: improved };
+      }
+      bets.push({ id: id, mid: f.mid, shares: f.shares, t: f.t, call: call, yesPay: f.yesPay, noPay: f.noPay, yes: sideRow('yes'), no: sideRow('no') });
+    });
+    offers.sort(function (a, b) { return a.t - b.t || a.id.localeCompare(b.id); });
+    bets.sort(function (a, b) { return b.t - a.t || a.id.localeCompare(b.id); });
+    var players = Object.keys(people).map(function (id) { return people[id]; });
+    players.sort(function (a, b) { return b.stack - a.stack || a.n.localeCompare(b.n) || a.tag.localeCompare(b.tag); });
+    return { players: players, offers: offers, bets: bets };
+  }
+
   function xml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
@@ -349,4 +404,6 @@
   G.conservation = conservation;
   G.locked = locked;
   G.chartHtml = chartHtml;
+  G.ledger = ledger;
+  G.ctStamp = ctStamp;
 })(typeof window !== 'undefined' ? (window.Crossbar = window.Crossbar || {}) : (globalThis.Crossbar = globalThis.Crossbar || {}));

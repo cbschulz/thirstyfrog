@@ -40,7 +40,7 @@
     });
     return o;
   }
-  function ingest(orders, fills, accounts, event, results) {
+  function ingest(orders, fills, accounts, event, results, voids) {
     var next = X.blank();
     next.orders = orders || {};
     next.fills = fills || {};
@@ -53,6 +53,10 @@
     Object.keys(results || {}).forEach(function (id) {
       var r = results[id];
       next.results[id] = r.kind === 'void' ? { kind: 'void', void: true, played: r.played, conflict: r.conflict } : { kind: 'stat', played: r.played === true, stat: r.stat, conflict: r.conflict === true };
+    });
+    next.voids = {};
+    Object.keys(voids || {}).forEach(function (id) {
+      if (voids[id] && voids[id].void === true) next.voids[id] = true;
     });
     state = next;
   }
@@ -122,18 +126,52 @@
       return '<article><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span><p>' + esc(r[2]) + '</p></article>';
     }).join('') + '</div></section>';
   }
+  function mtitle(mid) {
+    var prop = X.PROPS[mid], m = X.MARKETS[mid];
+    return prop ? prop.player + ' · ' + prop.title : (m ? m.title : mid);
+  }
+  function sname(mid, side) {
+    var prop = X.PROPS[mid], m = X.MARKETS[mid];
+    if (prop) return (side === 'yes' ? 'Over ' : 'Under ') + prop.line;
+    if (m) return side === 'yes' ? m.yes : m.no;
+    return side === 'yes' ? 'Yes' : 'No';
+  }
+  function pname(uid) {
+    var a = state.accounts[uid];
+    return a ? esc(a.n) + ' · ' + esc(a.tag) : 'Player';
+  }
+  function sideStatus(row, label) {
+    if (row.payout == null) return 'Pending. ' + X.tokens(row.possible) + ' tokens only if ' + esc(label) + ' wins. Not counted as a win yet.';
+    if (row.payout === row.possible) return 'Won ' + X.tokens(row.payout) + ' play tokens from escrow.' + (row.claimed ? ' In the wallet.' : ' Still to collect.');
+    if (row.payout === row.cost) return 'Refund ' + X.tokens(row.cost) + ' play tokens.' + (row.claimed ? ' In the wallet.' : ' Still to collect.');
+    return 'Gets 0. The stake stays in escrow for the other side.';
+  }
   function standings() {
-    var people = Object.keys(state.accounts).map(function (id) { return state.accounts[id]; }).sort(function (a, b) { return b.bal - a.bal || a.n.localeCompare(b.n); });
-    var lb = people.length ? people.map(function (p, i) {
-      var mark = ['🥇', '🥈', '🥉'][i] || ((i + 1) + '.');
-      return '<div><span>' + mark + ' <b>' + esc(p.n) + '</b> · ' + esc(p.tag) + '</span><span>' + X.tokens(p.bal) + '</span></div>';
-    }).join('') : '<div>No one has taken tokens yet.</div>';
-    var act = Object.keys(state.fills).map(function (id) { return state.fills[id]; }).sort(function (a, b) { return b.t - a.t; }).slice(0, 12);
-    var feed = act.length ? act.map(function (f) {
-      var a = state.accounts[f.yesUid], b = state.accounts[f.noUid];
-      return '<div>' + esc(a ? a.n : 'Yes') + ' ' + f.yesPay + '¢ vs ' + esc(b ? b.n : 'No') + ' ' + f.noPay + '¢ · ' + f.shares + ' shares</div>';
-    }).join('') : '<div>No trades yet.</div>';
-    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play-token balance only. Duplicate names stay distinct by the short id. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Matched trades</h2><div class="lb">' + feed + '</div></section>';
+    var book = X.ledger(state);
+    var lb = book.players.length ? book.players.map(function (p, i) {
+      return '<div class="person"><b>' + (i + 1) + '. ' + esc(p.n) + ' · ' + esc(p.tag) + '</b>' +
+        '<span>Available ' + X.tokens(p.available) + '</span>' +
+        '<span>Reserved on open offers ' + X.tokens(p.reserved) + '</span>' +
+        '<span>In matched stakes ' + X.tokens(p.escrow) + '</span>' +
+        '<span>Settled, not in wallet yet ' + X.tokens(p.collect) + '</span>' +
+        '<span>Settled result ' + (p.settledKnown ? X.tokens(p.settled) : '—') + '</span></div>';
+    }).join('') : '<div class="person">No one has taken tokens yet.</div>';
+    var offers = book.offers.length ? book.offers.map(function (o) {
+      return '<div class="bet"><b>Open offer · not a bet yet</b><p>' + pname(o.uid) + ' · ' + esc(mtitle(o.mid)) + ' · ' + esc(sname(o.mid, o.side)) + ' · ' + o.rem + ' shares at ' + o.px + '¢</p><p class="cond">' + X.tokens(o.hold) + ' reserved at that offer price. Cancel, or the board closing, returns it. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
+    }).join('') : '<div class="person">No unmatched offers.</div>';
+    var bets = book.bets.length ? book.bets.map(function (b) {
+      var why = b.call == null
+        ? 'Not settled. If ' + esc(sname(b.mid, 'yes')) + ' wins, ' + pname(b.yes.uid) + ' gets ' + X.tokens(b.yes.possible) + ' and ' + pname(b.no.uid) + ' gets 0. It flips if ' + esc(sname(b.mid, 'no')) + ' wins. A void refunds each stake. Nothing is owed yet.'
+        : (b.call === 'void'
+          ? 'Void. ' + pname(b.yes.uid) + ' is refunded ' + X.tokens(b.yes.cost) + ' and ' + pname(b.no.uid) + ' is refunded ' + X.tokens(b.no.cost) + '.'
+          : pname(b.call === 'yes' ? b.yes.uid : b.no.uid) + ' gets ' + X.tokens(b.call === 'yes' ? b.yes.payout : b.no.payout) + ' play tokens from the escrow. ' + pname(b.call === 'yes' ? b.no.uid : b.yes.uid) + ' gets 0.');
+      function line(row) {
+        var back = row.improved ? ' ' + X.tokens(row.improved) + ' already returned to available because the match was better than the offer.' : '';
+        return '<p>' + pname(row.uid) + ' · ' + esc(sname(b.mid, row.side)) + ' · ' + b.shares + ' shares · cost ' + X.tokens(row.cost) + back + '</p><p class="cond">' + sideStatus(row, sname(b.mid, row.side)) + '</p>';
+      }
+      return '<div class="bet"><b>' + esc(mtitle(b.mid)) + ' · ' + esc(X.ctStamp(b.t)) + '</b>' + line(b.yes) + line(b.no) + '<p class="cond">' + why + ' No cash.</p></div>';
+    }).join('') : '<div class="person">No matched trades yet. Nothing is owed.</div>';
+    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Rank is available, plus reserved offers, plus stake still in a match, plus a settled payout not in the wallet yet. A possible win is not included. The same name stays distinct by the short id. No cash is owed, and a wallet with no offer may be missing here.</p><div class="lb">' + lb + '</div><h2>Open offers</h2><div class="lb">' + offers + '</div><h2>Matched bets</h2><p class="sub">Who took each side. Paid only from tokens already escrowed.</p><div class="lb">' + bets + '</div></section>';
   }
   function gate() {
     if (preview) return '';
@@ -229,9 +267,9 @@
   }
   function listen() {
     var db = firebase.database();
-    var bag = { orders: {}, fills: {}, accounts: {}, event: null, results: {} };
+    var bag = { orders: {}, fills: {}, accounts: {}, event: null, results: {}, voids: {} };
     var seen = {};
-    function paint() { ingest(rows(bag.orders), bag.fills, bag.accounts, bag.event, bag.results); mine = uid && bag.accounts[uid] || null; draw(); }
+    function paint() { ingest(rows(bag.orders), bag.fills, bag.accounts, bag.event, bag.results, bag.voids); mine = uid && bag.accounts[uid] || null; draw(); }
     function watchName(id) {
       if (!id || seen[id]) return;
       seen[id] = true;
@@ -252,7 +290,15 @@
         paint();
       });
     });
-    db.ref('xbar_fills').on('value', function (s) { bag.fills = s.val() || {}; paint(); });
+    db.ref('xbar_fills').on('value', function (s) {
+      bag.fills = s.val() || {};
+      Object.keys(bag.fills).forEach(function (id) {
+        var f = bag.fills[id];
+        if (f) { watchName(f.yesUid); watchName(f.noUid); }
+      });
+      paint();
+    });
+    db.ref('xbar_void').on('value', function (s) { bag.voids = s.val() || {}; paint(); });
     db.ref('xbar_event').on('value', function (s) { rulesLive = true; bag.event = s.val(); paint(); }, function () { rulesLive = false; draw(); });
     db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); });
     db.ref('admins/' + uid).once('value').then(function (s) { admin = s.val() === true; draw(); });
