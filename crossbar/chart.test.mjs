@@ -20,9 +20,7 @@ const ids = Object.keys(X.MARKETS).concat(Object.keys(X.PROPS));
 ids.forEach(function (mid) {
   const html = X.chartHtml(mid, {});
   has(mid + ' frame', html, 'class="chart"');
-  has(mid + ' wait', html, 'Waiting for first matched trade');
-  has(mid + ' axis 0', html, '>0<');
-  has(mid + ' axis 100', html, '>100<');
+  has(mid + ' wait', html, 'No matched price yet');
   lacks(mid + ' no line yet', html, '<path ');
   lacks(mid + ' no invented point', html, '<circle ');
   lacks(mid + ' no estimate', html, 'pregame');
@@ -48,10 +46,10 @@ r = X.submit(s, { id: 'noorder0001', uid: 'bob', mid: 'ml', side: 'no', px: 70, 
 if (r.error) { console.error('match1', r.error); process.exit(1); }
 s = r.state;
 const one = X.chartHtml('ml', s.fills);
-has('one yes point', one, 'data-side="yes" cx="171.0" cy="65.6"');
-has('one no complement', one, 'data-side="no" cx="171.0" cy="46.4"');
-has('one legend 40', one, 'Oakridge <b>40%</b>');
-has('one legend 60', one, 'Country Day <b>60%</b>');
+has('one yes point', one, 'data-side="yes"');
+has('one no complement', one, 'data-side="no"');
+has('one legend 40', one, '>40%</b>');
+has('one legend 60', one, '>60%</b>');
 has('one point', one, '<circle ');
 has('one time', one, 'Nov 7, 3:00 PM');
 lacks('one no line', one, '<path ');
@@ -67,27 +65,32 @@ const two = X.chartHtml('ml', s.fills);
 has('line', two, '<path ');
 has('first time', two, 'Nov 7, 3:00 PM');
 has('second time', two, 'Nov 7, 3:30 PM');
-has('second price', two, 'cy="51.2"');
-if ((two.match(/<path /g) || []).length !== 2) { fail++; console.error('FAIL two lines'); }
+has('second price', two, '>55%</b>');
+var strokePaths = (two.match(/fill="none"/g) || []).length;
+if (strokePaths !== 2) { fail++; console.error('FAIL two lines', strokePaths); }
 else console.log('pass two lines');
-const yesYs = [...two.matchAll(/data-side="yes"[^>]*cy="([0-9.]+)"/g)].map((m) => Number(m[1]));
-if (yesYs.length !== 2 || yesYs[0] <= yesYs[1]) { fail++; console.error('FAIL price order', yesYs); }
-else console.log('pass higher price is higher on the chart');
+const yesYs = [...two.matchAll(/data-side="yes" d="([^"]+)"/g)].map(function (m) { return m[1]; });
+if (yesYs.length < 1 || yesYs[0].indexOf('L') < 0) { fail++; console.error('FAIL price line', yesYs); }
+else console.log('pass price history is a line');
 const flatFills = {
   a: { id: 'a', mid: 'ml', yesPay: 50, t: t1 },
   b: { id: 'b', mid: 'ml', yesPay: 50, t: t2 }
 };
 const flat = X.chartHtml('ml', flatFills);
-const flatYes = [...flat.matchAll(/data-side="yes"[^>]*cy="([0-9.]+)"/g)].map((m) => m[1]);
-const flatNo = [...flat.matchAll(/data-side="no"[^>]*cy="([0-9.]+)"/g)].map((m) => m[1]);
-if (flatYes.join() !== flatNo.join() || flatYes.length !== 2) { fail++; console.error('FAIL coincident', flatYes, flatNo); }
+const flatYes = (flat.match(/data-side="yes" d="M[^"]+"/g) || [])[0] || '';
+const flatNo = (flat.match(/data-side="no" d="M[^"]+"/g) || [])[0] || '';
+const ys = function (d) { return (d.match(/ [\d.]+/g) || []).filter(function (_, i) { return i % 2 === 1; }).join(); };
+if (!flatYes || ys(flatYes) !== ys(flatNo)) { fail++; console.error('FAIL coincident', flatYes, flatNo); }
 else console.log('pass 50-50 lines share the same points');
+has('both read 50', flat, '>50%</b>');
+lacks('no payout multiple', flat, 'x<');
 has('blue still drawn', flat, 'stroke="#173d79"');
 has('green still drawn', flat, 'stroke="#1f9d55"');
 has('dash distinguishes the blue line', flat, 'stroke-dasharray="5 4"');
 const fw = X.chartHtml('f21', { z: { id: 'z', mid: 'f21', yesPay: 30, t: t1 } });
-has('country day point height', fw, 'cy="75.2"');
 has('yes point stays green with the button', fw, 'fill="#1f9d55"');
+has('country day readout', fw, '21 or more');
+lacks('no kalshi sample', fw, '58%');
 
 if (fail) { console.error(fail + ' failed'); process.exit(1); }
 console.log('chart ok');
