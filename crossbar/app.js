@@ -171,7 +171,7 @@
       }
       return '<div class="bet"><b>' + esc(mtitle(b.mid)) + ' · ' + esc(X.ctStamp(b.t)) + '</b>' + line(b.yes) + line(b.no) + '<p class="cond">' + why + ' No cash.</p></div>';
     }).join('') : '<div class="person">No matched trades yet. Nothing is owed.</div>';
-    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Rank is available, plus reserved offers, plus stake still in a match, plus a settled payout not in the wallet yet. A possible win is not included. The same name stays distinct by the short id. No cash is owed, and a wallet with no offer may be missing here.</p><div class="lb">' + lb + '</div><h2>Open offers</h2><div class="lb">' + offers + '</div><h2>Matched bets</h2><p class="sub">Who took each side. Paid only from tokens already escrowed.</p><div class="lb">' + bets + '</div></section>';
+    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Rank is available, plus reserved offers, plus stake still in a match, plus a settled payout not in the wallet yet. A possible win is not included. The same name stays distinct by the short id. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Open offers</h2><div class="lb">' + offers + '</div><h2>Matched bets</h2><p class="sub">Who took each side. Paid only from tokens already escrowed.</p><div class="lb">' + bets + '</div></section>';
   }
   function gate() {
     if (preview) return '';
@@ -280,6 +280,7 @@
       });
     }
     watchName(uid);
+    db.ref('xbar_accounts').on('value', function (s) { bag.accounts = s.val() || {}; paint(); }, function () {});
     Object.keys(X.MARKETS).concat(Object.keys(X.PROPS)).forEach(function (mid) {
       db.ref('xbar_orders/' + mid).on('value', function (s) {
         bag.orders[mid] = s.val() || {};

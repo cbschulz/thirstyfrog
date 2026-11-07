@@ -104,6 +104,31 @@ await check('match, no self, prop stays pending', async () => {
   await assertSucceeds(alice().ref().update(claim2));
 });
 
+await check('two players see the same leaderboard', async () => {
+  await seed();
+  await assertSucceeds(alice().ref('xbar_accounts/' + A).set(grant(A, 'Ada', 'alic')));
+  await assertSucceeds(bob().ref('xbar_accounts/' + B).set(grant(B, 'Bea', 'bobb')));
+  const fromA = (await alice().ref('xbar_accounts').once('value')).val();
+  const fromB = (await bob().ref('xbar_accounts').once('value')).val();
+  if (JSON.stringify(fromA) !== JSON.stringify(fromB)) throw new Error('leaderboards differ');
+  if (fromA[A].n !== 'Ada' || fromA[B].n !== 'Bea' || fromA[B].bal !== 10000) throw new Error('missing public profile');
+  const fields = Object.keys(fromA[A]).sort().join(',');
+  if (fields !== 'bal,createdAt,granted,n,tag') throw new Error('grant record has ' + fields);
+  await assertFails(testEnv.unauthenticatedContext().database().ref('xbar_accounts').once('value'));
+  await assertFails(bob().ref('xbar_accounts/' + A).set({ bal: 1, granted: true, n: 'Ada', tag: 'alic', createdAt: 1 }));
+  await assertFails(alice().ref('xbar_accounts/' + A).set(grant(A, 'Ada', 'alic')));
+  await assertFails(stranger().ref('xbar_event').set({ status: 'void', t: Date.now() }));
+  await assertFails(bob().ref('golf_accounts/' + A).once('value'));
+  await assertFails(alice().ref('golf_accounts').once('value'));
+  await assertFails(bob().ref('users/' + A).once('value'));
+  const s = book();
+  const rest = W.steps(s, { id: 'restyes00001', uid: A, mid: 'ml', side: 'yes', px: 40, shares: 2, t: Date.now() });
+  await assertSucceeds(alice().ref().update(rest.steps[0]));
+  const listed = (await bob().ref('xbar_accounts').once('value')).val();
+  if (listed[A].n !== 'Ada' || listed[B].n !== 'Bea') throw new Error('offer hid a player');
+  if (listed[A].k !== 'restyes00001' || listed[B].k) throw new Error('scratch fields wrong ' + JSON.stringify(listed));
+});
+
 await check('unknown prop blocked', async () => {
   await seed();
   await alice().ref('xbar_accounts/' + A).set(grant(A, 'Ada', 'alic'));
