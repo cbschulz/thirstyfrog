@@ -231,7 +231,7 @@
     var name = String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 24);
     if (name.length < 1) return;
     var tag = uid.slice(0, 4);
-    firebase.database().ref('xbar_accounts/' + uid).set({ bal: 10000, granted: true, n: name, tag: tag, createdAt: Date.now() }).then(function () { note = '100 play tokens are on this browser.'; }).catch(function () { note = 'This browser already has its tokens, or the wallet rules are not live yet.'; draw(); });
+    firebase.database().ref('xbar_accounts/' + uid).set({ bal: 10000, granted: true, n: name, tag: tag, createdAt: Date.now() }).then(function () { note = '100 play tokens are on this browser.'; draw(); }).catch(function () { note = 'This browser already has its tokens, or the wallet rules are not live yet.'; draw(); });
   }
   function postScore(form) {
     var oak = Math.floor(+form.oak.value), fw = Math.floor(+form.fw.value);
@@ -243,13 +243,31 @@
   function listen() {
     var db = firebase.database();
     var bag = { orders: {}, fills: {}, accounts: {}, event: null, results: {} };
+    var seen = {};
     function paint() { ingest(rows(bag.orders), bag.fills, bag.accounts, bag.event, bag.results); mine = uid && bag.accounts[uid] || null; draw(); }
-    function closed() { rulesLive = false; draw(); }
-    db.ref('xbar_orders').on('value', function (s) { bag.orders = s.val() || {}; paint(); }, closed);
-    db.ref('xbar_fills').on('value', function (s) { bag.fills = s.val() || {}; paint(); }, closed);
-    db.ref('xbar_accounts').on('value', function (s) { bag.accounts = s.val() || {}; paint(); }, closed);
-    db.ref('xbar_event').on('value', function (s) { rulesLive = true; bag.event = s.val(); paint(); }, closed);
-    db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); }, closed);
+    function watchName(id) {
+      if (!id || seen[id]) return;
+      seen[id] = true;
+      db.ref('xbar_accounts/' + id).on('value', function (s) {
+        if (s.val()) bag.accounts[id] = s.val();
+        else delete bag.accounts[id];
+        paint();
+      });
+    }
+    watchName(uid);
+    Object.keys(X.MARKETS).concat(Object.keys(X.PROPS)).forEach(function (mid) {
+      db.ref('xbar_orders/' + mid).on('value', function (s) {
+        bag.orders[mid] = s.val() || {};
+        Object.keys(bag.orders[mid]).forEach(function (oid) {
+          var row = bag.orders[mid][oid];
+          if (row && row.uid) watchName(row.uid);
+        });
+        paint();
+      });
+    });
+    db.ref('xbar_fills').on('value', function (s) { bag.fills = s.val() || {}; paint(); });
+    db.ref('xbar_event').on('value', function (s) { rulesLive = true; bag.event = s.val(); paint(); }, function () { rulesLive = false; draw(); });
+    db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); });
     db.ref('admins/' + uid).once('value').then(function (s) { admin = s.val() === true; draw(); });
   }
   if (preview) {
