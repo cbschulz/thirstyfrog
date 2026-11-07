@@ -414,6 +414,11 @@
     if (prop) return prop.player + ' · ' + prop.title + '?';
     return 'Pick a side';
   }
+  function waitingSentence(mid, side, name) {
+  var picked = outcomeName(mid, side);
+  var need = outcomeName(mid, side === 'yes' ? 'no' : 'yes');
+  return ask(mid) + ' ' + name + ' picked ' + picked + ', waiting for someone to pick ' + need + '.';
+}
   function outcomeName(mid, side) {
     var prop = PROPS[mid], m = MARKETS[mid];
     if (prop && prop.kind === 'scoring_td') return side === 'yes' ? 'Scores a TD' : 'No TD';
@@ -456,5 +461,6 @@
   G.ctStamp = ctStamp;
   G.outcomeName = outcomeName;
   G.ask = ask;
+  G.waitingSentence = waitingSentence;
   G.quoteStake = quoteStake;
 })(typeof window !== 'undefined' ? (window.Crossbar = window.Crossbar || {}) : (globalThis.Crossbar = globalThis.Crossbar || {}));
