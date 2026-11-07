@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "firebase emulators:exec --only database --project demo-torii-golf \"node test-golf-rules.mjs\""
+    "test": "firebase emulators:exec --only database --project demo-torii-golf \"node test-golf-rules.mjs && node test-xbar-rules.mjs\""
   },
   "keywords": [],
   "author": "",
