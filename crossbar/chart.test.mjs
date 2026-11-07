@@ -87,7 +87,7 @@ has('green still drawn', flat, 'stroke="#1f9d55"');
 has('dash distinguishes the blue line', flat, 'stroke-dasharray="5 4"');
 const fw = X.chartHtml('f21', { z: { id: 'z', mid: 'f21', yesPay: 30, t: t1 } });
 has('country day point height', fw, 'cy="75.2"');
-has('country day point is blue', fw, 'fill="#173d79"');
+has('yes point stays green with the button', fw, 'fill="#1f9d55"');
 
 if (fail) { console.error(fail + ' failed'); process.exit(1); }
 console.log('chart ok');

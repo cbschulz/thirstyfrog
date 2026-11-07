@@ -320,14 +320,13 @@
       minute: '2-digit'
     }).format(new Date(ms));
   }
-  function chartColors(mid) {
-    if (mid === 'f21') return { yes: '#173d79', no: '#1f9d55' };
+  function chartColors() {
     return { yes: '#1f9d55', no: '#173d79' };
   }
   function chartHtml(mid, fills) {
     var yesName = outcomeName(mid, 'yes');
     var noName = outcomeName(mid, 'no');
-    var color = chartColors(mid);
+    var color = chartColors();
     var pts = [];
     Object.keys(fills || {}).forEach(function (id) {
       var f = fills[id];
