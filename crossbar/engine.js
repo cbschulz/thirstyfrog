@@ -253,6 +253,69 @@
     return { state: next, amt: amt };
   }
 
+  function xml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function ctStamp(ms) {
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    }).format(new Date(ms));
+  }
+  function chartHtml(mid, fills) {
+    var prop = PROPS[mid], m = MARKETS[mid];
+    var yes = prop ? ('Over ' + prop.line) : (m ? m.yes : 'Yes');
+    var no = prop ? ('Under ' + prop.line) : (m ? m.no : 'No');
+    var pts = [];
+    Object.keys(fills || {}).forEach(function (id) {
+      var f = fills[id];
+      if (!f || f.mid !== mid || typeof f.yesPay !== 'number' || typeof f.t !== 'number') return;
+      pts.push(f);
+    });
+    pts.sort(function (a, b) { return a.t - b.t || String(a.id).localeCompare(String(b.id)); });
+    var plotX = 32, plotY = 14, plotW = 276, plotH = 78;
+    function yOf(p) {
+      var c = Math.max(0, Math.min(100, p));
+      return plotY + ((100 - c) / 100) * plotH;
+    }
+    function xOf(t) {
+      if (pts.length < 2 || pts[pts.length - 1].t === pts[0].t) return plotX + plotW / 2;
+      return plotX + ((t - pts[0].t) / (pts[pts.length - 1].t - pts[0].t)) * plotW;
+    }
+    var grid = [100, 50, 0].map(function (p) {
+      var y = yOf(p);
+      return '<line x1="' + plotX + '" x2="' + (plotX + plotW) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="#3c4338" stroke-width="1"/>' +
+        '<text x="2" y="' + (y + 4).toFixed(1) + '" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + p + '</text>';
+    }).join('');
+    var marks = '';
+    if (pts.length >= 2) {
+      marks += '<path d="' + pts.map(function (f, i) {
+        return (i ? 'L' : 'M') + xOf(f.t).toFixed(1) + ' ' + yOf(f.yesPay).toFixed(1);
+      }).join(' ') + '" fill="none" stroke="#e4c98a" stroke-width="2" stroke-linejoin="round"/>';
+    }
+    pts.forEach(function (f) {
+      marks += '<circle cx="' + xOf(f.t).toFixed(1) + '" cy="' + yOf(f.yesPay).toFixed(1) + '" r="3.5" fill="#e4c98a"/>';
+    });
+    var wait = pts.length ? '' : '<text x="170" y="58" text-anchor="middle" fill="#c9c2b4" font-size="12" font-family="Outfit,sans-serif">Waiting for first matched trade</text>';
+    var times = '';
+    if (pts.length === 1) {
+      times = '<text x="170" y="118" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
+    } else if (pts.length > 1) {
+      times = '<text x="' + plotX + '" y="118" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>' +
+        '<text x="' + (plotX + plotW) + '" y="118" text-anchor="end" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">' + xml(ctStamp(pts[pts.length - 1].t)) + '</text>';
+    } else {
+      times = '<text x="170" y="118" text-anchor="middle" fill="#c9c2b4" font-size="11" font-family="Outfit,sans-serif">Central time</text>';
+    }
+    var aria = (pts.length ? (pts.length + ' matched trade' + (pts.length === 1 ? '' : 's') + '. ') : 'Waiting for first matched trade. ') +
+      yes + ' price in cents, from 0 to 100. ' + no + ' is 100 cents minus that.';
+    var cap = xml(yes) + ' ¢. ' + xml(no) + ' is 100¢ minus this. Central time.';
+    return '<div class="chart"><svg viewBox="0 0 320 128" role="img" aria-label="' + xml(aria) + '">' +
+      grid + wait + marks + times + '</svg><p>' + cap + '</p></div>';
+  }
+
   function claimAll(state, uid) {
     var next = state, paid = 0;
     Object.keys(state.fills).forEach(function (id) {
@@ -285,4 +348,5 @@
   G.payoutFor = payoutFor;
   G.conservation = conservation;
   G.locked = locked;
+  G.chartHtml = chartHtml;
 })(typeof window !== 'undefined' ? (window.Crossbar = window.Crossbar || {}) : (globalThis.Crossbar = globalThis.Crossbar || {}));

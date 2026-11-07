@@ -65,22 +65,8 @@
     });
     return best;
   }
-  function trades(mid) {
-    return Object.keys(state.fills).map(function (id) { return state.fills[id]; }).filter(function (f) { return f.mid === mid; }).sort(function (a, b) { return a.t - b.t; });
-  }
   function chart(mid) {
-    var pts = trades(mid);
-    if (!pts.length) return '<p class="wait">Waiting for first match</p>';
-    var ref = X.MARKETS[mid] ? X.MARKETS[mid].refYes : null;
-    var d = '';
-    pts.forEach(function (f, i) {
-      var x = pts.length === 1 ? 50 : (i / (pts.length - 1)) * 100;
-      var y = 100 - f.yesPay;
-      d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
-    });
-    var refY = ref == null ? '' : '<line x1="0" x2="100" y1="' + (100 - ref) + '" y2="' + (100 - ref) + '" stroke="#8d8a83" stroke-dasharray="2 2" stroke-width="0.6"/>';
-    var note = ref == null ? 'Matched prices only.' : 'Gold is matched trades. The dotted line is the pregame read, not a trade.';
-    return '<div class="chart"><svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Matched prices">' + refY + '<path d="' + d + '" fill="none" stroke="#e4c98a" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg><p>' + pts.length + ' match' + (pts.length === 1 ? '' : 'es') + '. ' + note + '</p></div>';
+    return X.chartHtml(mid, state.fills);
   }
   function book(mid) {
     var list = Object.keys(state.orders).map(function (id) { return state.orders[id]; }).filter(function (o) { return o && o.mid === mid && o.st === 'open' && o.rem > 0; });
@@ -115,12 +101,13 @@
     var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '<p class="basis">' + esc(m.yes) + ' / ' + esc(m.no) + '</p><p class="est">Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢</p>';
     var open = sel && sel.mid === mid;
     var canOffer = preview || rulesLive;
-    var extra = open && canOffer ? slip(mid, sel.side) + chart(mid) : '';
+    var extra = open && canOffer ? slip(mid, sel.side) : '';
     var offers = book(mid);
     var pend = offers.indexOf('empty') >= 0 ? '' : '<div class="offers">' + offers + '</div>';
+    var buttons = '<div class="sides"><button type="button" data-bet="' + mid + '" data-side="yes"><b>' + (prop ? 'Over' : 'Yes') + '</b><small>' + yesTxt + '</small></button><button type="button" data-bet="' + mid + '" data-side="no"><b>' + (prop ? 'Under' : 'No') + '</b><small>' + noTxt + '</small></button></div>';
     var controls = canOffer
-      ? '<div class="sides"><button type="button" data-bet="' + mid + '" data-side="yes"><b>' + (prop ? 'Over' : 'Yes') + '</b><small>' + yesTxt + '</small></button><button type="button" data-bet="' + mid + '" data-side="no"><b>' + (prop ? 'Under' : 'No') + '</b><small>' + noTxt + '</small></button></div>' + extra + pend
-      : '<p class="wait">Offers are closed until the token rules are published.</p>';
+      ? buttons + chart(mid) + extra + pend
+      : '<p class="wait">Offers are closed until the token rules are published.</p>' + chart(mid);
     return '<article class="mkt' + (prop ? ' prop' : '') + (open ? ' on' : '') + '" id="' + mid + '"><p class="kicker">' + esc(kicker) + '</p><h2>' + esc(title) + '</h2>' + (line ? '<p class="oline">' + esc(line) + '</p>' : '') + face + rulesBox(mid) + controls + '</article>';
   }
   function profiles() {
