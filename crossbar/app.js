@@ -77,7 +77,7 @@
     if (!list.length) return '<p class="empty">No pending offers.</p>';
     return list.sort(function (a, b) { return b.px - a.px; }).map(function (o) {
       var mineBtn = o.uid === uid ? '<button type="button" data-cancel="' + esc(o.id) + '">Cancel</button>' : '';
-      return '<div class="offer"><p>' + X.waitingSentence(mid, o.side, whoLabel(o.uid)) + ' ' + X.tokens(o.rem * o.px) + ' play tokens are set aside.</p>' + mineBtn + '</div>';
+      return '<div class="meta">' + whoLabel(o.uid) + ' · ' + esc(X.outcomeName(mid, o.side)) + ' · ' + X.tokens(o.rem * o.px) + ' tokens, waiting for ' + esc(X.outcomeName(mid, o.side === 'yes' ? 'no' : 'yes')) + mineBtn + '</div>';
     }).join('');
   }
   function rulesBox(mid) {
@@ -141,15 +141,10 @@
   function standings() {
     var book = X.ledger(state);
     var lb = book.players.length ? book.players.map(function (p, i) {
-      return '<div class="person"><b>' + (i + 1) + '. ' + whoLabel(p.uid) + '</b>' +
-        '<span>Available ' + X.tokens(p.available) + '</span>' +
-        '<span>Reserved on open offers ' + X.tokens(p.reserved) + '</span>' +
-        '<span>In matched stakes ' + X.tokens(p.escrow) + '</span>' +
-        '<span>Settled, not in wallet yet ' + X.tokens(p.collect) + '</span>' +
-        '<span>Settled result ' + (p.settledKnown ? X.tokens(p.settled) : '—') + '</span></div>';
+      return '<div class="person"><span>' + (i + 1) + '. ' + whoLabel(p.uid) + '</span><span>' + X.tokens(p.available) + ' <small>+ ' + X.tokens(p.reserved) + ' set aside</small></span></div>';
     }).join('') : '<div class="person">No one has taken tokens yet.</div>';
     var offers = book.offers.length ? book.offers.map(function (o) {
-      return '<div class="bet"><p>' + X.waitingSentence(o.mid, o.side, pname(o.uid)) + '</p><p class="cond">' + X.tokens(o.hold) + ' play tokens are set aside, not matched. Cancel returns them. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
+      return '<div class="bet"><p>' + X.waitingSentence(o.mid, o.side, pname(o.uid)) + ' ' + X.tokens(o.hold) + ' tokens set aside.</p></div>';
     }).join('') : '<div class="person">No unmatched offers.</div>';
     var bets = book.bets.length ? book.bets.map(function (b) {
       var why = b.call == null
@@ -168,7 +163,7 @@
   function gate() {
     if (preview) return '';
     if (!rulesLive) return '<p class="toast">Play tokens are not open. Offers stay off until this game’s rules are published on the existing database.</p>';
-    if (mine) return '<p class="bal"><b>' + X.tokens(mine.bal) + '</b> play tokens · ' + esc(mine.n) + ' · ' + esc(mine.tag) + '</p>';
+    if (mine) return '';
     return '<form class="gate" id="gate"><h2>Your name for this game</h2><p>This event only. You get 100 play tokens once on this browser. The same name on another phone is a different stack. Clearing this browser can get another 100. A name is not proof you are the only person using it.</p><label>Display name<input name="n" maxlength="24" autocomplete="nickname" required></label><button class="go" type="submit">Get 100 play tokens</button></form>';
   }
   function paintStats() {
