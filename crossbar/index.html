@@ -1,83 +1,106 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Oakridge vs Fort Worth Country Day play-token board. No cash value.">
 <title>Oakridge vs Country Day · Torii play tokens</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@400;560;750&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Playfair+Display:wght@560;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#10140f;--card:#171e18;--line:rgba(228,201,138,.28);--ivory:#f6f1e6;--mut:#c9c2b4;--gold:#e4c98a;--oak:#1f9d55;--fw:#173d79;--red:#e15b70}
-*{box-sizing:border-box}body{margin:0;overflow-x:hidden;background:radial-gradient(ellipse at top,#1a2418 0,#10140f 55%);color:var(--ivory);font-family:Outfit,system-ui,sans-serif}
-.banner{background:#3a2a12;color:#f8e7c0;text-align:center;font-weight:750;letter-spacing:.08em;font-size:12px;padding:8px 12px}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
-.brand{color:var(--ivory);text-decoration:none;font-weight:750} .brand em{color:var(--gold);font-style:normal}
-a.back{color:var(--gold);font-size:14px}
-main{max-width:880px;margin:0 auto;padding:16px 14px 64px}
-.hero{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:linear-gradient(160deg,#142218,#121820);border:1px solid var(--line);border-radius:18px;padding:16px 12px}
-.team{text-align:center} .team img{width:88px;height:88px;object-fit:contain;background:#0c0f0c;border-radius:16px}
-.team b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:6px}
-.team span,.vs small{color:var(--mut);font-size:12px} .vs{font-family:Fraunces,Georgia,serif;font-size:28px;color:var(--gold)}
-.note,.rule,.est,.sub,.empty{color:var(--mut);font-size:14px;line-height:1.45}
-.note{background:#241c12;border-radius:12px;padding:10px 12px}
-h1,h2{font-family:Fraunces,Georgia,serif;font-weight:560;margin:18px 0 8px} h1{font-size:34px;line-height:1.05} h2{font-size:28px;color:var(--gold)}
-.mkt{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 14px}
-.mkt.prop{border-color:rgba(31,157,85,.45)}
-.kicker{margin:0;font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
-.mkt h2{font-size:22px;margin:2px 0;color:var(--ivory)}
-.oline{margin:0 0 4px;font-family:Fraunces,Georgia,serif;font-size:34px;line-height:1}
-.basis{margin:4px 0 8px;font-size:15px;line-height:1.35}
-details.rules{margin:0 0 10px;font-size:14px;color:var(--mut)}
-details.rules summary{color:var(--gold);font-weight:750;cursor:pointer}
-details.rules p{margin:8px 0}
-.wait{margin:8px 0 0;color:var(--mut);font-size:13px}
-.ask{margin:8px 0 6px;font-weight:750;font-size:17px}
-.sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sides button,.go,.ghost{font:750 18px/1.2 Outfit,system-ui,sans-serif;border-radius:12px;min-height:72px}
-.sides button{border:0;background:#243028;color:var(--ivory);padding:8px}
-.sides button b{display:block;white-space:normal}
-.sides button.pick{box-shadow:inset 0 0 0 3px #e4c98a}
-.sides button:first-child{background:linear-gradient(180deg,#1f9d55,#146b3a)} .sides button:last-child{background:#173d79}
-.go{width:100%;border:0;background:linear-gradient(135deg,#f0d7a0,#c9a86a);color:#1b1408;margin-top:8px}
-.ghost{width:100%;margin-top:8px;background:transparent;color:var(--ivory);border:1px solid var(--line)}
-.slip{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
-label{display:block;font-size:13px;margin:8px 0} input{width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e120f;color:var(--ivory);font:600 18px Outfit,sans-serif}
-.chips{display:flex;gap:8px} .chips button{flex:1;min-height:48px;border-radius:999px;border:1px solid var(--line);background:#10140f;color:var(--ivory);font:750 18px Outfit,sans-serif} .chips button.pick{background:#e4c98a;color:#1b1408;border-color:#e4c98a}
-.quote{font-size:15px;line-height:1.4}
-.slip-k{margin:0;font-weight:750}
-.chart{margin-top:10px;background:#0e120f;border:1px solid rgba(228,201,138,.2);border-radius:12px;padding:8px 6px 6px} .chart svg{width:100%;height:auto;display:block} .chart p{margin:4px 2px 2px;color:var(--mut);font-size:12px;line-height:1.35}
-.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin:0 2px 2px;font-size:13px;line-height:1.3}
+:root{--bg:#0c0c0e;--card:#16161a;--gold:#c9a86a;--ivory:#f3ecdc;--mut:#b9b3a6;--line:rgba(201,168,106,.22);--oak:#1f9d55;--fw:#173d79}
+*{box-sizing:border-box}body{margin:0;overflow-x:hidden;background:#0c0c0e;background-image:radial-gradient(ellipse at top,#1a1712 0,#0c0c0e 60%);color:var(--ivory);font-family:Inter,system-ui,sans-serif}
+.banner{background:#1d1a14;color:var(--gold);text-align:center;font-weight:800;letter-spacing:.08em;font-size:11px;padding:8px 12px}
+header{position:sticky;top:0;z-index:5;background:#0a0a0c;border-bottom:1px solid var(--line)}
+header .bar{max-width:760px;margin:auto;display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+.brand{color:var(--ivory);text-decoration:none;font-weight:800;font-size:15px}.brand em{color:var(--gold);font-style:normal}
+a.back{color:var(--gold);font-size:13px;font-weight:700;text-decoration:none}
+main{max-width:760px;margin:auto;padding:0 14px 48px}
+.hero{background:linear-gradient(160deg,#17151a,#0f0e11);border:1px solid var(--line);border-top:1px solid var(--gold);border-radius:14px;padding:18px 16px;margin:14px 0;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.hero small{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--gold)}
+.teams{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0}
+.teams img{width:72px;height:72px;object-fit:contain;background:#0c0f0c;border-radius:14px}
+.teams b{display:block;font-family:'Playfair Display',Georgia,serif;font-size:18px;margin-top:4px}
+.teams span,.vs{color:var(--mut);font-size:12px}.vs{font-family:'Playfair Display',Georgia,serif;color:var(--gold);font-size:22px}
+.team{text-align:center;flex:1}
+h1,h2{font-family:'Playfair Display',Georgia,serif;font-weight:600}
+.hero h1{font-size:clamp(26px,7vw,40px);margin:8px 0 6px;line-height:1.05}
+.hero p{margin:0;font-size:15px;color:#c9c3b6}
+.chips{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}.chips span{background:#ffffff14;border:1px solid var(--line);padding:6px 10px;border-radius:20px;font-size:13px}
+.stat{display:flex;gap:8px;margin-top:14px}.stat div{flex:1;background:#ffffff14;border-radius:12px;padding:8px 10px;font-size:11px;color:var(--mut)}.stat b{display:block;font-size:20px;color:var(--ivory);font-variant-numeric:tabular-nums}
+h2{font-size:22px;margin:26px 0 4px;color:var(--gold)}
+.sub{color:var(--mut);margin:0 0 12px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.45);padding:16px 14px;margin:0 0 14px}
+.cat{color:var(--gold);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.q{font-family:'Playfair Display',Georgia,serif;font-size:20px;margin:4px 0 8px;line-height:1.25}
+.basis{margin:0 0 8px;color:var(--mut);font-size:14px;line-height:1.35}
+.ol{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-family:'Playfair Display',Georgia,serif;font-size:18px}
+.ol i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px}
+.ol i.g{background:var(--oak)}.ol i.b{background:var(--fw)}
+.ol b{font-family:Inter,sans-serif;font-size:20px;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;margin-top:12px}
+.yes,.no{flex:1;min-height:64px;border-radius:12px;font:800 16px/1.2 Inter,sans-serif;cursor:pointer;padding:10px 8px}
+.yes{background:linear-gradient(180deg,#1f9d55,#146b3a);color:#fff;border:0}
+.no{background:#1d1d22;color:#ece6d8;border:1px solid rgba(23,61,121,.9)}
+.yes.pick,.no.pick{box-shadow:inset 0 0 0 3px var(--gold)}
+.chart{margin-top:8px;background:#101013;border:1px solid rgba(201,168,106,.12);border-radius:10px;padding:8px 6px 6px}
+.chart svg{width:100%;height:auto;display:block}
+.chart p,.offer p,.bet p{margin:4px 0;color:var(--mut);font-size:13px;line-height:1.4}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin:0 2px 2px;font-size:13px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
-.legend i.dot{background:#1f9d55}
-.legend i.ring{background:transparent;border:2px solid #173d79;box-sizing:border-box}
-.offer{display:block;padding:8px 0;border-top:1px solid rgba(228,201,138,.12);font-size:15px;line-height:1.4}
-.offer p{margin:0}
-.offer button{border:0;background:transparent;color:var(--gold);font-weight:750;min-height:44px;padding:8px 0}
+.legend i.ring{background:transparent;border:2px solid var(--fw);box-sizing:border-box}
+.offer,.bet,.person{padding:8px 0;border-top:1px solid rgba(201,168,106,.12);font-size:14px;line-height:1.4}
 .tag{color:var(--mut);font-size:12px;font-weight:560}
-.lb .person,.lb .bet{display:block;padding:8px 0;border-top:1px solid rgba(228,201,138,.12);font-size:14px;line-height:1.35}
-.lb .person b,.lb .bet b{display:block}
-.lb .person span,.bet .cond{display:block;color:var(--mut);font-size:13px}
-.bet p{margin:4px 0}
-.bal{font-size:18px} .bal b{font-size:28px;color:var(--gold)}
-.toast{background:#243024;border-radius:12px;padding:10px 12px}
-.err{color:#ffb4c0;min-height:1em}
-.phase{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
-.prow{display:flex;gap:8px;overflow:auto;padding-bottom:6px} .prow article{flex:0 0 210px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px} .prow b{display:block;font-size:15px} .prow span{color:var(--gold);font-size:12px} .prow p{margin:6px 0 0;color:var(--mut);font-size:13px;line-height:1.35}
+details.rules{margin-top:8px;font-size:13px;color:var(--mut)}
+details.rules summary{color:var(--gold);font-weight:800;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.s{display:flex}
+.sheet{background:#141417;width:100%;max-width:520px;border-radius:16px 16px 0 0;border-top:2px solid var(--gold);padding:20px;box-shadow:0 -10px 40px rgba(0,0,0,.6)}
+.sheet h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 6px}
+.sheet p{margin:0 0 12px;color:#c9c3b6;font-size:14px}
+input{width:100%;padding:12px;border:1px solid rgba(201,168,106,.4);border-radius:10px;background:#0f0f12;color:var(--ivory);font:inherit;font-size:18px}
+.quick{display:flex;gap:6px;margin:8px 0 12px}
+.quick button{flex:1;min-height:48px;padding:8px;border:1px solid rgba(201,168,106,.45);background:#1d1d22;color:#ece6d8;border-radius:10px;font:inherit;font-weight:800;cursor:pointer}
+.quick button.pick{background:var(--gold);color:#17130b;border-color:var(--gold)}
+.btn{width:100%;background:linear-gradient(135deg,#e6cf9b,#c9a86a 55%,#a8854a);color:#17130b;border:0;border-radius:12px;padding:14px;font-weight:800;font:inherit;font-size:16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ivory);border:1px solid rgba(201,168,106,.5);margin-top:8px}
+.err{color:#e59a9a;min-height:1em;font-size:13px}
+.toast{background:#1c2a21;border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.phase{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.gate{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px}
+.prow{display:flex;gap:8px;overflow:auto;padding-bottom:6px}
+.prow article{flex:0 0 210px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.prow b{display:block}.prow span{color:var(--gold);font-size:12px}.prow p{margin:6px 0 0;color:var(--mut);font-size:13px}
+.disc{background:#1d1a14;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:12px;color:#e8d3a6;margin:18px 0}
 footer{color:var(--mut);font-size:12px;line-height:1.45}
-@media(min-width:800px){.team img{width:120px;height:120px}.team b{font-size:28px} .hero{padding:22px}}
+@media(min-width:800px){.teams img{width:96px;height:96px}}
 </style></head><body>
-<p class="banner">PLAY TOKENS · NO CASH VALUE · NO DEPOSITS · NO WITHDRAWALS · NO MONEY PAYOUTS</p>
-<header><a class="brand" href="/">Torii <em>play tokens</em></a><a class="back" href="/">Clubs</a></header>
+<p class="banner">PLAY TOKENS · NO CASH VALUE · NO DEPOSITS · NO WITHDRAWALS</p>
+<header><div class="bar"><a class="brand" href="/">Torii <em>play tokens</em></a><a class="back" href="/">Clubs</a></div></header>
 <main>
 <section class="hero">
+<small>GAME NIGHT · NOV 7 · PLAY TOKENS ONLY</small>
+<div class="teams">
 <div class="team"><img src="logos/oakridge.png" alt="The Oakridge School athletics mark"><b>Oakridge</b><span>Owls · Arlington</span></div>
-<div class="vs">VS<small>Nov 7</small></div>
+<div class="vs">VS</div>
 <div class="team"><img src="logos/fwcd.png" alt="Fort Worth Country Day falcon mark"><b>Country Day</b><span>Falcons · Fort Worth</span></div>
+</div>
+<h1>Oakridge vs Country Day</h1>
+<p>Orders stop at 6:00 p.m. Central. Overtime counts. A post waits until someone takes the other side.</p>
+<div class="chips"><span><b>Oakridge</b> · green</span><span><b>Country Day</b> · blue</span></div>
+<div class="stat"><div><b id="sBal">—</b>Your tokens</div><div><b id="sOpen">—</b>Set aside</div><div><b id="sVol">—</b>Matched</div></div>
 </section>
-<h1>Oakridge at home. Country Day in town.</h1>
-<p class="note">Kickoff is unconfirmed, listed at 6:00 or 7:00 p.m. Central. This board stops new orders at 6:00 p.m. Central Saturday (midnight UTC). If the game starts sooner, an operator can close it. Overtime is part of the final. Torii is not affiliated with either school, and these marks are not an endorsement.</p>
 <div id="app">Loading the board…</div>
+<div class="disc"><b>Play tokens, not cash.</b> Nothing on this page is money. Tokens are escrowed by the two sides. Unmatched tokens come back. Torii is not affiliated with either school.</div>
 <footer>
-<p>School marks: Oakridge athletics logo from theoakridgeschool.org athletics page; Fort Worth Country Day logo from fwcd.org/gsd-logo.png. Colors from those sites (Country Day navy #173d79 and red #c22c47). Not an official school product.</p>
-<p>Team lines use a rough pregame estimate, labeled as an estimate. Player props have no estimate. Prices exist only when two people trade. The house does not take a side. One token per share is escrowed by the two sides together. Unmatched tokens refund. A one-sided offer is not a bet.</p>
+<p>School marks: Oakridge athletics logo from theoakridgeschool.org; Fort Worth Country Day logo from fwcd.org/gsd-logo.png. Not an official school product.</p>
 </footer>
 </main>
+<div class="modal" id="slipM"><div class="sheet">
+<h3 id="slipQ"></h3>
+<p id="slipSide"></p>
+<div class="quick"><button type="button" data-amt="1">1</button><button type="button" data-amt="5" class="pick">5</button><button type="button" data-amt="10">10</button></div>
+<label>Play tokens<input id="slipAmt" type="number" min="0.5" step="0.01" value="5" inputmode="decimal"></label>
+<p id="slipQuote"></p>
+<p id="slipErr" class="err"></p>
+<button class="btn" id="slipGo" type="button">Post</button>
+<button class="btn ghost" id="slipNo" type="button">Not now</button>
+</div></div>
 <script src="engine.js"></script>
 <script src="wire.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>

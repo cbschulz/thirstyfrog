@@ -87,9 +87,14 @@
       : '<p>' + esc(m.yes) + ' / ' + esc(m.no) + '. Pregame read ' + m.refYes + '¢ / ' + (100 - m.refYes) + '¢. That read is not a trade and not a live price. The number on the card does not move. A tie voids the outright winner only. Oakridge −15.5 needs a win by 16 or more. Combined 56.5: 57 or more is over. 35 and 21 are included on those yes sides. The house does not take a side. Unmatched tokens come back if you cancel or the board closes.</p>';
     return '<details class="rules"><summary>Rules &amp; sources</summary>' + body + '</details>';
   }
-  function slip(mid, side) {
-    var label = X.outcomeName(mid, side);
-    return '<form class="slip" data-mid="' + mid + '" data-side="' + side + '"><p class="slip-k">' + esc(label) + '</p><p class="ask">How many play tokens do you want to risk?</p><div class="chips"><button type="button" data-amt="1">1</button><button type="button" data-amt="5" class="pick">5</button><button type="button" data-amt="10">10</button></div><label>Play tokens<input name="amt" type="number" min="0.5" step="0.01" value="5" inputmode="decimal"></label><p class="quote"></p><p class="err"></p><button class="go" type="submit">Post</button><button class="ghost" type="button" data-close>Not now</button></form>';
+  function lastPct(mid) {
+    var pts = [];
+    Object.keys(state.fills || {}).forEach(function (id) {
+      var f = state.fills[id];
+      if (f && f.mid === mid && typeof f.yesPay === 'number') pts.push(f);
+    });
+    pts.sort(function (a, b) { return a.t - b.t || String(a.id).localeCompare(String(b.id)); });
+    return pts.length ? pts[pts.length - 1].yesPay : null;
   }
   function card(mid) {
     var prop = X.PROPS[mid], m = X.MARKETS[mid];
@@ -99,18 +104,18 @@
     var face = prop ? '<p class="basis">' + esc(BASIS[mid]) + '</p>' : '';
     var open = sel && sel.mid === mid;
     var canOffer = preview || rulesLive;
-    var extra = open && canOffer ? slip(mid, sel.side) : '';
+    var px = lastPct(mid);
+    var odds = '<div class="ol"><span><i class="g"></i>' + esc(X.outcomeName(mid, 'yes')) + '</span><b>' + (px == null ? '—' : px + '%') + '</b></div><div class="ol"><span><i class="b"></i>' + esc(X.outcomeName(mid, 'no')) + '</span><b>' + (px == null ? '—' : (100 - px) + '%') + '</b></div>';
     var offers = book(mid);
-    var pend = offers.indexOf('empty') >= 0 ? '' : '<div class="offers">' + offers + '</div>';
-    function sideBtn(side) {
+    var pend = offers.indexOf('empty') >= 0 ? '' : offers;
+    function sideBtn(side, cls) {
       var picked = open && sel.side === side ? ' pick' : '';
-      return '<button type="button" class="' + picked + '" data-bet="' + mid + '" data-side="' + side + '"><b>' + esc(X.outcomeName(mid, side)) + '</b></button>';
+      return '<button type="button" class="' + cls + picked + '" data-bet="' + mid + '" data-side="' + side + '">' + esc(X.outcomeName(mid, side)) + '</button>';
     }
-    var buttons = '<p class="ask">' + esc(X.ask(mid)) + '</p><div class="sides">' + sideBtn('yes') + sideBtn('no') + '</div>';
-    var controls = canOffer
-      ? buttons + extra + chart(mid) + pend
-      : '<p class="wait">Offers are closed until the token rules are published.</p>' + chart(mid);
-    return '<article class="mkt' + (prop ? ' prop' : '') + (open ? ' on' : '') + '" id="' + mid + '"><p class="kicker">' + esc(kicker) + '</p><h2>' + esc(title) + '</h2>' + (line ? '<p class="oline">' + esc(line) + '</p>' : '') + face + rulesBox(mid) + controls + '</article>';
+    var buttons = canOffer
+      ? '<div class="row">' + sideBtn('yes', 'yes') + sideBtn('no', 'no') + '</div>'
+      : '<p class="sub">Posts are closed until this board is open.</p>';
+    return '<article class="card" id="' + mid + '"><div class="cat">' + esc(kicker) + '</div><div class="q">' + esc(X.ask(mid)) + '</div>' + (line ? '<p class="basis">' + esc(line) + '</p>' : '') + face + odds + chart(mid) + buttons + pend + rulesBox(mid) + '</article>';
   }
   function profiles() {
     var rows = [
@@ -177,15 +182,32 @@
     if (mine) return '<p class="bal"><b>' + X.tokens(mine.bal) + '</b> play tokens · ' + esc(mine.n) + ' · ' + esc(mine.tag) + '</p>';
     return '<form class="gate" id="gate"><h2>Your name for this game</h2><p>This event only. You get 100 play tokens once on this browser. The same name on another phone is a different stack. Clearing this browser can get another 100. A name is not proof you are the only person using it.</p><label>Display name<input name="n" maxlength="24" autocomplete="nickname" required></label><button class="go" type="submit">Get 100 play tokens</button></form>';
   }
+  function paintStats() {
+    var bal = document.getElementById('sBal');
+    if (!bal) return;
+    var book = X.ledger(state);
+    var me = null;
+    book.players.forEach(function (p) { if (p.uid === uid) me = p; });
+    bal.textContent = me ? X.tokens(me.available) : '—';
+    var openEl = document.getElementById('sOpen');
+    if (openEl) openEl.textContent = me ? X.tokens(me.reserved) : '—';
+    var vol = 0;
+    Object.keys(state.fills || {}).forEach(function (id) { var f = state.fills[id]; if (f) vol += f.shares * 100; });
+    var volEl = document.getElementById('sVol');
+    if (volEl) volEl.textContent = X.tokens(vol);
+  }
   function draw() {
-    var typing = document.activeElement && root.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
-    if (typing) return;
-    var phase = state.status === 'open' && Date.now() < X.CUTOFF ? 'Orders open until 6:00 p.m. CT' : (state.status === 'settled' ? 'Final posted' : 'Orders closed');
+    var phase = state.status === 'open' && Date.now() < X.CUTOFF ? 'Open until 6:00 p.m. CT' : (state.status === 'settled' ? 'Final posted' : 'Orders closed');
     root.innerHTML = '<p class="phase">' + phase + '</p>' + gate() + (note ? '<p class="toast">' + esc(note) + '</p>' : '') +
-      '<section><h2>The game</h2>' + ['ml', 'spd', 'tot', 'o35', 'f21'].map(card).join('') + '</section>' +
-      profiles() + '<section><h2>Player props</h2><p class="sub">Pick a side, then how many play tokens.</p>' + ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') + '</section>' +
-      standings() + (admin ? '<section class="ops"><h2>Operator</h2><p class="sub">Final score does not settle player props. A missing box-score stat is Void, not zero.</p><form id="score"><label>Oakridge<input name="oak" type="number" min="0" max="200"></label><label>Country Day<input name="fw" type="number" min="0" max="200"></label><button class="go" type="submit">Post final</button></form><button type="button" id="voidgame">Void the game and refund</button></section>' : '');
+      '<h2>The board</h2><p class="sub">Pick a side. Then choose how many play tokens to risk.</p>' +
+      ['ml', 'spd', 'tot', 'o35', 'f21'].map(card).join('') +
+      '<h2>Player props</h2><p class="sub">Same idea. The name on the button is the side you are posting.</p>' +
+      ['p_stadler_td', 'p_stadler_rec', 'p_stadler_tck', 'p_homan_rush', 'p_homan_td', 'p_bluntzer_tck'].map(card).join('') +
+      profiles() + standings() +
+      (admin ? '<h2>Operator</h2><p class="sub">The final score does not settle a player prop. A missing stat is void, not zero.</p><form class="card" id="score"><label>Oakridge<input name="oak" type="number" min="0" max="200"></label><label>Country Day<input name="fw" type="number" min="0" max="200"></label><button class="btn" type="submit">Post final</button></form><button type="button" class="btn ghost" id="voidgame">Void the game and refund</button>' : '');
+    paintStats();
     bind();
+    if (sel && document.getElementById('slipM').classList.contains('s')) refreshQuote();
   }
   function bind() {
     root.querySelectorAll('[data-bet]').forEach(function (b) {
@@ -193,24 +215,13 @@
         if (!mine && !preview) { note = 'Enter your name to use play tokens.'; draw(); return; }
         sel = { mid: b.dataset.bet, side: b.dataset.side };
         note = '';
+        document.getElementById('slipQ').textContent = X.ask(sel.mid);
+        document.getElementById('slipSide').textContent = 'Posting ' + X.outcomeName(sel.mid, sel.side);
+        document.getElementById('slipErr').textContent = '';
+        document.getElementById('slipM').classList.add('s');
+        refreshQuote();
         draw();
-        var form = root.querySelector('.slip');
-        if (form) form.scrollIntoView({ block: 'nearest' });
       };
-    });
-    root.querySelectorAll('[data-close]').forEach(function (b) { b.onclick = function () { sel = null; draw(); }; });
-    root.querySelectorAll('[data-amt]').forEach(function (b) {
-      b.onclick = function () {
-        var f = b.closest('form');
-        f.amt.value = b.dataset.amt;
-        f.querySelectorAll('[data-amt]').forEach(function (c) { c.classList.toggle('pick', c === b); });
-        quote(f);
-      };
-    });
-    root.querySelectorAll('.slip').forEach(function (f) {
-      f.oninput = function () { quote(f); };
-      f.onsubmit = function (e) { e.preventDefault(); place(f); };
-      quote(f);
     });
     root.querySelectorAll('[data-cancel]').forEach(function (b) { b.onclick = function () { cancel(b.dataset.cancel); }; });
     var g = document.getElementById('gate');
@@ -230,30 +241,38 @@
     if (q.leftover > 0) text += ' ' + X.tokens(q.leftover) + ' stays in your wallet.';
     return text;
   }
-  function quote(f) {
-    var q = f.querySelector('.quote');
-    var got = X.quoteStake(state, { uid: uid, mid: f.dataset.mid, side: f.dataset.side, tokens: f.amt.value, t: Date.now() });
-    q.textContent = quoteWords(got, X.outcomeName(f.dataset.mid, f.dataset.side));
+  function refreshQuote() {
+    if (!sel) return;
+    var amt = document.getElementById('slipAmt');
+    var got = X.quoteStake(state, { uid: uid, mid: sel.mid, side: sel.side, tokens: amt.value, t: Date.now() });
+    document.getElementById('slipQuote').textContent = quoteWords(got, X.outcomeName(sel.mid, sel.side));
   }
-  function place(f) {
-    if (busy) return;
-    var err = f.querySelector('.err');
+  function closeSlip() {
+    sel = null;
+    var m = document.getElementById('slipM');
+    if (m) m.classList.remove('s');
+    draw();
+  }
+  function place() {
+    if (busy || !sel) return;
+    var err = document.getElementById('slipErr');
     if (!preview && !rulesLive) { err.textContent = 'Posts are closed.'; return; }
     var t = Date.now();
-    var got = X.quoteStake(state, { uid: uid, mid: f.dataset.mid, side: f.dataset.side, tokens: f.amt.value, t: t });
+    var got = X.quoteStake(state, { uid: uid, mid: sel.mid, side: sel.side, tokens: document.getElementById('slipAmt').value, t: t });
     if (got.error) { err.textContent = got.error; return; }
-    var order = { id: X.id(), uid: uid, mid: f.dataset.mid, side: f.dataset.side, px: got.px, shares: got.shares, t: t };
+    var order = { id: X.id(), uid: uid, mid: sel.mid, side: sel.side, px: got.px, shares: got.shares, t: t };
     var built = W.steps(state, order);
     if (built.error) { err.textContent = built.error; return; }
     busy = true;
-    var btn = f.querySelector('.go');
+    var btn = document.getElementById('slipGo');
     if (btn) btn.disabled = true;
     if (preview) {
       var applied = X.submit(state, order);
       state = applied.state;
       busy = false;
+      if (btn) btn.disabled = false;
       note = applied.fills && applied.fills.length ? 'Posted on this phone only. Some of it is matched.' : 'Posted on this phone only. It waits for another player.';
-      sel = null; draw(); return;
+      closeSlip(); return;
     }
     sendSteps(built.steps, got.matched ? 'Posted. Some of it is matched. The rest waits for another player.' : 'Posted. It waits until someone takes the other side.');
   }
@@ -266,8 +285,8 @@
     var db = firebase.database();
     var i = 0;
     function next(err) {
-      if (err) { busy = false; note = 'The book changed or the post was rejected. Nothing extra was taken.'; draw(); return; }
-      if (i >= steps.length) { busy = false; note = ok; sel = null; draw(); return; }
+      if (err) { busy = false; var go = document.getElementById('slipGo'); if (go) go.disabled = false; note = 'The book changed or the post was rejected. Nothing extra was taken.'; draw(); return; }
+      if (i >= steps.length) { busy = false; var go = document.getElementById('slipGo'); if (go) go.disabled = false; note = ok; closeSlip(); return; }
       db.ref().update(steps[i++]).then(function () { next(); }).catch(function () { next(true); });
     }
     next();
@@ -324,6 +343,19 @@
     db.ref('xbar_results').on('value', function (s) { bag.results = s.val() || {}; paint(); });
     db.ref('admins/' + uid).once('value').then(function (s) { admin = s.val() === true; draw(); });
   }
+  document.querySelectorAll('#slipM [data-amt]').forEach(function (b) {
+    b.onclick = function () {
+      document.getElementById('slipAmt').value = b.dataset.amt;
+      document.querySelectorAll('#slipM [data-amt]').forEach(function (c) { c.classList.toggle('pick', c === b); });
+      refreshQuote();
+    };
+  });
+  var slipAmt = document.getElementById('slipAmt');
+  if (slipAmt) slipAmt.oninput = refreshQuote;
+  var slipGo = document.getElementById('slipGo');
+  if (slipGo) slipGo.onclick = place;
+  var slipNo = document.getElementById('slipNo');
+  if (slipNo) slipNo.onclick = closeSlip;
   if (preview) {
     uid = 'previewuid01';
     state.accounts[uid] = { bal: 10000, n: 'You', tag: 'prev', createdAt: 1 };
