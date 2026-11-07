@@ -76,10 +76,8 @@
     var list = Object.keys(state.orders).map(function (id) { return state.orders[id]; }).filter(function (o) { return o && o.mid === mid && o.st === 'open' && o.rem > 0; });
     if (!list.length) return '<p class="empty">No pending offers.</p>';
     return list.sort(function (a, b) { return b.px - a.px; }).map(function (o) {
-      var who = (state.accounts[o.uid] && state.accounts[o.uid].n) || 'Player';
-      var tag = (state.accounts[o.uid] && state.accounts[o.uid].tag) || '';
       var mineBtn = o.uid === uid ? '<button type="button" data-cancel="' + esc(o.id) + '">Cancel</button>' : '';
-      return '<div class="offer"><span>' + esc(X.outcomeName(mid, o.side)) + ' · ' + X.tokens(o.rem * o.px) + ' waiting · ' + esc(who) + ' · ' + esc(tag) + '</span>' + mineBtn + '</div>';
+      return '<div class="offer"><p>' + X.waitingSentence(mid, o.side, whoLabel(o.uid)) + ' ' + X.tokens(o.rem * o.px) + ' play tokens are set aside.</p>' + mineBtn + '</div>';
     }).join('');
   }
   function rulesBox(mid) {
@@ -131,10 +129,15 @@
     return prop ? prop.player + ' · ' + prop.title : (m ? m.title : mid);
   }
   function sname(mid, side) { return X.outcomeName(mid, side); }
-  function pname(uid) {
+  function whoLabel(uid) {
     var a = state.accounts[uid];
-    return a ? esc(a.n) + ' · ' + esc(a.tag) : 'Player';
+    if (!a || !a.n) return 'Someone';
+    var dup = Object.keys(state.accounts).some(function (id) {
+      return id !== uid && state.accounts[id] && state.accounts[id].n === a.n;
+    });
+    return esc(a.n) + (dup ? ' <span class="tag">' + esc(a.tag) + '</span>' : '');
   }
+  function pname(uid) { return whoLabel(uid); }
   function sideStatus(row, label) {
     if (row.payout == null) return 'Pending. ' + X.tokens(row.possible) + ' tokens only if ' + esc(label) + ' wins. Not counted as a win yet.';
     if (row.payout === row.possible) return 'Won ' + X.tokens(row.payout) + ' play tokens from escrow.' + (row.claimed ? ' In the wallet.' : ' Still to collect.');
@@ -144,7 +147,7 @@
   function standings() {
     var book = X.ledger(state);
     var lb = book.players.length ? book.players.map(function (p, i) {
-      return '<div class="person"><b>' + (i + 1) + '. ' + esc(p.n) + ' · ' + esc(p.tag) + '</b>' +
+      return '<div class="person"><b>' + (i + 1) + '. ' + whoLabel(p.uid) + '</b>' +
         '<span>Available ' + X.tokens(p.available) + '</span>' +
         '<span>Reserved on open offers ' + X.tokens(p.reserved) + '</span>' +
         '<span>In matched stakes ' + X.tokens(p.escrow) + '</span>' +
@@ -152,7 +155,7 @@
         '<span>Settled result ' + (p.settledKnown ? X.tokens(p.settled) : '—') + '</span></div>';
     }).join('') : '<div class="person">No one has taken tokens yet.</div>';
     var offers = book.offers.length ? book.offers.map(function (o) {
-      return '<div class="bet"><b>Waiting for another player</b><p>' + pname(o.uid) + ' · ' + esc(mtitle(o.mid)) + ' · ' + esc(sname(o.mid, o.side)) + '</p><p class="cond">' + X.tokens(o.hold) + ' play tokens set aside. Not matched yet. Cancel returns them. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
+      return '<div class="bet"><p>' + X.waitingSentence(o.mid, o.side, pname(o.uid)) + '</p><p class="cond">' + X.tokens(o.hold) + ' play tokens are set aside, not matched. Cancel returns them. ' + esc(X.ctStamp(o.t)) + '.</p></div>';
     }).join('') : '<div class="person">No unmatched offers.</div>';
     var bets = book.bets.length ? book.bets.map(function (b) {
       var why = b.call == null
@@ -166,7 +169,7 @@
       }
       return '<div class="bet"><b>' + esc(mtitle(b.mid)) + ' · ' + esc(X.ctStamp(b.t)) + '</b>' + line(b.yes) + line(b.no) + '<p class="cond">' + why + ' No cash.</p></div>';
     }).join('') : '<div class="person">No matched trades yet. Nothing is owed.</div>';
-    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Available is what you can still post. Set aside is waiting for another player. In a match is already paired. A possible win is not counted until the result is in. Same names stay distinct by the short id. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Waiting posts</h2><div class="lb">' + offers + '</div><h2>Matched play</h2><p class="sub">Who took each side. Tokens already set aside pay the winner. Nothing is owed in cash.</p><div class="lb">' + bets + '</div></section>';
+    return '<section class="stand"><h2>Token leaderboard</h2><p class="sub">Play tokens only. Available is what you can still post. Set aside is waiting for the other side. In a match is already paired. A possible win is not counted yet. If two people use the same name, a small code keeps them apart. No cash is owed.</p><div class="lb">' + lb + '</div><h2>Waiting posts</h2><div class="lb">' + offers + '</div><h2>Matched play</h2><p class="sub">Who took each side. Tokens already set aside pay the winner. Nothing is owed in cash.</p><div class="lb">' + bets + '</div></section>';
   }
   function gate() {
     if (preview) return '';

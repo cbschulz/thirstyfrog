@@ -27,6 +27,32 @@ eq('td yes', X.outcomeName('p_stadler_td', 'yes'), 'Scores a TD');
 eq('td no', X.outcomeName('p_homan_td', 'no'), 'No TD');
 eq('yards', X.outcomeName('p_stadler_rec', 'yes'), 'Over 29.5');
 eq('ask', X.ask('ml'), 'Who wins?');
+eq('waiting names the other side', X.waitingSentence('ml', 'yes', 'Charlie'), 'Who wins? Charlie picked Oakridge, waiting for someone to pick Country Day.');
+eq('spread waiting is not Country Day for both', X.waitingSentence('spd', 'no', 'Charlie'), 'Who covers? Charlie picked Country Day +15.5, waiting for someone to pick Oakridge −15.5.');
+eq('same side does not match', (function () {
+  let s = X.blank();
+  acct(s, 'alice', 'Ada');
+  acct(s, 'bob', 'Bea');
+  s = X.submit(s, { id: 'samen0000001', uid: 'alice', mid: 'spd', side: 'no', px: 50, shares: 4, t: t }).state;
+  s = X.submit(s, { id: 'samen0000002', uid: 'bob', mid: 'spd', side: 'no', px: 10, shares: 4, t: t + 1 }).state;
+  return Object.keys(s.fills).length === 0 && s.orders.samen0000001.rem === 4 && s.orders.samen0000002.rem === 4;
+})(), true);
+eq('even sides match', (function () {
+  let s = X.blank();
+  acct(s, 'alice', 'Ada');
+  acct(s, 'bob', 'Bea');
+  s = X.submit(s, { id: 'evenyes00001', uid: 'alice', mid: 'ml', side: 'yes', px: 50, shares: 4, t: t }).state;
+  s = X.submit(s, { id: 'evenno000001', uid: 'bob', mid: 'ml', side: 'no', px: 50, shares: 4, t: t + 1 }).state;
+  return Object.keys(s.fills).length === 1 && s.orders.evenyes00001.rem === 0;
+})(), true);
+eq('cheap other side does not meet an even post', (function () {
+  let s = X.blank();
+  acct(s, 'alice', 'Ada');
+  acct(s, 'bob', 'Bea');
+  s = X.submit(s, { id: 'cheapno00001', uid: 'bob', mid: 'tot', side: 'no', px: 10, shares: 4, t: t }).state;
+  s = X.submit(s, { id: 'evenyes00002', uid: 'alice', mid: 'tot', side: 'yes', px: 50, shares: 4, t: t + 1 }).state;
+  return Object.keys(s.fills).length === 0 && s.orders.cheapno00001.rem === 4 && s.orders.evenyes00002.rem === 4;
+})(), true);
 
 let s = X.blank();
 acct(s, 'alice', 'Ada');
