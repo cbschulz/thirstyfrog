@@ -107,6 +107,7 @@ export const xbarRules = {
     }
   },
   xbar_accounts: {
+    ".read": "auth != null",
     $uid: {
       ".read": "auth != null",
       ".write": "auth != null && newData.exists() && (" + acct() + ")",
