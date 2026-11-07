@@ -366,7 +366,7 @@
       marks += '<circle data-side="no" cx="' + x + '" cy="' + yOf(100 - last.yesPay).toFixed(1) + '" r="5.5" fill="' + color.no + '"/>';
       marks += '<circle data-side="yes" cx="' + x + '" cy="' + yOf(last.yesPay).toFixed(1) + '" r="5.5" fill="' + color.yes + '"/>';
     }
-    var wait = pts.length ? '' : '<text x="116" y="58" text-anchor="middle" fill="#b9b3a6" font-size="12" font-family="Inter,sans-serif">No matched price yet</text>';
+    var wait = pts.length ? '' : '<text x="116" y="58" text-anchor="middle" fill="#5f6368" font-size="12" font-family="Inter,sans-serif">No matched price yet</text>';
     var times = '';
     if (pts.length === 1) times = '<text x="116" y="116" text-anchor="middle" fill="#8d8a83" font-size="10" font-family="Inter,sans-serif">' + xml(ctStamp(pts[0].t)) + '</text>';
     else if (pts.length > 1) {
